@@ -48,7 +48,7 @@ import com.pili.PiliException;
 ###Get an exist stream
 ```JAVA
   try {
-    Stream stream = pili.getStream(stream.id);
+    Stream stream = pili.getStream(stream.getStreamId());
   } catch (PiliException e) {
     e.printStackTrace();
   }
@@ -76,7 +76,7 @@ import com.pili.Pili.StreamSegmentList;
   long startTime = 0; // optional
   long endTime   = 0; // optional
   try {
-      StreamSegmentList ssList = pili.getStreamSegments(stream.Id, startTime, endTime);
+      StreamSegmentList ssList = pili.getStreamSegments(stream.getStreamId(), startTime, endTime);
   } catch (PiliException e) {
       e.printStackTrace();
   }
@@ -88,7 +88,7 @@ String newPublishKey      = "new_secret_words";
 String newPublishSecurity = "dynamic";
 
   try {
-      Stream stream = pili.updateStream(stream.id, newPublishKey, newPublishSecurity);
+      Stream stream = pili.updateStream(stream.getStreamId(), newPublishKey, newPublishSecurity);
       printStream(stream);
   } catch (PiliException e) {
       e.printStackTrace();
@@ -97,7 +97,7 @@ String newPublishSecurity = "dynamic";
 ###Delete stream
 ```JAVA
   try {
-      String res = pili.deleteStream(stream.id);
+      String res = pili.deleteStream(stream.getStreamId());
   } catch (PiliException e) {
       e.printStackTrace();
   }
