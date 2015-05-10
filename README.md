@@ -48,7 +48,7 @@ import com.pili.PiliException;
 ###Get an exist stream
 ```JAVA
   try {
-    Stream stream = pili.getStream(stream.getStreamId());
+    Stream retStream = pili.getStream(stream.getStreamId());
   } catch (PiliException e) {
     e.printStackTrace();
   }
@@ -88,7 +88,7 @@ String newPublishKey      = "new_secret_words";
 String newPublishSecurity = "dynamic";
 
   try {
-      Stream stream = pili.updateStream(stream.getStreamId(), newPublishKey, newPublishSecurity);
+      Stream retStream = pili.updateStream(stream.getStreamId(), newPublishKey, newPublishSecurity);
       printStream(stream);
   } catch (PiliException e) {
       e.printStackTrace();
