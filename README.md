@@ -1,7 +1,7 @@
 #Pili server-side library for JAVA
 
 ##Installation
-You can downlaod pili-sdk-java-v0.1.0.jar file in the release folder.
+You can downlaod pili-sdk-java-v1.0.0.jar file in the release folder.
 
 ##dependency
 You also need [okhttp][1], [okio][2], [Gson][3]
