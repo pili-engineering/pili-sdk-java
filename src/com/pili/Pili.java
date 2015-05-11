@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.security.SignatureException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -401,7 +402,7 @@ public class Pili {
                 System.out.println(jsonObj);
                 System.out.println(jsonObj.get("segments"));
                 if (jsonObj.get("segments") instanceof JsonNull) {
-                    throw new PiliException(response);
+                    throw new PiliException("Segments is null");
                 }
                 return new StreamSegmentList(jsonObj);
             } catch (IOException e) {
@@ -413,4 +414,81 @@ public class Pili {
         }
     }
 
+    //Generate a RTMP publish URL
+    public String publishUrl(String streamId, String publishKey, String publishSecurity, long nonce) throws PiliException {
+        final String defaultScheme = "rtmp";
+        if ("dynamic".equals(publishSecurity)) {
+            return generateDynamicUrl(streamId, publishKey, nonce, defaultScheme);
+        } else if ("static".equals(publishSecurity)) {
+            return generateStaticUrl(streamId, publishKey, defaultScheme);
+        } else {
+            return null;
+        }
+    }
+
+    //Generate RTMP live play URL
+    public String rtmpLiveUrl(String rtmpPlayHost, String streamId, String preset) {
+        final String defaultScheme = "rtmp";
+        String baseUri = getPath(streamId);
+        String url = defaultScheme + "://" + rtmpPlayHost + baseUri;
+        if (preset != null && !preset.isEmpty()) {
+            url += '@' + preset;
+        }
+        return url;
+    }
+
+    //Generate HLS live play URL
+    public String hlsLiveUrl(String hlsPlayHost, String streamId, String preset) {
+        final String defaultScheme = "http";
+        String baseUri = getPath(streamId);
+        String url = defaultScheme + "://" + hlsPlayHost + baseUri;
+        if (preset != null && !preset.isEmpty()) {
+            url += '@' + preset;
+        }
+        url += ".m3u8";
+        return url;
+    }
+
+    //Generate HLS playback URL
+    public String hlsPlaybackUrl(String hlsPlayHost, String streamId, long startTime, long endTime, String preset) {
+        final String defaultScheme = "http";
+        String baseUri = getPath(streamId);
+        String url = defaultScheme + "://" + hlsPlayHost + baseUri;
+        if (preset != null && !preset.isEmpty()) {
+            url += '@' + preset;
+        }
+        url += ".m3u8";
+        if (startTime >= 0) {
+            url += "?start=" +startTime;
+        }
+        if (endTime >= 0) {
+            url += "&end=" +endTime;
+        }
+        return url;
+    }
+
+    
+    private String getPath(String streamId) {
+        String[] res = streamId.split("\\.");
+        return String.format("/%s/%s", res[1], res[2]);
+    }
+
+    private String generateStaticUrl(String streamId, String publishKey, String scheme) {
+        return String.format("%s://%s%s?key=%s", scheme, Config.DEFAULT_RTMP_PUBLISH_HOST, getPath(streamId), publishKey);
+    }
+
+    private String generateDynamicUrl(String streamId, String publishKey, long nonce, String scheme) throws PiliException {
+        if (nonce == 0) {
+            nonce = System.currentTimeMillis();
+        }
+        String baseUri = getPath(streamId) + "?nonce=" + nonce;
+        String publishToken = null;
+        try {
+            publishToken = Auth.sign(publishKey, baseUri);
+        } catch (SignatureException e) {
+            e.printStackTrace();
+            throw new PiliException(e);
+        }
+        return String.format("%s://%s%s&token=%s", scheme, Config.DEFAULT_RTMP_PUBLISH_HOST, baseUri, publishToken);
+    }
 }

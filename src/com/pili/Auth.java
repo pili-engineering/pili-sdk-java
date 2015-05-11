@@ -81,25 +81,39 @@ public class Auth {
                 !"application/octet-stream".equals(contentType)) {
             sb.append(new String(body));
         }
+        return String.format("%s %s:%s", DIGEST_AUTH_PREFIX, mMacKeys.accessKey, signData(sb.toString()));
+    }
 
-        return signData(sb.toString());
+    private static byte[] digest(String secret, String data) throws SignatureException {
+        try {
+            SecretKeySpec secretKeySpec = new SecretKeySpec(secret.getBytes(Config.UTF8), "HmacSHA1");
+            Mac mac = createMac(secretKeySpec);
+            mac.update(data.getBytes(Config.UTF8));
+            return mac.doFinal();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new SignatureException("Failed to digest: " + e.getMessage());
+        } 
+    }
+
+    public static String sign(String secret, String data) throws SignatureException {
+        return UrlSafeBase64.encodeToString(digest(secret, data));
     }
 
     private String signData(String data) throws SignatureException {
-        String token = null;
+        String sign = null;
         try {
-            Mac mac = createMac();
-            String sign = UrlSafeBase64.encodeToString(mac.doFinal(data.getBytes()));
-            token = String.format("%s %s:%s", DIGEST_AUTH_PREFIX, mMacKeys.accessKey, sign);
+            Mac mac = createMac(mSkSpec);
+            sign = UrlSafeBase64.encodeToString(mac.doFinal(data.getBytes(Config.UTF8)));
         } catch (Exception e) {
             throw new SignatureException("Failed to generate HMAC : " + e.getMessage());
         }
-        return token;
+        return sign;
     }
 
-    private Mac createMac() throws GeneralSecurityException {
+    private static Mac createMac(SecretKeySpec secretKeySpec) throws GeneralSecurityException {
         Mac mac = javax.crypto.Mac.getInstance("HmacSHA1");
-        mac.init(mSkSpec);
+        mac.init(secretKeySpec);
         return mac;
     }
 }
