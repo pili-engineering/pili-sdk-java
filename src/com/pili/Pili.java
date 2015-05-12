@@ -145,13 +145,13 @@ public class Pili {
         System.out.println(urlStr);
         JsonObject json = new JsonObject();
         json.addProperty("hub", hubName);
-        if (title != null) {
+        if (isArgNotEmpty(title)) {
             json.addProperty("title", title);
         }
-        if (publishKey != null) {
+        if (isArgNotEmpty(publishKey)) {
             json.addProperty("publishKey", publishKey);
         }
-        if (publishSecurity != null) {
+        if (isArgNotEmpty(publishSecurity)) {
             json.addProperty("publishSecurity", publishSecurity);
         }
         Response response = null;
@@ -236,23 +236,19 @@ public class Pili {
         }
         try {
             hubName = URLEncoder.encode(hubName, Config.UTF8);
-            if (startMarker != null && !" ".equals(startMarker)) {
+            if (isArgNotEmpty(startMarker)) {
                 startMarker = URLEncoder.encode(startMarker, Config.UTF8);
             }
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
             throw new PiliException(e);
         }
-        String urlStr = null;
-        
-        if (startMarker != null && !"".equals(startMarker) && limitCount != 0) {
-            urlStr = String.format("%s/streams?hub=%s&marker=%s&limit=%d", API_BASE_URL, hubName, startMarker, limitCount);
-        } else if (startMarker == null || "".equals(startMarker) || " ".equals(startMarker)) {
-            urlStr = String.format("%s/streams?hub=%s&limit=%d", API_BASE_URL, hubName, limitCount);
-        } else if (limitCount == 0) {
-            urlStr = String.format("%s/streams?hub=%s&marker=%s", API_BASE_URL, hubName, startMarker);
-        } else {
-            System.out.println("never go here!");
+        String urlStr = String.format("%s/streams?hub=%s", API_BASE_URL, hubName);
+        if (isArgNotEmpty(startMarker)) {
+            urlStr += "&marker=" + startMarker;
+        }
+        if (limitCount > 0) {
+            urlStr += "&limit=%d" + limitCount;
         }
         Response response = null;
         try {
@@ -292,10 +288,10 @@ public class Pili {
         }
         
         JsonObject json = new JsonObject();
-        if (publishKey != null) {
+        if (isArgNotEmpty(publishKey)) {
             json.addProperty("publishKey", publishKey);
         }
-        if (publishSecurity != null) {
+        if (isArgNotEmpty(publishSecurity)) {
             json.addProperty("publishSecurity", publishSecurity);
         }
         String urlStr = String.format("%s/streams/%s", API_BASE_URL, streamId);
@@ -374,8 +370,12 @@ public class Pili {
         if (streamId == null) {
             throw new PiliException("FATAL EXCEPTION: streamId is null!");
         }
-        String urlStr = String.format("%s/streams/%s/segments?start=%d&end=%d", API_BASE_URL, streamId, startTime, endTime);
-
+        String urlStr = String.format("%s/streams/%s/segments", API_BASE_URL, streamId);
+        if (startTime > 0 && endTime > 0 && startTime < endTime) {
+            urlStr += "?start=" + startTime + "&end=" + endTime;
+        } else {
+            throw new PiliException("Illegal startTime or endTime!");
+        }
         Response response = null;
         try {
             URL url = new URL(urlStr);
@@ -422,7 +422,7 @@ public class Pili {
         } else if ("static".equals(publishSecurity)) {
             return generateStaticUrl(streamId, publishKey, defaultScheme);
         } else {
-            return null;
+            throw new PiliException("Illegal publishSecurity:" + publishSecurity);
         }
     }
 
@@ -431,7 +431,7 @@ public class Pili {
         final String defaultScheme = "rtmp";
         String baseUri = getPath(streamId);
         String url = defaultScheme + "://" + rtmpPlayHost + baseUri;
-        if (preset != null && !preset.isEmpty()) {
+        if (isArgNotEmpty(preset)) {
             url += '@' + preset;
         }
         return url;
@@ -442,7 +442,7 @@ public class Pili {
         final String defaultScheme = "http";
         String baseUri = getPath(streamId);
         String url = defaultScheme + "://" + hlsPlayHost + baseUri;
-        if (preset != null && !preset.isEmpty()) {
+        if (isArgNotEmpty(preset)) {
             url += '@' + preset;
         }
         url += ".m3u8";
@@ -450,26 +450,26 @@ public class Pili {
     }
 
     //Generate HLS playback URL
-    public String hlsPlaybackUrl(String hlsPlayHost, String streamId, long startTime, long endTime, String preset) {
+    public String hlsPlaybackUrl(String hlsPlayHost, String streamId, long startTime, long endTime, String preset) 
+            throws PiliException {
         final String defaultScheme = "http";
         String baseUri = getPath(streamId);
         String url = defaultScheme + "://" + hlsPlayHost + baseUri;
-        if (preset != null && !preset.isEmpty()) {
+        if (isArgNotEmpty(preset)) {
             url += '@' + preset;
         }
         url += ".m3u8";
-        if (startTime >= 0) {
-            url += "?start=" +startTime;
-        }
-        if (endTime >= 0) {
-            url += "&end=" +endTime;
+        if (startTime > 0 && endTime > 0 && startTime < endTime) {
+            url += "?start=" +startTime + "&end=" +endTime;
+        } else {
+            throw new PiliException("Illegal startTime or endTime!");
         }
         return url;
     }
 
-    
     private String getPath(String streamId) {
         String[] res = streamId.split("\\.");
+        // res[1] -> hub, res[2] -> title
         return String.format("/%s/%s", res[1], res[2]);
     }
 
@@ -478,7 +478,7 @@ public class Pili {
     }
 
     private String generateDynamicUrl(String streamId, String publishKey, long nonce, String scheme) throws PiliException {
-        if (nonce == 0) {
+        if (nonce <= 0) {
             nonce = System.currentTimeMillis();
         }
         String baseUri = getPath(streamId) + "?nonce=" + nonce;
@@ -490,5 +490,17 @@ public class Pili {
             throw new PiliException(e);
         }
         return String.format("%s://%s%s&token=%s", scheme, Config.DEFAULT_RTMP_PUBLISH_HOST, baseUri, publishToken);
+    }
+
+    /*
+     * check the arg.
+     * 1. arg == null, return false, treat as empty situation
+     * 2. arg == "", return false, treat as empty situation
+     * 3. arg == " " or arg == "   ", return false, treat as empty situation
+     * 4. return true, only if the arg is a illegal string
+     *
+     * */
+    private boolean isArgNotEmpty(String arg) {
+        return arg != null && !arg.trim().isEmpty();
     }
 }
