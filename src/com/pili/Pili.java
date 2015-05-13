@@ -373,8 +373,6 @@ public class Pili {
         String urlStr = String.format("%s/streams/%s/segments", API_BASE_URL, streamId);
         if (startTime > 0 && endTime > 0 && startTime < endTime) {
             urlStr += "?start=" + startTime + "&end=" + endTime;
-        } else {
-            throw new PiliException("Illegal startTime or endTime!");
         }
         Response response = null;
         try {
