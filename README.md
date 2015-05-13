@@ -35,11 +35,11 @@ import com.pili.PiliException;
 
 ...
   String hub             = "YOUR_HUB_NAME"; // required, <Hub> must be an exists one
-  String title           = null;              // optional, default is auto-generated
-  String publishKey      = null;            // optional, a secret key for signing the <publishToken>, default is   auto-generated
+  String title           = null;              // optional, default is auto-generated. Setting title to null or "" or " ", default you choosed.
+  String publishKey      = null;            // optional, a secret key for signing the <publishToken>, default is   auto-generated. Setting publishKey to null or "" or " ", default you choosed.
   String publishSecurity = null;            // optional, can be "dynamic" or "static", default is "dynamic"
     try {
-      Stream stream = pili.createStream(hub, null, null, null);
+      Stream stream = pili.createStream(hub, title, publishKey, publishSecurity);
     } catch (PiliException e) {
       e.printStackTrace();
     }
@@ -59,8 +59,8 @@ import com.pili.PiliException;
 import com.pili.Pili.StreamList;
 ...
 String hub    = "YOUR_HUB_NAME"; // required
-String marker = null;            // optional
-String limit  = 0;               // optional
+String marker = null;            // optional. Setting marker to null or "" or " ", default you choosed.
+long limit  = 0;               // optional. Setting limit to value(<=0), default you choosed.
 
   try {
       StreamList list = pili.listStreams(hub, marker, limit);
@@ -73,8 +73,8 @@ String limit  = 0;               // optional
 ```JAVA
 import com.pili.Pili.StreamSegmentList;
 ...
-  long startTime = 0; // optional
-  long endTime   = 0; // optional
+  long startTime = 0; // optional. Setting startTime to value(<=0), default you choosed.
+  long endTime   = 0; // optional. Setting endTime to value(<=0), default you choosed.
   try {
       StreamSegmentList ssList = pili.getStreamSegments(stream.getStreamId(), startTime, endTime);
   } catch (PiliException e) {
@@ -105,7 +105,7 @@ String newPublishSecurity = "dynamic";
 
 ###Generate a RTMP publish URL
 ```JAVA
-  long nonce = 1; // // optional, for "dynamic" only, default is: System.currentTimeMillis()
+  long nonce = 1; // // optional, for "dynamic" only, default is: System.currentTimeMillis(). Setting nonce to value(<=0), default you choosed. 
   try {
       String publishUrl = pili.publishUrl(stream.getStreamId(), stream.getPublishKey(), stream.getPublishSecurity(), nonce);
       System.out.println(publishUrl);
@@ -120,12 +120,18 @@ String newPublishSecurity = "dynamic";
   String rtmpPlayHost = "live.z1.glb.pili.qiniucdn.com"; // required, replace with your customized domain
   String hlsPlayHost = "hls1.z1.glb.pili.qiniuapi.com"; // required, replace with your customized domain
   
-  String playUrl = pili.rtmpLiveUrl(rtmpPlayHost, stream.getStreamId(), null);
-  String hlsUrl = pili.hlsLiveUrl(hlsPlayHost, stream.getStreamId(), null);
+  String preset = "720p"; // optional, just like '720p', '480p', '360p', '240p'. All presets should be defined first. Setting preset to null or "" or " " ..., default you choosed.
   
-  long startTime = 1429678551;
-  long endTime = 1429689551;
-  String preset = "720p"; // optional, just like '720p', '480p', '360p', '240p'. All presets should be defined first.
-          
-  String hlsPlaybackUrl = pili.hlsPlaybackUrl(hlsPlayHost, stream.getStreamId(), startTime, endTime, preset);
+  String playUrl = pili.rtmpLiveUrl(rtmpPlayHost, stream.getStreamId(), preset);
+  String hlsUrl = pili.hlsLiveUrl(hlsPlayHost, stream.getStreamId(), preset);
+  
+  // startTime and endTime should be llegal(>0) and startTime < endTime, otherwise PiliException will be thrown
+  // startTime and endTime are from streamSegment
+  long startTime = streamSegment.getStart(); 
+  long endTime = streamSegment.getEnd();
+  try {
+    String hlsPlaybackUrl = pili.hlsPlaybackUrl(hlsPlayHost, stream.getStreamId(), startTime, endTime, preset);
+  } catch (PiliException e) {
+    e.printStackTrace();
+  }
 ```
