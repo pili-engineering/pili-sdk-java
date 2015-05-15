@@ -413,14 +413,19 @@ public class Pili {
     }
 
     //Generate a RTMP publish URL
-    public String publishUrl(String streamId, String publishKey, String publishSecurity, long nonce) throws PiliException {
+    public String publishUrl(String rtmpPubHost, String streamId, String publishKey, String publishSecurity, long nonce) 
+            throws PiliException {
+        if (!isArgNotEmpty(rtmpPubHost)) {
+            throw new PiliException("Illegal rtmp publish url");
+        }
         final String defaultScheme = "rtmp";
         if ("dynamic".equals(publishSecurity)) {
-            return generateDynamicUrl(streamId, publishKey, nonce, defaultScheme);
+            return generateDynamicUrl(rtmpPubHost, streamId, publishKey, nonce, defaultScheme);
         } else if ("static".equals(publishSecurity)) {
-            return generateStaticUrl(streamId, publishKey, defaultScheme);
+            return generateStaticUrl(rtmpPubHost, streamId, publishKey, defaultScheme);
         } else {
-            throw new PiliException("Illegal publishSecurity:" + publishSecurity);
+            // "dynamic" as default 
+            return generateDynamicUrl(rtmpPubHost, streamId, publishKey, nonce, defaultScheme);
         }
     }
 
@@ -471,11 +476,11 @@ public class Pili {
         return String.format("/%s/%s", res[1], res[2]);
     }
 
-    private String generateStaticUrl(String streamId, String publishKey, String scheme) {
-        return String.format("%s://%s%s?key=%s", scheme, Config.DEFAULT_RTMP_PUBLISH_HOST, getPath(streamId), publishKey);
+    private String generateStaticUrl(String rtmpPubHost, String streamId, String publishKey, String scheme) {
+        return String.format("%s://%s%s?key=%s", scheme, rtmpPubHost, getPath(streamId), publishKey);
     }
 
-    private String generateDynamicUrl(String streamId, String publishKey, long nonce, String scheme) throws PiliException {
+    private String generateDynamicUrl(String rtmpPubHost, String streamId, String publishKey, long nonce, String scheme) throws PiliException {
         if (nonce <= 0) {
             nonce = System.currentTimeMillis();
         }
@@ -487,7 +492,7 @@ public class Pili {
             e.printStackTrace();
             throw new PiliException(e);
         }
-        return String.format("%s://%s%s&token=%s", scheme, Config.DEFAULT_RTMP_PUBLISH_HOST, baseUri, publishToken);
+        return String.format("%s://%s%s&token=%s", scheme, rtmpPubHost, baseUri, publishToken);
     }
 
     /*
