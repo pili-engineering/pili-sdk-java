@@ -18,7 +18,7 @@ For Java, the minimum requirement is 1.7.
 ```JAVA
 // Replace with your keys
 public static final String ACCESS_KEY = "QiniuAccessKey";
-public static final String ACCESS_KEY = "QiniuSecretKey";
+public static final String SECRET_KEY = "QiniuSecretKey";
 
 // Replace with your customized domains
 public static final String RTMP_PUBLISH_HOST = "xxx.pub.z1.pili.qiniup.com";
@@ -35,7 +35,7 @@ import com.pili.Pili;
 import com.pili.Auth.MacKeys;
 ...
 
-Pili pili = new Pili(new MacKeys(ACCESS_KEY, ACCESS_KEY));
+Pili pili = new Pili(new MacKeys(ACCESS_KEY, SECRET_KEY));
 
 ```
 
