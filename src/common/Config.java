@@ -1,7 +1,7 @@
 package common;
 
 public class Config {
-    public static final String SDK_VERSION = "1.0.1";
+    public static final String SDK_VERSION = "1.0.2";
 
     public static final String USER_AGENT = "pili-sdk-java";
 

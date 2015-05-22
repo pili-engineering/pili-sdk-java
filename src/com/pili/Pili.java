@@ -29,6 +29,8 @@ public class Pili {
     private static final String API_BASE_URL = 
             String.format("http://%s/%s", Config.DEFAULT_API_HOST, Config.API_VERSION);
 
+    private static final int TITLE_MIN_LENGTH = 5;
+
     public class Stream {
         private String streamId;
         private String hubName;
@@ -146,6 +148,9 @@ public class Pili {
         JsonObject json = new JsonObject();
         json.addProperty("hub", hubName);
         if (isArgNotEmpty(title)) {
+            if (title.length() < TITLE_MIN_LENGTH) {
+                throw new PiliException("The length of title should be at least " + TITLE_MIN_LENGTH);
+            }
             json.addProperty("title", title);
         }
         if (isArgNotEmpty(publishKey)) {
