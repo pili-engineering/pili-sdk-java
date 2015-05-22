@@ -1,7 +1,7 @@
 #Pili server-side library for JAVA
 
 ##Installation
-You can download **pili-sdk-java-v1.0.1.jar** file in the **release** folder.
+You can download **pili-sdk-java-v1.0.2.jar** file in the **release** folder.
 
 ##dependency
 You also need [okhttp][1], [okio][2], [Gson][3]
@@ -45,7 +45,7 @@ import com.pili.Pili.Stream;
 import com.pili.PiliException;
 
 ...
-  String title           = null;              // optional, default is auto-generated. Setting title to null or "" or " ", default you choosed.
+  String title           = null;              // optional, default is auto-generated. Setting title to null or "" or " ", default you choosed. The length of title should be at least 5.
   String publishKey      = null;            // optional, a secret key for signing the <publishToken>, default is   auto-generated. Setting publishKey to null or "" or " ", default you choosed.
   String publishSecurity = null;            // optional, can be "dynamic" or "static", default is "dynamic"
     try {
