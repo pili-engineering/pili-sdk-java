@@ -31,6 +31,12 @@ public class Pili {
 
     private static final int TITLE_MIN_LENGTH = 5;
 
+    private static final String NULL_STREAM_ID_EXCEPTION_MSG = "FATAL EXCEPTION: streamId is null!";
+    private static final String NULL_HUBNAME_EXCEPTION_MSG = "FATAL EXCEPTION: hubName is null!";
+    private static final String ILLEGAL_RTMP_PUBLISH_URL_MSG = "Illegal rtmp publish url!";
+    private static final String ILLEGAL_TIME_MSG = "Illegal startTime or endTime!";
+    private static final String ILLEGAL_TITLE_MSG = "The length of title should be at least " + TITLE_MIN_LENGTH;
+
     public class Stream {
         private String streamId;
         private String hubName;
@@ -140,7 +146,7 @@ public class Pili {
     // Create a new stream
     public Stream createStream(String hubName, String title, String publishKey, String publishSecurity) throws PiliException {
         if (hubName == null) {
-            throw new PiliException("FATAL EXCEPTION: hubName is null!");
+            throw new PiliException(NULL_HUBNAME_EXCEPTION_MSG);
         }
 
         String urlStr = API_BASE_URL + "/streams";
@@ -149,7 +155,7 @@ public class Pili {
         json.addProperty("hub", hubName);
         if (isArgNotEmpty(title)) {
             if (title.length() < TITLE_MIN_LENGTH) {
-                throw new PiliException("The length of title should be at least " + TITLE_MIN_LENGTH);
+                throw new PiliException(ILLEGAL_TITLE_MSG);
             }
             json.addProperty("title", title);
         }
@@ -200,7 +206,7 @@ public class Pili {
     // Get an exist stream
     public Stream getStream(String streamId) throws PiliException {
         if (streamId == null) {
-            throw new PiliException("FATAL EXCEPTION: streamId is null!");
+            throw new PiliException(NULL_STREAM_ID_EXCEPTION_MSG);
         }
         String urlStr = String.format("%s/streams/%s", API_BASE_URL, streamId);
         Response response = null;
@@ -237,7 +243,7 @@ public class Pili {
     // List stream
     public StreamList listStreams(String hubName, String startMarker, long limitCount) throws PiliException {
         if (hubName == null) {
-            throw new PiliException("FATAL EXCEPTION: streamId is null!");
+            throw new PiliException(NULL_HUBNAME_EXCEPTION_MSG);
         }
         try {
             hubName = URLEncoder.encode(hubName, Config.UTF8);
@@ -253,7 +259,7 @@ public class Pili {
             urlStr += "&marker=" + startMarker;
         }
         if (limitCount > 0) {
-            urlStr += "&limit=%d" + limitCount;
+            urlStr += "&limit=" + limitCount;
         }
         Response response = null;
         try {
@@ -289,7 +295,7 @@ public class Pili {
     // Update an exist stream
     public Stream updateStream(String streamId, String publishKey, String publishSecurity) throws PiliException {
         if (streamId == null) {
-            throw new PiliException("FATAL EXCEPTION: streamId is null!");
+            throw new PiliException(NULL_STREAM_ID_EXCEPTION_MSG);
         }
         
         JsonObject json = new JsonObject();
@@ -340,7 +346,7 @@ public class Pili {
     // Delete stream
     public String deleteStream(String streamId) throws PiliException {
         if (streamId == null) {
-            throw new PiliException("FATAL EXCEPTION: streamId is null!");
+            throw new PiliException(NULL_STREAM_ID_EXCEPTION_MSG);
         }
         
         String urlStr = String.format("%s/streams/%s", API_BASE_URL, streamId);
@@ -373,7 +379,7 @@ public class Pili {
     // Get recording segments from an exist stream
     public StreamSegmentList getStreamSegments(String streamId, long startTime, long endTime) throws PiliException {
         if (streamId == null) {
-            throw new PiliException("FATAL EXCEPTION: streamId is null!");
+            throw new PiliException(NULL_STREAM_ID_EXCEPTION_MSG);
         }
         String urlStr = String.format("%s/streams/%s/segments", API_BASE_URL, streamId);
         if (startTime > 0 && endTime > 0 && startTime < endTime) {
@@ -421,7 +427,7 @@ public class Pili {
     public String publishUrl(String rtmpPubHost, String streamId, String publishKey, String publishSecurity, long nonce) 
             throws PiliException {
         if (!isArgNotEmpty(rtmpPubHost)) {
-            throw new PiliException("Illegal rtmp publish url");
+            throw new PiliException(ILLEGAL_RTMP_PUBLISH_URL_MSG);
         }
         final String defaultScheme = "rtmp";
         if ("dynamic".equals(publishSecurity)) {
@@ -470,7 +476,7 @@ public class Pili {
         if (startTime > 0 && endTime > 0 && startTime < endTime) {
             url += "?start=" +startTime + "&end=" +endTime;
         } else {
-            throw new PiliException("Illegal startTime or endTime!");
+            throw new PiliException(ILLEGAL_TIME_MSG);
         }
         return url;
     }
