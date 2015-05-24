@@ -13,6 +13,24 @@ You also need [okhttp][1], [okio][2], [Gson][3]
 ##Runtime Requirement
 For Java, the minimum requirement is 1.7.
 
+##Unit Test
+The jar doesn't contain the unit test code. If you want to run the unit test code, you should download the whole code first, and then replace the following configuration before running:
+```JAVA
+  // src/com/pili/test/PiliTest.java
+
+  // Replace with your keys
+  public static final String ACCESS_KEY = "QiniuAccessKey";
+  public static final String SECRET_KEY = "QiniuSecretKey";
+
+  // Replace with your customized domains
+  public static final String RTMP_PUBLISH_HOST = "xxx.pub.z1.pili.qiniup.com";
+  public static final String RTMP_PLAY_HOST = "xxx.live1.z1.pili.qiniucdn.com";
+  public static final String HLS_PLAY_HOST = "xxx.hls1.z1.pili.qiniucdn.com";
+
+  // Replace with your hub name
+  public static final String HUB_NAME = "hubName";
+```
+
 ##Usage
 ###Configuration
 ```JAVA
