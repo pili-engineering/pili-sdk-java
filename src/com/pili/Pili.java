@@ -45,6 +45,7 @@ public class Pili {
         private String title;
         private String publishKey;
         private String publishSecurity;
+        private boolean disabled;
 
         public Stream(JsonObject jsonObj) {
             streamId = jsonObj.get("id").getAsString();
@@ -54,6 +55,7 @@ public class Pili {
             title = jsonObj.get("title").getAsString();
             publishKey = jsonObj.get("publishKey").getAsString();
             publishSecurity = jsonObj.get("publishSecurity").getAsString();
+            disabled = jsonObj.get("disabled").getAsBoolean();
         }
 
         public String getStreamId() {
@@ -76,6 +78,24 @@ public class Pili {
         }
         public String getPublishSecurity() {
             return publishSecurity;
+        }
+        public boolean isDisabled() {
+            return disabled;
+        }
+    }
+
+    public class StreamStatus {
+        private String addr;
+        private String status;
+        public StreamStatus(JsonObject jsonObj) {
+            addr = jsonObj.get("addr").getAsString();
+            status = jsonObj.get("status").getAsString();
+        }
+        public String getAddr() {
+            return addr;
+        }
+        public String getStatus() {
+            return status;
         }
     }
 
@@ -150,7 +170,6 @@ public class Pili {
         }
 
         String urlStr = API_BASE_URL + "/streams";
-        System.out.println(urlStr);
         JsonObject json = new JsonObject();
         json.addProperty("hub", hubName);
         if (isArgNotEmpty(title)) {
@@ -292,8 +311,45 @@ public class Pili {
         }
     }
 
+    // get stream status
+    public StreamStatus getStreamStatus(String streamId) throws PiliException {
+        if (streamId == null) {
+            throw new PiliException(NULL_STREAM_ID_EXCEPTION_MSG);
+        }
+        String urlStr = String.format("%s/streams/%s/status", API_BASE_URL, streamId);
+        Response response = null;
+        try {
+            URL url = new URL(urlStr);
+
+            String macToken = mAuth.signRequest(url, "GET", null, null);
+            Request request = new Request.Builder()
+            .url(url)
+            .get()
+            .header("User-Agent", Utils.getUserAgent())
+            .addHeader("Authorization", macToken)
+            .build();
+
+            response = mOkHttpClient.newCall(request).execute();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        // response never be null
+        if (response.isSuccessful()) {
+            JsonParser parser = new JsonParser();
+            try {
+                JsonObject jsonObj = parser.parse(response.body().string()).getAsJsonObject();
+                return new StreamStatus(jsonObj);
+            } catch (IOException e) {
+                e.printStackTrace();
+                throw new PiliException(e);
+            }
+        } else {
+            throw new PiliException(response);
+        }
+    }
+
     // Update an exist stream
-    public Stream updateStream(String streamId, String publishKey, String publishSecurity) throws PiliException {
+    public Stream updateStream(String streamId, String publishKey, String publishSecurity, boolean disabled) throws PiliException {
         if (streamId == null) {
             throw new PiliException(NULL_STREAM_ID_EXCEPTION_MSG);
         }
@@ -305,6 +361,7 @@ public class Pili {
         if (isArgNotEmpty(publishSecurity)) {
             json.addProperty("publishSecurity", publishSecurity);
         }
+        json.addProperty("disabled", disabled);
         String urlStr = String.format("%s/streams/%s", API_BASE_URL, streamId);
         Response response = null;
         try {
@@ -408,8 +465,6 @@ public class Pili {
             JsonParser parser = new JsonParser();
             try {
                 JsonObject jsonObj = parser.parse(response.body().string()).getAsJsonObject();
-                System.out.println(jsonObj);
-                System.out.println(jsonObj.get("segments"));
                 if (jsonObj.get("segments") instanceof JsonNull) {
                     throw new PiliException("Segments is null");
                 }
