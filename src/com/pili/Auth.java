@@ -60,7 +60,6 @@ public class Auth {
         String line = String.format("%s %s", method, url.getPath());
         sb.append(line);
         if (url.getQuery() != null) {
-            System.out.println("url.getQuery()="+url.getQuery());
             sb.append("?" + url.getQuery());
         }
 

@@ -1,7 +1,7 @@
 #Pili server-side library for JAVA
 
 ##Installation
-You can download **pili-sdk-java-v1.0.2.jar** file in the **release** folder.
+You can download **pili-sdk-java-v1.1.0.jar** file in the **release** folder.
 
 ##dependency
 You also need [okhttp][1], [okio][2], [Gson][3]
@@ -108,14 +108,23 @@ import com.pili.Pili.StreamSegmentList;
       e.printStackTrace();
   }
 ```
-
+###Get Stream Status
+```JAVA
+  try {
+      StreamStatus streamStatus = pili.getStreamStatus(stream.getStreamId());
+      System.out.println("addr:" + streamStatus.getAddr() + ", status:" + streamStatus.getStatus());
+  } catch (PiliException e) {
+      e.printStackTrace();
+  }
+```
 ###Update an exist stream
 ```JAVA
 String newPublishKey      = "new_secret_words";
 String newPublishSecurity = "dynamic";
+boolean disabled = false;
 
   try {
-      Stream retStream = pili.updateStream(stream.getStreamId(), newPublishKey, newPublishSecurity);
+      Stream retStream = pili.updateStream(stream.getStreamId(), newPublishKey, newPublishSecurity, disabled);
       printStream(stream);
   } catch (PiliException e) {
       e.printStackTrace();
@@ -132,7 +141,7 @@ String newPublishSecurity = "dynamic";
 
 ###Generate a RTMP publish URL
 ```JAVA
-  long nonce = 1; // optional, for "dynamic" only, default is: System.currentTimeMillis(). Setting nonce to value(<=0), default you choosed. 
+  long nonce = 0; // optional, for "dynamic" only, default is: System.currentTimeMillis(). Setting nonce to value(<=0), default you choosed. 
   try {
       String publishUrl = pili.publishUrl(RTMP_PUBLISH_HOST, stream.getStreamId(), stream.getPublishKey(), stream.getPublishSecurity(), nonce);
   } catch (PiliException e) {
@@ -143,17 +152,17 @@ String newPublishSecurity = "dynamic";
 
 ###Generate Play URL
 ```JAVA
-  String preset = "720p"; // optional, just like '720p', '480p', '360p', '240p'. All presets should be defined first. Setting preset to null or "" or " " ..., default you choosed.
+  String profile = "720p"; // optional, such as '720p', '480p', '360p', '240p'. All profiles should be defined first. Setting profile to null or "" or " " ..., default you choosed.
   
-  String playUrl = pili.rtmpLiveUrl(RTMP_PLAY_HOST, stream.getStreamId(), preset);
-  String hlsUrl = pili.hlsLiveUrl(HLS_PLAY_HOST, stream.getStreamId(), preset);
+  String playUrl = pili.rtmpLiveUrl(RTMP_PLAY_HOST, stream.getStreamId(), profile);
+  String hlsUrl = pili.hlsLiveUrl(HLS_PLAY_HOST, stream.getStreamId(), profile);
   
   // startSecond and endSecond should be llegal(>0) and startSecond < endSecond, otherwise PiliException will be thrown
   // the unit of startSecond and endSecond is second.
   long startSecond = System.currentTimeMillis() / 1000 - 3600; 
   long endSecond = System.currentTimeMillis()) / 1000;
   try {
-    String hlsPlaybackUrl = pili.hlsPlaybackUrl(HLS_PLAY_HOST, stream.getStreamId(), startSecond, endSecond, preset);
+    String hlsPlaybackUrl = pili.hlsPlaybackUrl(HLS_PLAY_HOST, stream.getStreamId(), startSecond, endSecond, profile);
   } catch (PiliException e) {
     e.printStackTrace();
   }
