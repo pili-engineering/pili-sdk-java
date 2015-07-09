@@ -92,7 +92,7 @@ or
   }
 ```
 
-###List stream
+###List streams
 ```JAVA
 import com.pili.Stream.StreamList;
   ...
@@ -232,5 +232,6 @@ or
 
 ###To JSON String
 ```JAVA
-System.out.println(mStream.toJsonString());
+String streamJsonString = mStream.toJsonString();
+System.out.println(streamJsonString);
 ```
