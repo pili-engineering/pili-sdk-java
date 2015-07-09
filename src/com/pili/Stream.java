@@ -187,7 +187,7 @@ public class Stream {
     public String rtmpPublishUrl() throws PiliException {
         return API.publishUrl(this.publishRtmpHost, this.id, this.publishKey, this.publishSecurity, 0);
     }
-    public Map<String, String> rtmpLiveUrls() throws PiliException {
+    public Map<String, String> rtmpLiveUrls() {
         return API.rtmpLiveUrl(this.playRtmpHost, this.id, this.profiles);
     }
     public Map<String, String> hlsLiveUrls() {

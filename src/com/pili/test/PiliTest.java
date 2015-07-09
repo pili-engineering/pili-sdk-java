@@ -354,18 +354,12 @@ public class PiliTest {
         for (String p : mStream.getProfiles()) {
             expectedUrls.put(p, EXPECTED_BASE_RTMP_LIVEURL + "/" + mStream.getTitle() + "@" + p);
         }
-        Map<String, String> rtmpLiveUrl;
-        try {
-            rtmpLiveUrl = mStream.rtmpLiveUrls();
-            for (String key : expectedUrls.keySet()) {
-                System.out.println("key:" + key + ", rtmpLiveUrl:" + rtmpLiveUrl.get(key) + ", expected:" + expectedUrls.get(key));
-                if (rtmpLiveUrl.containsKey(key)) {
-                    assertEquals(rtmpLiveUrl.get(key), expectedUrls.get(key));
-                }
+        Map<String, String> rtmpLiveUrl = mStream.rtmpLiveUrls();
+        for (String key : expectedUrls.keySet()) {
+            System.out.println("key:" + key + ", rtmpLiveUrl:" + rtmpLiveUrl.get(key) + ", expected:" + expectedUrls.get(key));
+            if (rtmpLiveUrl.containsKey(key)) {
+                assertEquals(rtmpLiveUrl.get(key), expectedUrls.get(key));
             }
-        } catch (PiliException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
         }
     }
 
