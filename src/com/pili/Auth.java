@@ -13,8 +13,8 @@ import common.UrlSafeBase64;
 
 public class Auth {
     private static final String DIGEST_AUTH_PREFIX = "Qiniu";
-    private static SecretKeySpec mSkSpec;
-    private static MacKeys mMacKeys;
+    private SecretKeySpec mSkSpec;
+    private MacKeys mMacKeys;
     public static class MacKeys {
         private String accessKey;
         private String secretKey;
@@ -28,18 +28,12 @@ public class Auth {
         }
     }
 
-    private static class AuthHolder {
-        public final static Auth instance = new Auth();
-    }
-
     private Auth() {
     }
 
-    public static Auth getAuthInstance(MacKeys macKeys) {
-        if (macKeys == null)
-            return null;
-        if (macKeys == mMacKeys) {
-            return AuthHolder.instance;
+    public Auth(MacKeys macKeys) {
+        if (macKeys == null) {
+            throw new NullPointerException("Invalid macKeys:" + macKeys);
         }
         mMacKeys = macKeys;
         try {
@@ -47,9 +41,7 @@ public class Auth {
         } catch (UnsupportedEncodingException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
-            return null;
         }
-        return AuthHolder.instance;
     }
 
     public String signRequest(URL url, String method, byte[] body, String contentType) 
