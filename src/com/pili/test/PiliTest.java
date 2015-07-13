@@ -3,20 +3,24 @@ package com.pili.test;
 import static org.junit.Assert.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.pili.Auth.MacKeys;
-import com.pili.Pili.Stream;
-import com.pili.Pili.StreamList;
-import com.pili.Pili.StreamSegment;
-import com.pili.Pili.StreamStatus;
 import com.pili.Pili;
-import com.pili.Pili.StreamSegmentList;
 import com.pili.PiliException;
+import com.pili.Stream;
+import com.pili.Stream.Segment;
+import com.pili.Stream.SegmentList;
+import com.pili.Stream.Status;
+import com.pili.Stream.StreamList;
+
+import common.Config;
+import common.MessageConfig;
 
 public class PiliTest {
     // Replace with your keys
@@ -41,25 +45,26 @@ public class PiliTest {
     private static final String NOT_FOUND_MSG = "Not Found";
     private static final String BAD_REQ_MSG = "Bad Request";
     private static final String ILLEGAL_TIME_MSG = "Illegal startTime or endTime!";
+    private static final String SEGMENTS_IS_NULL = "Segments is null";
 
-    private static final String[] DEFAULT_PRESETS = new String[] {null, "240p", "480p", "720p"};
+    private static final String[] DEFAULT_PRESETS = new String[] {null, "240p", "360p", "480p"};
 
     private static final String STREAM_STATUS_DISCONNECTED = "disconnected";
     private static final String STREAM_STATUS_CONNECTED = "connected";
     private static final String PRE_STREAM_PRESET_PUBLISH_SECURITY = "static";
-    private static final String PRE_STREAM_PRESET_TITLE = "title4test";
+    private static final String PRE_STREAM_PRESET_TITLE = "testTitle";
     private static final String EXPECTED_BASE_PUBLISH_URL = "rtmp://" + RTMP_PUBLISH_HOST + "/" + HUB_NAME + "/" + PRE_STREAM_PRESET_TITLE;
     private static final String EXPECTED_BASE_RTMP_LIVEURL = "rtmp://" + RTMP_PLAY_HOST + "/" + HUB_NAME;
     private static final String EXPECTED_BASE_HLS_LIVEURL = "http://" + HLS_PLAY_HOST + "/" + HUB_NAME;
 
-    private Pili mPili = new Pili(new MacKeys(ACCESS_KEY, SECRET_KEY));
+    private Pili mPili = new Pili(ACCESS_KEY, SECRET_KEY, HUB_NAME);
     private Stream mStream = null;
-    private List<Stream> mTestCreatedStreamList = new ArrayList<Pili.Stream>();;
+    private List<Stream> mTestCreatedStreamList = new ArrayList<Stream>();;
 
     @Before
     public void prepareStream() {
         try {
-            mStream = mPili.createStream(HUB_NAME, PRE_STREAM_PRESET_TITLE, null, PRE_STREAM_PRESET_PUBLISH_SECURITY);
+            mStream = mPili.createStream(PRE_STREAM_PRESET_TITLE, null, PRE_STREAM_PRESET_PUBLISH_SECURITY);
         } catch (PiliException e) {
             e.printStackTrace();
         }
@@ -68,15 +73,21 @@ public class PiliTest {
     @Test
     public void testCreateStream() {
         try {
-            Stream stream = mPili.createStream(null, null, null, null);
+            Stream stream = mPili.createStream();
             mTestCreatedStreamList.add(stream);
-            fail();
+            assertNotNull(stream);
+            assertNotNull(stream.getStreamId());
+            assertNotNull(stream.getCreatedAt());
+            assertNotNull(stream.getUpdatedAt());
+            assertNotNull(stream.getTitle());
+            assertEquals(HUB_NAME, stream.getHubName());
+            assertEquals("dynamic", stream.getPublishSecurity());
         } catch (PiliException e) {
-            assertTrue(NULL_HUBNAME_EXCEPTION_MSG.equals(e.getMessage()));
+            e.printStackTrace();
         }
 
         try {
-            Stream stream = mPili.createStream(HUB_NAME, null, null, null);
+            Stream stream = mPili.createStream(null, null, null);
             mTestCreatedStreamList.add(stream);
             assertNotNull(stream);
             assertNotNull(stream.getStreamId());
@@ -92,21 +103,36 @@ public class PiliTest {
 
     @Test
     public void testCreateStreamTitle() {
+        // min title test
         String[] titles = new String[] {"1", "12", "123", "1234", "t", "-", "_", "titl"};
         for (String title : titles) {
             try {
-                Stream stream = mPili.createStream(HUB_NAME, title, null, null);
+                Stream stream = mPili.createStream(title, null, null);
                 mTestCreatedStreamList.add(stream);
                 fail();
             } catch (PiliException e) {
-                assertEquals("The length of title should be at least 5", e.getMessage());
+                assertEquals(MessageConfig.ILLEGAL_TITLE_MSG, e.getMessage());
             }
         }
-
+        
+        // max title test
+        String maxTitleStr = "";
+        for(int i = 0; i < Config.TITLE_MAX_LENGTH; i++) {
+            maxTitleStr += i;
+        }
         try {
-            Stream stream1 = mPili.createStream(HUB_NAME, "test1", null, null);
+            Stream stream = mPili.createStream(maxTitleStr, null, null);
+            mTestCreatedStreamList.add(stream);
+            fail();
+        } catch (PiliException e) {
+            assertEquals(MessageConfig.ILLEGAL_TITLE_MSG, e.getMessage());
+        }
+
+        // recreate stream test
+        try {
+            Stream stream1 = mPili.createStream("test1", null, null);
             mTestCreatedStreamList.add(stream1);
-            Stream stream2 = mPili.createStream(HUB_NAME, "test1", null, null);
+            Stream stream2 = mPili.createStream("test1", null, null);
             mTestCreatedStreamList.add(stream2);
             fail();
         } catch (PiliException e) {
@@ -154,23 +180,23 @@ public class PiliTest {
     @Test
     public void testListStreams() {
         try {
-            mPili.listStreams(null, null, 0);
-            fail();
+            System.out.println("mPili=" + mPili);
+            StreamList streamList = mPili.listStreams();
+            if (streamList != null) {
+                assertNotNull(streamList.getMarker());
+                assertNotNull(streamList.getStreams());
+                for (Stream stream : streamList.getStreams()) {
+                    assertNotNull(stream);
+                }
+            }
         } catch (PiliException e) {
-            assertEquals(NULL_HUBNAME_EXCEPTION_MSG, e.getMessage());
-        }
-
-        try {
-            mPili.listStreams(INVALID_HUB_NAME, null, 0);
-            fail();
-        } catch (PiliException e) {
-            assertEquals(BAD_REQ_MSG, e.getMessage());
+            e.printStackTrace();
         }
 
         String[] markers = new String[] {null, "", " ", "  "};
         for (String marker : markers) {
             try {
-                StreamList streamList = mPili.listStreams(HUB_NAME, marker, 0);
+                StreamList streamList = mPili.listStreams(marker, 0);
                 if (streamList != null) {
                     assertNotNull(streamList.getMarker());
                     assertNotNull(streamList.getStreams());
@@ -186,7 +212,7 @@ public class PiliTest {
         int[] limitCounts = new int[] {-1, 0, 1};
         for (int limitCount : limitCounts) {
             try {
-                StreamList streamList = mPili.listStreams(HUB_NAME, null, limitCount);
+                StreamList streamList = mPili.listStreams(null, limitCount);
                 if (streamList != null) {
                     assertNotNull(streamList.getMarker());
                     assertNotNull(streamList.getStreams());
@@ -202,24 +228,12 @@ public class PiliTest {
 
     @Test
     public void getStreamStatus() {
-        try {
-            mPili.getStreamStatus(null);
-            fail();
-        } catch (PiliException e) {
-            assertEquals(NULL_STREAM_ID_EXCEPTION_MSG, e.getMessage());
-        }
-        try {
-            mPili.getStreamStatus(INVALID_STREAM_ID);
-            fail();
-        } catch (PiliException e) {
-            assertEquals(NOT_FOUND_MSG, e.getMessage());
-        }
         // the test case order cannot be guaranteed
         if (mStream == null) {
             prepareStream();
         }
         try {
-            StreamStatus streamStatus = mPili.getStreamStatus(mStream.getStreamId());
+            Status streamStatus = mStream.status();
             assertNotNull(streamStatus);
             assertEquals("", streamStatus.getAddr());
             assertEquals(STREAM_STATUS_DISCONNECTED, streamStatus.getStatus());
@@ -229,33 +243,20 @@ public class PiliTest {
 
     @Test
     public void testUpdateStream() {
-        try {
-            mPili.updateStream(null, null, null, false);
-            fail();
-        } catch (PiliException e) {
-            assertEquals(NULL_STREAM_ID_EXCEPTION_MSG, e.getMessage());
-        }
-
-        try {
-            mPili.updateStream(INVALID_STREAM_ID, null, null, false);
-            fail();
-        } catch (PiliException e) {
-            assertEquals(NOT_FOUND_MSG, e.getMessage());
-        }
         // the test case order cannot be guaranteed
         if (mStream == null) {
             prepareStream();
         }
 
         try {
-            mPili.updateStream(mStream.getStreamId(), null, INVALID_PUBLISH_SECURITY, false);
+            mStream.update(null, INVALID_PUBLISH_SECURITY, false);
             fail();
         } catch (PiliException e) {
             assertEquals(BAD_REQ_MSG, e.getMessage());
         }
 
         try {
-            Stream stream = mPili.updateStream(mStream.getStreamId(), null, null, false);
+            Stream stream = mStream.update(null, null, false);
             assertNotNull(stream);
             assertEquals(mStream.getPublishKey(), stream.getPublishKey());
             assertEquals(mStream.getStreamId(), stream.getStreamId());
@@ -267,7 +268,7 @@ public class PiliTest {
 
         try {
             String publishSecurity = "static";
-            Stream stream = mPili.updateStream(mStream.getStreamId(), null, publishSecurity, false);
+            Stream stream = mStream.update(null, publishSecurity, false);
             assertNotNull(stream);
             assertNotNull(stream.getPublishKey());
             assertEquals(mStream.getStreamId(), stream.getStreamId());
@@ -277,7 +278,7 @@ public class PiliTest {
         }
 
         try {
-            Stream stream = mPili.updateStream(mStream.getStreamId(), mStream.getPublishKey(), 
+            Stream stream = mStream.update(mStream.getPublishKey(), 
                     mStream.getPublishSecurity(), true);
             assertNotNull(stream);
             assertEquals(mStream.getPublishKey(), stream.getPublishKey());
@@ -291,22 +292,13 @@ public class PiliTest {
 
     @Test
     public void testDeleteStream() {
-        try {
-            mPili.deleteStream(null);
-            fail();
-        } catch (PiliException e) {
-            assertEquals(NULL_STREAM_ID_EXCEPTION_MSG, e.getMessage());
+        // the test case order cannot be guaranteed
+        if (mStream == null) {
+            prepareStream();
         }
 
         try {
-            mPili.deleteStream(INVALID_STREAM_ID);
-            fail();
-        } catch (PiliException e) {
-            assertEquals(NOT_FOUND_MSG, e.getMessage());
-        }
-
-        try {
-            String res = mPili.deleteStream(mStream.getStreamId());
+            String res = mStream.delete();
             assertEquals(OK_DELETE_STREAM_RES_MSG, res);
             mStream = null;
         } catch (PiliException e) {
@@ -316,38 +308,35 @@ public class PiliTest {
 
     @Test
     public void testGetStreamSegments() {
-        try {
-            mPili.getStreamSegments(null, 0, 0);
-        } catch (PiliException e) {
-            assertEquals(NULL_STREAM_ID_EXCEPTION_MSG, e.getMessage());
+        // the test case order cannot be guaranteed
+        if (mStream == null) {
+            prepareStream();
         }
 
         try {
-            mPili.getStreamSegments(INVALID_STREAM_ID, 0, 0);
-        } catch (PiliException e) {
-            assertEquals(NOT_FOUND_MSG, e.getMessage());
-        }
-
-        try {
-            StreamSegmentList ssList = mPili.getStreamSegments(mStream.getStreamId(), 0, 0);
+            SegmentList ssList = mStream.segments();
             if (ssList != null) {
-                List<StreamSegment> list = ssList.getStreamSegmentList();
-                for (StreamSegment ss : list) {
+                List<Segment> list = ssList.getSegmentList();
+                for (Segment ss : list) {
                     assertTrue(ss.getStart() < ss.getEnd());
                 }
             }
         } catch (PiliException e) {
-            e.printStackTrace();
+//            e.printStackTrace();
+            assertEquals(SEGMENTS_IS_NULL, e.getMessage());
         }
     }
 
     @Test
     public void testPublishUrl() {
-        long nonce = 0;
+        // the test case order cannot be guaranteed
+        if (mStream == null) {
+            prepareStream();
+        }
         try {
-            String publishUrl = mPili.publishUrl(RTMP_PUBLISH_HOST, mStream.getStreamId(), 
-                    mStream.getPublishKey(), mStream.getPublishSecurity(), nonce);
+            String publishUrl = mStream.rtmpPublishUrl();
             String expectedUrl = EXPECTED_BASE_PUBLISH_URL + "?key=" + mStream.getPublishKey();
+            System.out.println("publishUrl:" + publishUrl + ",expectedUrl:" + expectedUrl);
             assertEquals(expectedUrl, publishUrl);
         } catch (PiliException e) {
             e.printStackTrace();
@@ -356,79 +345,105 @@ public class PiliTest {
 
     @Test
     public void testRtmpLiveUrl() {
-        String expectedUrl =  null;
-        for (String preset : DEFAULT_PRESETS) {
-            String rtmpLiveUrl =  mPili.rtmpLiveUrl(RTMP_PLAY_HOST, mStream.getStreamId(), preset);
-            if (preset != null) {
-                expectedUrl = EXPECTED_BASE_RTMP_LIVEURL + "/" + mStream.getTitle() + "@" + preset;
-            } else {
-                expectedUrl = EXPECTED_BASE_RTMP_LIVEURL + "/" + mStream.getTitle();
+        // the test case order cannot be guaranteed
+        if (mStream == null) {
+            prepareStream();
+        }
+        Map<String, String> expectedUrls =  new HashMap<String, String>();
+        expectedUrls.put(Stream.ORIGIN, EXPECTED_BASE_RTMP_LIVEURL + "/" + mStream.getTitle());
+        for (String p : mStream.getProfiles()) {
+            expectedUrls.put(p, EXPECTED_BASE_RTMP_LIVEURL + "/" + mStream.getTitle() + "@" + p);
+        }
+        Map<String, String> rtmpLiveUrl = mStream.rtmpLiveUrls();
+        for (String key : expectedUrls.keySet()) {
+            System.out.println("key:" + key + ", rtmpLiveUrl:" + rtmpLiveUrl.get(key) + ", expected:" + expectedUrls.get(key));
+            if (rtmpLiveUrl.containsKey(key)) {
+                assertEquals(rtmpLiveUrl.get(key), expectedUrls.get(key));
             }
-            assertEquals(expectedUrl, rtmpLiveUrl);
         }
     }
 
     @Test
     public void testHlsLiveUrl() {
-        String expectedUrl = null;
-        for (String preset : DEFAULT_PRESETS) {
-            String hlsLiveUrl = mPili.hlsLiveUrl(HLS_PLAY_HOST, mStream.getStreamId(), preset);
-            if (preset != null) {
-                expectedUrl = EXPECTED_BASE_HLS_LIVEURL + "/" + mStream.getTitle() + "@" + preset + ".m3u8";
-            } else {
-                expectedUrl = EXPECTED_BASE_HLS_LIVEURL + "/" + mStream.getTitle() + ".m3u8";
-            }
-            assertEquals(expectedUrl, hlsLiveUrl);
+        // the test case order cannot be guaranteed
+        if (mStream == null) {
+            prepareStream();
         }
-        
+        Map<String, String> expectedUrls =  new HashMap<String, String>();
+        expectedUrls.put(Stream.ORIGIN, EXPECTED_BASE_HLS_LIVEURL + "/" + mStream.getTitle() + ".m3u8");
+        for (String p : mStream.getProfiles()) {
+            expectedUrls.put(p, EXPECTED_BASE_HLS_LIVEURL + "/" + mStream.getTitle() + "@" + p  + ".m3u8");
+        }
+        Map<String, String> hlsLiveUrl;
+        hlsLiveUrl = mStream.hlsLiveUrls();
+        for (String key : expectedUrls.keySet()) {
+            System.out.println("key:" + key + ", hlsLiveUrl:" + hlsLiveUrl.get(key) + ", expected:" + expectedUrls.get(key));
+            if (hlsLiveUrl.containsKey(key)) {
+                assertEquals(hlsLiveUrl.get(key), expectedUrls.get(key));
+            }
+        }
     }
 
     @Test
     public void testHlsPlaybackUrl() {
+        // the test case order cannot be guaranteed
+        if (mStream == null) {
+            prepareStream();
+        }
         try {
-            mPili.hlsPlaybackUrl(HLS_PLAY_HOST, mStream.getStreamId(), -1, -2, null);
+            mStream.hlsPlaybackUrls(-1, -2);
         } catch (PiliException e) {
             assertEquals(ILLEGAL_TIME_MSG, e.getMessage());
         }
 
         try {
-            mPili.hlsPlaybackUrl(HLS_PLAY_HOST, mStream.getStreamId(), 0, 0, null);
+            mStream.hlsPlaybackUrls(0, 0);
         } catch (PiliException e) {
             assertEquals(ILLEGAL_TIME_MSG, e.getMessage());
         }
 
         long currentSecond = System.currentTimeMillis() / 1000;
         try {
-            mPili.hlsPlaybackUrl(HLS_PLAY_HOST, mStream.getStreamId(),  currentSecond + 3600, currentSecond, null);
+            mStream.hlsPlaybackUrls(currentSecond + 3600, currentSecond);
         } catch (PiliException e) {
             assertEquals(ILLEGAL_TIME_MSG, e.getMessage());
         }
 
-        String expectedUrl = null;
         long startSec = currentSecond - 3600;
         long endSec = currentSecond;
-        for (String preset : DEFAULT_PRESETS) {
-            try {
-                String hlsPlaybackUrl = mPili.hlsPlaybackUrl(HLS_PLAY_HOST, mStream.getStreamId(), 
-                        startSec, endSec, preset);
-                if (preset != null) {
-                    expectedUrl = EXPECTED_BASE_HLS_LIVEURL + "/" + mStream.getTitle() + "@" + preset + ".m3u8";
-                } else {
-                    expectedUrl = EXPECTED_BASE_HLS_LIVEURL + "/" + mStream.getTitle() + ".m3u8";
-                }
-                expectedUrl += "?start=" + startSec + "&end=" + endSec;
-                assertEquals(expectedUrl, hlsPlaybackUrl);
-            } catch (PiliException e) {
-                e.printStackTrace();
-            }
+        final String queryPara = "?start=" + startSec + "&end=" + endSec;
+        Map<String, String> expectedUrls =  new HashMap<String, String>();
+        expectedUrls.put(Stream.ORIGIN, EXPECTED_BASE_HLS_LIVEURL + "/" + mStream.getTitle() + ".m3u8" + queryPara);
+        for (String p : mStream.getProfiles()) {
+            expectedUrls.put(p, EXPECTED_BASE_HLS_LIVEURL + "/" + mStream.getTitle() + "@" + p + ".m3u8" + queryPara);
         }
+        try {
+            Map<String, String> hlsPlaybackUrls = mStream.hlsPlaybackUrls(startSec, endSec);
+            for (String key : expectedUrls.keySet()) {
+                System.out.println("key:" + key + ", hlsPlaybackUrls:" + hlsPlaybackUrls.get(key) + ", expected:" + expectedUrls.get(key));
+                if (hlsPlaybackUrls.containsKey(key)) {
+                    assertEquals(hlsPlaybackUrls.get(key), expectedUrls.get(key));
+                }
+            }
+        } catch (PiliException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    @Test
+    public void testToJsonString() {
+        // the test case order cannot be guaranteed
+        if (mStream == null) {
+            prepareStream();
+        }
+        assertNotNull(mStream.toJsonString());
     }
 
     @After
     public void clear() {
         if (mStream != null) {
             try {
-                mPili.deleteStream(mStream.getStreamId());
+                mStream.delete();
             } catch (PiliException e) {
                 e.printStackTrace();
             }
@@ -437,7 +452,7 @@ public class PiliTest {
         if (mTestCreatedStreamList != null) {
             for (Stream s : mTestCreatedStreamList) {
                 try {
-                    mPili.deleteStream(s.getStreamId());
+                    s.delete();
                 } catch (PiliException e) {
                 }
             }

@@ -1,7 +1,7 @@
 package common;
 
 public class Config {
-    public static final String SDK_VERSION = "1.1.0";
+    public static final String SDK_VERSION = "1.2.0";
 
     public static final String USER_AGENT = "pili-sdk-java";
 
@@ -11,4 +11,6 @@ public class Config {
 
     public static final String DEFAULT_API_HOST          = "pili.qiniuapi.com";
 
+    public static final int TITLE_MIN_LENGTH = 5;
+    public static final int TITLE_MAX_LENGTH = 200;
 }
