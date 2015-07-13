@@ -7,12 +7,12 @@ import common.MessageConfig;
 
 public class Pili {
 
-    private static Auth mAuth;
+    private Auth mAuth;
     private String mHubName;
 
     public Pili(final String ak, final String sk, final String hubName) {
         MacKeys macKeys = new MacKeys(ak, sk);
-        mAuth = Auth.getAuthInstance(macKeys);
+        mAuth = new Auth(macKeys);
         if (hubName == null) {
             throw new IllegalArgumentException(MessageConfig.NULL_HUBNAME_EXCEPTION_MSG);
         }
