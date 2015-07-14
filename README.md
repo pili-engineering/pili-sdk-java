@@ -38,11 +38,6 @@ The jar doesn't contain the unit test code. If you want to run the unit test cod
   public static final String ACCESS_KEY = "QiniuAccessKey";
   public static final String SECRET_KEY = "QiniuSecretKey";
   
-  // Replace with your customized domains
-  public static final String RTMP_PUBLISH_HOST = "xxx.pub.z1.pili.qiniup.com";
-  public static final String RTMP_PLAY_HOST = "xxx.live1.z1.pili.qiniucdn.com";
-  public static final String HLS_PLAY_HOST = "xxx.hls1.z1.pili.qiniucdn.com";
-  
   // Replace with your hub name
   public static final String HUB = "hubName";
 ```
@@ -144,7 +139,7 @@ import com.pili.Stream.SegmentList;
 or
 ```JAVA
   try {
-      StreamSegmentList ssList = mStream.segments();
+      SegmentList ssList = mStream.segments();
       if (ssList != null) {
           List<Segment> list = ssList.getSegmentList();
           for (Segment ss : list) {
@@ -181,7 +176,7 @@ or
 ###Delete stream
 ```JAVA
   try {
-      String res = mStream.delete();
+      String retValue = mStream.delete();
   } catch (PiliException e) {
       e.printStackTrace();
   }
@@ -217,8 +212,9 @@ or
 ```JAVA
   // startSecond and endSecond should be llegal(>0) and startSecond < endSecond, otherwise PiliException will be thrown
   // the unit of startSecond and endSecond is second.
-  long startSecond = System.currentTimeMillis() / 1000 - 3600; 
-  long endSecond = System.currentTimeMillis()) / 1000;
+  long currentSecond = System.currentTimeMillis() / 1000;
+  long startSecond =  currentSecond - 3600; 
+  long endSecond = currentSecond;
   try {
     Map<String, String> hlsPlaybackUrls = mStream.hlsPlaybackUrls(startSecond, endSecond);
     for (String key : hlsPlaybackUrls.keySet()) {
@@ -231,6 +227,6 @@ or
 
 ###To JSON String
 ```JAVA
-String streamJsonString = mStream.toJsonString();
-System.out.println(streamJsonString);
+String streamJsonStr = mStream.toJsonString();
+System.out.println(streamJsonStr);
 ```
