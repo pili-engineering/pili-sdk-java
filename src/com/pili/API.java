@@ -362,8 +362,10 @@ public class API {
         String url = defaultScheme + "://" + rtmpPlayHost + baseUri;
         Map<String, String> dictionary = new HashMap<String, String>();
         dictionary.put(Stream.ORIGIN, url);
-        for (String p : profiles) {
-            dictionary.put(p, url + '@' + p);
+        if (profiles != null) {
+            for (String p : profiles) {
+                dictionary.put(p, url + '@' + p);
+            }
         }
         return dictionary;
     }
@@ -375,8 +377,10 @@ public class API {
         final String url = defaultScheme + "://" + hlsPlayHost + baseUri;
         Map<String, String> dictionary = new HashMap<String, String>();
         dictionary.put(Stream.ORIGIN, url + ".m3u8");
-        for (String p : profiles) {
-            dictionary.put(p, url + '@' + p + ".m3u8");
+        if (profiles != null) {
+            for (String p : profiles) {
+                dictionary.put(p, url + '@' + p + ".m3u8");
+            }
         }
         return dictionary;
     }
@@ -395,8 +399,10 @@ public class API {
         }
         Map<String, String> dictionary = new HashMap<String, String>();
         dictionary.put(Stream.ORIGIN, url + ".m3u8" + queryPara);
-        for (String p : profiles) {
-            dictionary.put(p, url + '@' + p + ".m3u8" + queryPara);
+        if (profiles != null) {
+            for (String p : profiles) {
+                dictionary.put(p, url + '@' + p + ".m3u8" + queryPara);
+            }
         }
         return dictionary;
     }
