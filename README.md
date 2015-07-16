@@ -176,17 +176,19 @@ or
 
 ###Generate RTMP live play URLs
 ```JAVA
-  Map<String, String> rtmpLiveUrl = mStream.rtmpLiveUrls();
-  for (String key : rtmpLiveUrl.keySet()) {
-    System.out.println("key:" + key + ", rtmpLiveUrl:" + rtmpLiveUrl.get(key));
+  Map<String, String> rtmpLiveUrls = mStream.rtmpLiveUrls();
+  String originRtmpLiveUrl = rtmpLiveUrls.get(Stream.ORIGIN);     // Get original RTMP live url
+  for (String key : rtmpLiveUrls.keySet()) {
+    System.out.println("key:" + key + ", rtmpLiveUrl:" + rtmpLiveUrls.get(key));
   }
 ```
 
 ###Generate HLS live play URLs
 ```JAVA
-  Map<String, String> hlsLiveUrl = mStream.hlsLiveUrls();
-  for (String key : hlsLiveUrl.keySet()) {
-    System.out.println("key:" + key + ", hlsLiveUrl:" + hlsLiveUrl.get(key));
+  Map<String, String> hlsLiveUrls = mStream.hlsLiveUrls();
+  String originHlsLiveUrl = hlsLiveUrls.get(Stream.ORIGIN);       // Get original HLS live url
+  for (String key : hlsLiveUrls.keySet()) {
+    System.out.println("key:" + key + ", hlsLiveUrl:" + hlsLiveUrls.get(key));
   }
 ```
 
@@ -194,11 +196,9 @@ or
 ```JAVA
   // startSecond and endSecond should be llegal(>0) and startSecond < endSecond, otherwise PiliException will be thrown
   // the unit of startSecond and endSecond is second.
-  long currentSecond = System.currentTimeMillis() / 1000;
-  long startSecond =  currentSecond - 3600; 
-  long endSecond = currentSecond;
   try {
     Map<String, String> hlsPlaybackUrls = mStream.hlsPlaybackUrls(startSecond, endSecond);
+    String originPlaybackUrl = hlsPlaybackUrls.get(Stream.ORIGIN); // Get original HLS playback url
     for (String key : hlsPlaybackUrls.keySet()) {
       System.out.println("key:" + key + ", hlsPlaybackUrls:" + hlsPlaybackUrls.get(key));
     }
