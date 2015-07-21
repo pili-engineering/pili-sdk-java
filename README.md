@@ -39,7 +39,7 @@ import com.pili.Stream;
 import com.pili.PiliException;
 
 ...
-  String title           = null;            // optional, default is auto-generated. Setting title to null or "" or " ", default you choosed. The length of title should be at least 5 and at most 200. A title should be unique and only can be used once.
+  String title           = null;            // optional, default is auto-generated. Setting title to null or "" or " ", default you choosed. The length of title should be at least 5 and at most 200. A title should be unique.
   String publishKey      = null;            // optional, a secret key for signing the <publishToken>, default is   auto-generated. Setting publishKey to null or "" or " ", default you choosed.
   String publishSecurity = null;            // optional, can be "dynamic" or "static", default is "dynamic"
   try {
