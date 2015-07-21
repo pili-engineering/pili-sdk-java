@@ -148,7 +148,7 @@ public class Stream {
     public static class StreamList {
         private String marker;
         private List<Stream> itemList;
-        public StreamList(JsonObject jsonObj) {
+        public StreamList(JsonObject jsonObj, Auth auth) {
             this.marker = jsonObj.get("marker").getAsString();
 
             JsonArray respArray = jsonObj.getAsJsonArray("items");
@@ -156,7 +156,7 @@ public class Stream {
             itemList = new ArrayList<Stream>();
             while (it.hasNext()) {
               JsonObject json = it.next().getAsJsonObject();
-              itemList.add(new Stream(json));
+              itemList.add(new Stream(json, auth));
             }
         }
 

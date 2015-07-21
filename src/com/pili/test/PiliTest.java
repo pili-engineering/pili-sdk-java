@@ -27,11 +27,6 @@ public class PiliTest {
     public static final String ACCESS_KEY = "QiniuAccessKey";
     public static final String SECRET_KEY = "QiniuSecretKey";
 
-    // Replace with your customized domains
-    public static final String RTMP_PUBLISH_HOST = "xxx.pub.z1.pili.qiniup.com";
-    public static final String RTMP_PLAY_HOST = "xxx.live1.z1.pili.qiniucdn.com";
-    public static final String HLS_PLAY_HOST = "xxx.hls1.z1.pili.qiniucdn.com";
-
     // Replace with your hub name
     public static final String HUB_NAME = "hubName";
 
@@ -53,9 +48,9 @@ public class PiliTest {
     private static final String STREAM_STATUS_CONNECTED = "connected";
     private static final String PRE_STREAM_PRESET_PUBLISH_SECURITY = "static";
     private static final String PRE_STREAM_PRESET_TITLE = "testTitle";
-    private static final String EXPECTED_BASE_PUBLISH_URL = "rtmp://" + RTMP_PUBLISH_HOST + "/" + HUB_NAME + "/" + PRE_STREAM_PRESET_TITLE;
-    private static final String EXPECTED_BASE_RTMP_LIVEURL = "rtmp://" + RTMP_PLAY_HOST + "/" + HUB_NAME;
-    private static final String EXPECTED_BASE_HLS_LIVEURL = "http://" + HLS_PLAY_HOST + "/" + HUB_NAME;
+    private static final String EXPECTED_BASE_PUBLISH_URL = "rtmp://" + "xxx.pub.z1.pili.qiniup.com" + "/" + HUB_NAME + "/" + PRE_STREAM_PRESET_TITLE;
+    private static final String EXPECTED_BASE_RTMP_LIVEURL = "rtmp://" + "xxx.live1.z1.pili.qiniucdn.com" + "/" + HUB_NAME;
+    private static final String EXPECTED_BASE_HLS_LIVEURL = "http://" + "xxx.hls1.z1.pili.qiniucdn.com" + "/" + HUB_NAME;
 
     private Pili mPili = new Pili(ACCESS_KEY, SECRET_KEY, HUB_NAME);
     private Stream mStream = null;
@@ -223,6 +218,31 @@ public class PiliTest {
             } catch (PiliException e) {
                 e.printStackTrace();
             }
+        }
+
+        try {
+            final String title = "test_stream_list";
+            mPili.createStream(title, null, null);
+            boolean found = false;
+            String marker = null;
+            while(!found) {
+                StreamList streamList = mPili.listStreams(marker, 300);
+                marker = streamList.getMarker();
+                List<Stream> list = streamList.getStreams();
+                for (Stream stream : list) {
+                    if(title.equals(stream.getTitle())) {
+                        String res = stream.delete();
+                        assertEquals(OK_DELETE_STREAM_RES_MSG, res);
+                        System.out.println("found stream:" + title + ",delete:" + res);
+                        found = true;
+                        return;
+                    }
+                }
+            }
+            fail();
+        } catch(PiliException e) {
+            e.printStackTrace();
+            fail();
         }
     }
 

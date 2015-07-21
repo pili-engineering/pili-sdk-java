@@ -161,7 +161,7 @@ public class API {
             JsonParser parser = new JsonParser();
             try {
                 JsonObject jsonObj = parser.parse(response.body().string()).getAsJsonObject();
-                return new StreamList(jsonObj);
+                return new StreamList(jsonObj, auth);
             } catch (IOException e) {
                 e.printStackTrace();
                 throw new PiliException(e);
