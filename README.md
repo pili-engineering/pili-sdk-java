@@ -223,6 +223,10 @@ long startSecond, endSecond;
 String notifyUrl = "http://your_notify_url";
 
 SaveAsResponse resp = stream.saveAs(fileName, format, startSecond, endSecond, notifyUrl);
+
+// You can get processing state via Qiniu fop service by persistentId.
+// API: `curl -D GET http://api.qiniu.com/status/get/prefop?id=<PersistentId>`
+// Doc reference: `http://developer.qiniu.com/docs/v6/api/overview/fop/persistent-fop.html#pfop-status`
 System.out.println("saveAs resp.getUrl:" + resp.getUrl() + ",resp.getTargetUrl:" + resp.getTargetUrl() + ",resp.getPersistentId:" + resp.getPersistentId());
 ```
 or
