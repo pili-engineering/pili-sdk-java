@@ -1,7 +1,7 @@
 #Pili server-side library for JAVA
 
 ##Installation
-You can download **pili-sdk-java-v1.2.2.jar** file in the **release** folder.
+You can download **pili-sdk-java-v1.2.3.jar** file in the **release** folder.
 
 ##dependency
 You also need [okhttp][1], [okio][2], [Gson][3]
@@ -12,6 +12,8 @@ You also need [okhttp][1], [okio][2], [Gson][3]
 
 ##Runtime Requirement
 For Java, the minimum requirement is 1.7.
+
+If you want to run the SDK on JDK 1.6 environment, you can download the compatible jar of  [okhttp](https://raw.githubusercontent.com/qiniu/java-sdk/master/libs/okhttp-2.3.0-SNAPSHOT.jar) and [okio](https://raw.githubusercontent.com/qiniu/java-sdk/master/libs/okio-1.3.0-SNAPSHOT.jar).
 
 ##Usage
 ###Configuration
@@ -212,3 +214,28 @@ or
 String streamJsonStr = mStream.toJsonString();
 System.out.println(streamJsonStr);
 ```
+###Save Stream as
+```JAVA
+String fileName;
+String format;
+long startSecond, endSecond;
+
+String notifyUrl = "http://your_notify_url";
+
+SaveAsResponse resp = stream.saveAs(fileName, format, startSecond, endSecond, notifyUrl);
+
+// You can get processing state via Qiniu fop service by persistentId.
+// API: `curl -D GET http://api.qiniu.com/status/get/prefop?id=<PersistentId>`
+// Doc reference: `http://developer.qiniu.com/docs/v6/api/overview/fop/persistent-fop.html#pfop-status`
+System.out.println("saveAs resp.getUrl:" + resp.getUrl() + ",resp.getTargetUrl:" + resp.getTargetUrl() + ",resp.getPersistentId:" + resp.getPersistentId());
+```
+or
+```JAVA
+String fileName;
+String format;
+long startSecond, endSecond;
+
+SaveAsResponse resp = stream.saveAs(fileName, format, startSecond, endSecond);
+System.out.println("saveAs resp.getUrl:" + resp.getUrl() + ",resp.getTargetUrl:" + resp.getTargetUrl() + ",resp.getPersistentId:" + resp.getPersistentId());
+```
+

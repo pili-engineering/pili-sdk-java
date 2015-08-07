@@ -14,6 +14,7 @@ import org.junit.Test;
 import com.pili.Pili;
 import com.pili.PiliException;
 import com.pili.Stream;
+import com.pili.Stream.SaveAsResponse;
 import com.pili.Stream.Segment;
 import com.pili.Stream.SegmentList;
 import com.pili.Stream.Status;
@@ -24,7 +25,7 @@ import common.MessageConfig;
 
 public class PiliTest {
     // Replace with your keys
-    public static final String ACCESS_KEY = "QiniuAccessKey";
+    public static final String ACCESS_KEY = "-QiniuAccessKey";
     public static final String SECRET_KEY = "QiniuSecretKey";
 
     // Replace with your hub name
@@ -41,6 +42,7 @@ public class PiliTest {
     private static final String BAD_REQ_MSG = "Bad Request";
     private static final String ILLEGAL_TIME_MSG = "Illegal startTime or endTime!";
     private static final String SEGMENTS_IS_NULL = "Segments is null";
+    private static final String SAVEAS_RES_OK = "OK";
 
     private static final String[] DEFAULT_PRESETS = new String[] {null, "240p", "360p", "480p"};
 
@@ -51,6 +53,8 @@ public class PiliTest {
     private static final String EXPECTED_BASE_PUBLISH_URL = "rtmp://" + "xxx.pub.z1.pili.qiniup.com" + "/" + HUB_NAME + "/" + PRE_STREAM_PRESET_TITLE;
     private static final String EXPECTED_BASE_RTMP_LIVEURL = "rtmp://" + "xxx.live1.z1.pili.qiniucdn.com" + "/" + HUB_NAME;
     private static final String EXPECTED_BASE_HLS_LIVEURL = "http://" + "xxx.hls1.z1.pili.qiniucdn.com" + "/" + HUB_NAME;
+
+    private static final String EXPECTED_SAVEAS_BASE_URL = "http://" + "xxx.ts1.z1.pili.qiniucdn.com" + "/" + HUB_NAME;
 
     private Pili mPili = new Pili(ACCESS_KEY, SECRET_KEY, HUB_NAME);
     private Stream mStream = null;
@@ -450,6 +454,100 @@ public class PiliTest {
         }
     }
     
+    @Test
+    public void testSaveAs() {
+        if (mStream == null) {
+            prepareStream();
+        }
+        final String streamId = "z1.test-hub.55a35335fb16df733a00102d";
+        final String format = "mp4";
+        final String name = "testFileName";
+        final String title = "55a35335fb16df733a00102d";
+        final String fileName = name + "." + format;
+        final String expectedUrl = EXPECTED_SAVEAS_BASE_URL + "/" + title + "/" + "play" + "/" + name + ".m3u8";
+        final String expectedTargetUrl = EXPECTED_SAVEAS_BASE_URL + "/" + title + "/" + "play" + "/" + fileName;
+        
+        long startTime = 0;
+        long endTime = 0;
+        
+        try {
+            mStream.saveAs(null, format, startTime, endTime);
+            fail();
+        } catch (PiliException e) {
+            assertEquals(MessageConfig.ILLEGAL_FILE_NAME_EXCEPTION_MSG, e.getMessage());
+        }
+
+        try {
+            mStream.saveAs(" ", format, startTime, endTime);
+            fail();
+        } catch (PiliException e) {
+            assertEquals(MessageConfig.ILLEGAL_FILE_NAME_EXCEPTION_MSG, e.getMessage());
+        }
+
+        try {
+            mStream.saveAs(fileName, null, startTime, endTime);
+            fail();
+        } catch (PiliException e) {
+            assertEquals(MessageConfig.ILLEGAL_FORMAT_EXCEPTION_MSG, e.getMessage());
+        }
+
+        try {
+            mStream.saveAs(fileName, "", startTime, endTime);
+            fail();
+        } catch (PiliException e) {
+            assertEquals(MessageConfig.ILLEGAL_FORMAT_EXCEPTION_MSG, e.getMessage());
+        }
+
+        try {
+            mStream.saveAs(fileName, " ", startTime, endTime);
+            fail();
+        } catch (PiliException e) {
+            assertEquals(MessageConfig.ILLEGAL_FORMAT_EXCEPTION_MSG, e.getMessage());
+        }
+
+        try {
+            mStream.saveAs(fileName, format, 0, 0);
+            fail();
+        } catch (PiliException e) {
+            assertEquals(MessageConfig.ILLEGAL_TIME_MSG, e.getMessage());
+        }
+
+        try {
+            mStream.saveAs(fileName, format, 3600, 1000);
+            fail();
+        } catch (PiliException e) {
+            assertEquals(MessageConfig.ILLEGAL_TIME_MSG, e.getMessage());
+        }
+
+        try {
+            SaveAsResponse res = mStream.saveAs(fileName, format, 1000, 3600, null);
+            fail();
+        } catch (PiliException e) {
+            assertEquals(BAD_REQ_MSG, e.getMessage());
+        }
+
+        try {
+            Stream stream = mPili.getStream(streamId);
+            List<Segment> list = stream.segments().getSegmentList();
+            Segment s = list.get(list.size() - 1);
+            long start = s.getStart();
+            long end = s.getEnd();
+            SaveAsResponse res = stream.saveAs(fileName, format, start, end);
+            assertEquals(expectedUrl, res.getUrl());
+            assertEquals(expectedTargetUrl, res.getTargetUrl());
+            assertNotNull(res.getPersistentId());
+
+            s = list.get(0);
+            start = s.getStart();
+            end = s.getEnd();
+            res = stream.saveAs(fileName, format, start, end, "http://notifyurl");
+            assertNotNull(res);
+        } catch (PiliException e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+        }
+    }
+
     @Test
     public void testToJsonString() {
         // the test case order cannot be guaranteed

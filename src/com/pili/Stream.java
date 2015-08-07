@@ -112,6 +112,28 @@ public class Stream {
         }
     }
 
+    public static class SaveAsResponse {
+        private String url;
+        private String targetUrl;
+        private String persistentId;
+
+        public SaveAsResponse(JsonObject jsonObj) {
+            url = jsonObj.get("url").getAsString();
+            targetUrl = jsonObj.get("targetUrl").getAsString();
+            persistentId = jsonObj.get("persistentId").getAsString();
+        }
+
+        public String getUrl() {
+            return url;
+        }
+        public String getTargetUrl() {
+            return targetUrl;
+        }
+        public String getPersistentId() {
+            return persistentId;
+        }
+    }
+
     public static class SegmentList {
         private List<Segment> segmentList;
 
@@ -151,12 +173,16 @@ public class Stream {
         public StreamList(JsonObject jsonObj, Auth auth) {
             this.marker = jsonObj.get("marker").getAsString();
 
-            JsonArray respArray = jsonObj.getAsJsonArray("items");
-            Iterator<JsonElement> it = respArray.iterator();
-            itemList = new ArrayList<Stream>();
-            while (it.hasNext()) {
-              JsonObject json = it.next().getAsJsonObject();
-              itemList.add(new Stream(json, auth));
+            try {
+                JsonArray respArray = jsonObj.getAsJsonArray("items");
+                Iterator<JsonElement> it = respArray.iterator();
+                itemList = new ArrayList<Stream>();
+                while (it.hasNext()) {
+                  JsonObject json = it.next().getAsJsonObject();
+                  itemList.add(new Stream(json, auth));
+                }
+            } catch (java.lang.ClassCastException e) {
+                e.printStackTrace();
             }
         }
 
@@ -202,6 +228,13 @@ public class Stream {
 
     public String toJsonString() {
         return mStreamJsonStr;
+    }
+
+    public SaveAsResponse saveAs(String fileName, String format, long startTime, long endTime, String notifyUrl) throws PiliException {
+        return API.saveAs(mAuth, this.id, fileName, format, startTime, endTime, notifyUrl);
+    }
+    public SaveAsResponse saveAs(String fileName, String format, long startTime, long endTime) throws PiliException {
+        return saveAs(fileName, format, startTime, endTime, null);
     }
 }
 

@@ -11,6 +11,7 @@ import java.util.Map;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.pili.Stream.SaveAsResponse;
 import com.pili.Stream.SegmentList;
 import com.pili.Stream.Status;
 import com.pili.Stream.StreamList;
@@ -293,6 +294,69 @@ public class API {
         }
     }
 
+    public static SaveAsResponse saveAs(Auth auth, String streamId, String fileName, String format, 
+            long start, long end, String notifyUrl) throws PiliException {
+        if (streamId == null) {
+            throw new PiliException(MessageConfig.NULL_STREAM_ID_EXCEPTION_MSG);
+        }
+
+        if (!Utils.isArgNotEmpty(fileName)) {
+            throw new PiliException(MessageConfig.ILLEGAL_FILE_NAME_EXCEPTION_MSG);
+        }
+
+        if (!Utils.isArgNotEmpty(format)) {
+            throw new PiliException(MessageConfig.ILLEGAL_FORMAT_EXCEPTION_MSG);
+        }
+
+        if (start <= 0 || end <= 0 || start > end) {
+            throw new PiliException(MessageConfig.ILLEGAL_TIME_MSG);
+        }
+
+        String urlStr = String.format("%s/streams/%s/saveas", API_BASE_URL, streamId);
+        Response response = null;
+        JsonObject json = new JsonObject();
+        json.addProperty("name", fileName);
+        if (Utils.isArgNotEmpty(notifyUrl)) {
+            json.addProperty("notifyUrl", notifyUrl);
+        }
+        json.addProperty("start", start);
+        json.addProperty("end", end);
+        json.addProperty("format", format);
+
+        try {
+            URL url = new URL(urlStr);
+
+            String contentType = "application/json";
+            byte[] body = json.toString().getBytes(Config.UTF8);
+            String macToken = auth.signRequest(url, "POST", body, contentType);
+            MediaType type = MediaType.parse(contentType);
+            RequestBody rBody = RequestBody.create(type, body);
+            Request request = new Request.Builder()
+            .post(rBody)
+            .url(url)
+            .header("User-Agent", Utils.getUserAgent())
+            .addHeader("Authorization", macToken)
+            .build();
+
+            response = mOkHttpClient.newCall(request).execute();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        // response never be null
+        if (response.isSuccessful()) {
+            JsonParser parser = new JsonParser();
+            try {
+                JsonObject jsonObj = parser.parse(response.body().string()).getAsJsonObject();
+//                System.out.println(jsonObj.toString());
+                return new SaveAsResponse(jsonObj);
+            } catch (IOException e) {
+                e.printStackTrace();
+                throw new PiliException(e);
+            }
+        } else {
+            throw new PiliException(response);
+        }
+    }
     // Get recording segments from an exist stream
     public static SegmentList getStreamSegments(Auth auth, String streamId, long startTime, long endTime) throws PiliException {
         if (streamId == null) {
