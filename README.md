@@ -1,7 +1,7 @@
 #Pili server-side library for JAVA
 
 ##Installation
-You can download **pili-sdk-java-v1.2.3.jar** file in the **release** folder.
+You can download **pili-sdk-java-v1.4.0.jar** file in the **release** folder.
 
 ##dependency
 You also need [okhttp][1], [okio][2], [Gson][3]
@@ -166,6 +166,24 @@ or
   }
 ```
 
+###Enable a stream
+```JAVA
+try {
+    stream.enable();
+} catch (PiliException e) {
+    e.printStackTrace();
+}
+```
+
+###Disable a stream
+```JAVA
+try {
+    stream.disable();
+} catch (PiliException e) {
+    e.printStackTrace();
+}
+```
+
 ###Generate RTMP publish URL
 ```JAVA
   try {
@@ -209,6 +227,17 @@ or
   }
 ```
 
+###Generate FLV URLs
+```JAVA
+  Map<String, String> flvLiveUrls = mStream.httpFlvLiveUrls();
+  String originFlvLiveUrl = flvLiveUrls.get(Stream.ORIGIN);       // Get original FLV live url
+  for (String key : flvLiveUrls.keySet()) {
+    System.out.println("key:" + key + ", flvLiveUrls:" + flvLiveUrls.get(key));
+  }
+```
+
+httpFlvLiveUrls
+
 ###To JSON String
 ```JAVA
 String streamJsonStr = mStream.toJsonString();
@@ -222,20 +251,71 @@ long startSecond, endSecond;
 
 String notifyUrl = "http://your_notify_url";
 
-SaveAsResponse resp = stream.saveAs(fileName, format, startSecond, endSecond, notifyUrl);
+try {
+    SaveAsResponse resp = stream.saveAs(fileName, format, startSecond, endSecond, notifyUrl);
 
-// You can get processing state via Qiniu fop service by persistentId.
-// API: `curl -D GET http://api.qiniu.com/status/get/prefop?id=<PersistentId>`
-// Doc reference: `http://developer.qiniu.com/docs/v6/api/overview/fop/persistent-fop.html#pfop-status`
-System.out.println("saveAs resp.getUrl:" + resp.getUrl() + ",resp.getTargetUrl:" + resp.getTargetUrl() + ",resp.getPersistentId:" + resp.getPersistentId());
+    // You can get processing state via Qiniu fop service by persistentId.
+    // API: `curl -D GET http://api.qiniu.com/status/get/prefop?id=<PersistentId>`
+    // Doc reference: `http://developer.qiniu.com/docs/v6/api/overview/fop/persistent-fop.html#pfop-status`
+    System.out.println("saveAs resp.getUrl:" + resp.getUrl() + ",resp.getTargetUrl:" + resp.getTargetUrl() + ",resp.getPersistentId:" + resp.getPersistentId());
+} catch (PiliException e) {
+    e.printStackTrace();
+}
 ```
 or
 ```JAVA
 String fileName;
 String format;
 long startSecond, endSecond;
-
-SaveAsResponse resp = stream.saveAs(fileName, format, startSecond, endSecond);
-System.out.println("saveAs resp.getUrl:" + resp.getUrl() + ",resp.getTargetUrl:" + resp.getTargetUrl() + ",resp.getPersistentId:" + resp.getPersistentId());
+try {
+    SaveAsResponse resp = stream.saveAs(fileName, format, startSecond, endSecond);
+    System.out.println("saveAs resp.getUrl:" + resp.getUrl() + ",resp.getTargetUrl:" + resp.getTargetUrl() + ",resp.getPersistentId:" + resp.getPersistentId());
+} catch (PiliException e) {
+    e.printStackTrace();
+}
 ```
 
+###Snapshot stream
+```JAVA
+String fileName;
+String format;
+long time; // second
+
+String notifyUrl = "http://your_notify_url";
+SnapshotResponse resp;
+try {
+  SnapshotResponse resp = stream.snapshot(fileName, format);
+  // You can get processing state via Qiniu fop service by persistentId.
+  // API: `curl -D GET http://api.qiniu.com/status/get/prefop?id=<PersistentId>`
+  // Doc reference: `http://developer.qiniu.com/docs/v6/api/overview/fop/persistent-fop.html#pfop-status`
+  System.out.println("snapshot resp.getTargetUrl:" + resp.getTargetUrl() + ",resp.getPersistentId:" + resp.getPersistentId());
+} catch (PiliException e) {
+    e.printStackTrace();
+}
+```
+or
+
+```JAVA
+String fileName;
+String format;
+long time;
+
+try {
+    SnapshotResponse resp = stream.snapshot(fileName, format, time, notifyUrl);
+    System.out.println("snapshot resp.getTargetUrl:" + resp.getTargetUrl() + ",resp.getPersistentId:" + resp.getPersistentId());
+} catch (PiliException e) {
+    e.printStackTrace();
+}
+```
+
+##History
+- 1.4.0
+  - Update `Stream` class
+  - Update `Stream$Status` class
+  - Add `Stream$SnapshotResponse` class
+  - Add `Stream$FramesPerSecond` class
+  - Add `snapshot` interface
+  - Add `enable` interface
+  - Add `disable` interface
+  - Add `httpFlvLiveUrls` interface
+  - Add the test code for the new API
