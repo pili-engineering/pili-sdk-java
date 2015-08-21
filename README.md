@@ -51,6 +51,7 @@ import com.pili.PiliException;
   }
 ```
 or
+
 ```JAVA
   try {
     Stream stream = mPili.createStream();
@@ -89,6 +90,7 @@ import com.pili.Stream.StreamList;
   }
 ```
 or
+
 ```JAVA
   try {
       StreamList list = mPili.listStreams();
@@ -121,6 +123,7 @@ import com.pili.Stream.SegmentList;
   }
 ```
 or
+
 ```JAVA
   try {
       SegmentList ssList = mStream.segments();
@@ -144,6 +147,7 @@ or
       e.printStackTrace();
   }
 ```
+
 ###Update an exist stream
 ```JAVA
   String newPublishKey      = "new_secret_words";
@@ -157,6 +161,7 @@ or
       e.printStackTrace();
   }
 ```
+
 ###Delete stream
 ```JAVA
   try {
@@ -212,6 +217,15 @@ try {
   }
 ```
 
+###Generate FLV URLs
+```JAVA
+  Map<String, String> flvLiveUrls = mStream.httpFlvLiveUrls();
+  String originFlvLiveUrl = flvLiveUrls.get(Stream.ORIGIN);       // Get original FLV live url
+  for (String key : flvLiveUrls.keySet()) {
+    System.out.println("key:" + key + ", flvLiveUrls:" + flvLiveUrls.get(key));
+  }
+```
+
 ###Generate HLS playback URLs
 ```JAVA
   // startSecond and endSecond should be llegal(>0) and startSecond < endSecond, otherwise PiliException will be thrown
@@ -227,22 +241,12 @@ try {
   }
 ```
 
-###Generate FLV URLs
-```JAVA
-  Map<String, String> flvLiveUrls = mStream.httpFlvLiveUrls();
-  String originFlvLiveUrl = flvLiveUrls.get(Stream.ORIGIN);       // Get original FLV live url
-  for (String key : flvLiveUrls.keySet()) {
-    System.out.println("key:" + key + ", flvLiveUrls:" + flvLiveUrls.get(key));
-  }
-```
-
-httpFlvLiveUrls
-
 ###To JSON String
 ```JAVA
 String streamJsonStr = mStream.toJsonString();
 System.out.println(streamJsonStr);
 ```
+
 ###Save Stream as
 ```JAVA
 String fileName;
@@ -263,6 +267,7 @@ try {
 }
 ```
 or
+
 ```JAVA
 String fileName;
 String format;
@@ -279,10 +284,7 @@ try {
 ```JAVA
 String fileName;
 String format;
-long time; // second
 
-String notifyUrl = "http://your_notify_url";
-SnapshotResponse resp;
 try {
   SnapshotResponse resp = stream.snapshot(fileName, format);
   // You can get processing state via Qiniu fop service by persistentId.
