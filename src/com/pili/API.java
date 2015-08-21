@@ -13,6 +13,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.pili.Stream.SaveAsResponse;
 import com.pili.Stream.SegmentList;
+import com.pili.Stream.SnapshotResponse;
 import com.pili.Stream.Status;
 import com.pili.Stream.StreamList;
 import com.squareup.okhttp.MediaType;
@@ -357,6 +358,68 @@ public class API {
             throw new PiliException(response);
         }
     }
+
+    public static SnapshotResponse snapshot(Auth auth, String streamId, String fileName, String format, 
+            long time, String notifyUrl) throws PiliException {
+        if (streamId == null) {
+            throw new PiliException(MessageConfig.NULL_STREAM_ID_EXCEPTION_MSG);
+        }
+
+        if (!Utils.isArgNotEmpty(fileName)) {
+            throw new PiliException(MessageConfig.ILLEGAL_FILE_NAME_EXCEPTION_MSG);
+        }
+
+        if (!Utils.isArgNotEmpty(format)) {
+            throw new PiliException(MessageConfig.ILLEGAL_FORMAT_EXCEPTION_MSG);
+        }
+
+        String urlStr = String.format("%s/streams/%s/snapshot", API_BASE_URL, streamId);
+        Response response = null;
+        JsonObject json = new JsonObject();
+        json.addProperty("name", fileName);
+        json.addProperty("format", format);
+        if (time > 0) {
+            json.addProperty("time", time);
+        }
+        if (Utils.isArgNotEmpty(notifyUrl)) {
+            json.addProperty("notifyUrl", notifyUrl);  // optional
+        }
+
+        try {
+            URL url = new URL(urlStr);
+
+            String contentType = "application/json";
+            byte[] body = json.toString().getBytes(Config.UTF8);
+            String macToken = auth.signRequest(url, "POST", body, contentType);
+            MediaType type = MediaType.parse(contentType);
+            RequestBody rBody = RequestBody.create(type, body);
+            Request request = new Request.Builder()
+            .post(rBody)
+            .url(url)
+            .header("User-Agent", Utils.getUserAgent())
+            .addHeader("Authorization", macToken)
+            .build();
+
+            response = mOkHttpClient.newCall(request).execute();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        // response never be null
+        if (response.isSuccessful()) {
+            JsonParser parser = new JsonParser();
+            try {
+                JsonObject jsonObj = parser.parse(response.body().string()).getAsJsonObject();
+                System.out.println(jsonObj.toString());
+                return new SnapshotResponse(jsonObj);
+            } catch (IOException e) {
+                e.printStackTrace();
+                throw new PiliException(e);
+            }
+        } else {
+            throw new PiliException(response);
+        }
+    }
+
     // Get recording segments from an exist stream
     public static SegmentList getStreamSegments(Auth auth, String streamId, long startTime, long endTime) throws PiliException {
         if (streamId == null) {
@@ -401,7 +464,7 @@ public class API {
             throw new PiliException(response);
         }
     }
-
+    
     //Generate a RTMP publish URL
     public static String publishUrl(String rtmpPubHost, String streamId, String publishKey, String publishSecurity, long nonce) 
             throws PiliException {
@@ -420,10 +483,10 @@ public class API {
     }
 
     //Generate RTMP live play URL
-    public static Map<String, String> rtmpLiveUrl(String rtmpPlayHost, String streamId, String[] profiles) {
+    public static Map<String, String> rtmpLiveUrl(String liveRtmpHost, String streamId, String[] profiles) {
         final String defaultScheme = "rtmp";
         String baseUri = Utils.getPath(streamId);
-        String url = defaultScheme + "://" + rtmpPlayHost + baseUri;
+        String url = defaultScheme + "://" + liveRtmpHost + baseUri;
         Map<String, String> dictionary = new HashMap<String, String>();
         dictionary.put(Stream.ORIGIN, url);
         if (profiles != null) {
@@ -435,10 +498,10 @@ public class API {
     }
 
     //Generate HLS live play URL
-    public static Map<String, String> hlsLiveUrl(String hlsPlayHost, String streamId, String[] profiles) {
+    public static Map<String, String> hlsLiveUrl(String liveHttpHlsHost, String streamId, String[] profiles) {
         final String defaultScheme = "http";
         String baseUri = Utils.getPath(streamId);
-        final String url = defaultScheme + "://" + hlsPlayHost + baseUri;
+        final String url = defaultScheme + "://" + liveHttpHlsHost + baseUri;
         Map<String, String> dictionary = new HashMap<String, String>();
         dictionary.put(Stream.ORIGIN, url + ".m3u8");
         if (profiles != null) {
@@ -450,11 +513,11 @@ public class API {
     }
 
     //Generate HLS playback URL
-    public static Map<String, String> hlsPlaybackUrl(String hlsPlayHost, String streamId, long startTime, long endTime, String[] profiles) 
+    public static Map<String, String> hlsPlaybackUrl(String playbackHttpHls, String streamId, long startTime, long endTime, String[] profiles) 
             throws PiliException {
         final String defaultScheme = "http";
         String baseUri = Utils.getPath(streamId);
-        final String url = defaultScheme + "://" + hlsPlayHost + baseUri;
+        final String url = defaultScheme + "://" + playbackHttpHls + baseUri;
         String queryPara = null;
         if (startTime > 0 && endTime > 0 && startTime < endTime) {
             queryPara = "?start=" +startTime + "&end=" +endTime;
@@ -471,13 +534,30 @@ public class API {
         return dictionary;
     }
 
+    public static Map<String, String> httpFlvLiveUrl(String liveHttpFlvHost, String streamId, String[] profiles) {
+        /* 
+         * http://liveHttpFlvHost/hub/title@480p.flv
+         */
+        final String defaultScheme = "http";
+        String baseUri = Utils.getPath(streamId);
+        final String url = defaultScheme + "://" + liveHttpFlvHost + baseUri;
+        Map<String, String> dictionary = new HashMap<String, String>();
+        dictionary.put(Stream.ORIGIN, url + ".flv");
+        if (profiles != null) {
+            for (String p : profiles) {
+                dictionary.put(p, url + '@' + p + ".flv");
+            }
+        }
+        return dictionary;
+    }
+
     private static String generateStaticUrl(String rtmpPubHost, String streamId, String publishKey, String scheme) {
         return String.format("%s://%s%s?key=%s", scheme, rtmpPubHost, Utils.getPath(streamId), publishKey);
     }
 
     private static String generateDynamicUrl(String rtmpPubHost, String streamId, String publishKey, long nonce, String scheme) throws PiliException {
         if (nonce <= 0) {
-            nonce = System.currentTimeMillis();
+            nonce = System.currentTimeMillis() / 1000; // the unit should be second
         }
         String baseUri = Utils.getPath(streamId) + "?nonce=" + nonce;
         String publishToken = null;

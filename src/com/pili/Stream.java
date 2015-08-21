@@ -27,10 +27,12 @@ public class Stream {
     private boolean disabled;
     private String[] profiles;
     private String publishRtmpHost;
-    private String playHlsHost;
-    private String playRtmpHost;
+    private String liveRtmpHost;
+    private String liveHttpHost;
+    private String playbackHttpHost;
 
     public Stream(JsonObject jsonObj) {
+//        System.out.println("Stream:" + jsonObj.toString());
         id = jsonObj.get("id").getAsString();
         hub = jsonObj.get("hub").getAsString();
         createdAt = jsonObj.get("createdAt").getAsString();
@@ -45,11 +47,13 @@ public class Stream {
 
         JsonObject hosts = jsonObj.getAsJsonObject("hosts");
         JsonObject publish = hosts.getAsJsonObject("publish");
-        JsonObject play = hosts.getAsJsonObject("play");
+        JsonObject live = hosts.getAsJsonObject("live");
+        JsonObject playback = hosts.getAsJsonObject("playback");
 
         publishRtmpHost = publish.get("rtmp").getAsString();
-        playHlsHost = play.get("hls").getAsString();
-        playRtmpHost = play.get("rtmp").getAsString();
+        liveRtmpHost = live.get("rtmp").getAsString();
+        liveHttpHost = live.get("http").getAsString();
+        playbackHttpHost = playback.get("http").getAsString();
 
         mStreamJsonStr = jsonObj.toString();
     }
@@ -65,11 +69,22 @@ public class Stream {
     public String getPublishRtmpHost() {
         return publishRtmpHost;
     }
-    public String getPlayHlsHost() {
-        return playHlsHost;
+    public String getLiveRtmpHost() {
+        return liveRtmpHost;
     }
+    public String getLiveHttpHost() {
+        return liveHttpHost;
+    }
+    public String getPlaybackHttpHost() {
+        return playbackHttpHost;
+    }
+    @Deprecated
+    public String getPlayHlsHost() {
+        return playbackHttpHost;
+    }
+    @Deprecated
     public String getPlayRtmpHost() {
-        return playRtmpHost;
+        return liveRtmpHost;
     }
     public String getStreamId() {
         return id;
@@ -134,6 +149,43 @@ public class Stream {
         }
     }
 
+    public static class SnapshotResponse {
+        private String targetUrl;
+        private String persistentId;
+        public SnapshotResponse(JsonObject jsonObj) {
+            targetUrl = jsonObj.get("targetUrl").getAsString();
+            persistentId = jsonObj.get("persistentId").getAsString();
+        }
+        
+        public String getTargetUrl() {
+            return targetUrl;
+        }
+        public String getPersistentId() {
+            return persistentId;
+        }
+    }
+
+    public static class FramesPerSecond {
+        private int audio;
+        private int video;
+        private int data;
+        public FramesPerSecond(int audio, int video, int data) {
+            this.audio = audio;
+            this.video = video;
+            this.data = data;
+        }
+        
+        public int getAudio() {
+            return audio;
+        }
+        public int getVideo() {
+            return video;
+        }
+        public int getData() {
+            return data;
+        }
+    }
+
     public static class SegmentList {
         private List<Segment> segmentList;
 
@@ -155,15 +207,30 @@ public class Stream {
     public static class Status {
         private String addr;
         private String status;
+        private long bytesPerSecond;
+        private FramesPerSecond framesPerSecond;
         public Status(JsonObject jsonObj) {
             addr = jsonObj.get("addr").getAsString();
             status = jsonObj.get("status").getAsString();
+            bytesPerSecond = jsonObj.get("bytesPerSecond").getAsLong();
+            
+            JsonObject framesPerSecondJsonObj = jsonObj.getAsJsonObject("framesPerSecond");
+            int audio = framesPerSecondJsonObj.get("audio").getAsInt();
+            int video = framesPerSecondJsonObj.get("video").getAsInt();
+            int data = framesPerSecondJsonObj.get("data").getAsInt();
+            framesPerSecond = new FramesPerSecond(audio, video, data);
         }
         public String getAddr() {
             return addr;
         }
         public String getStatus() {
             return status;
+        }
+        public long getBytesPerSecond() {
+            return bytesPerSecond;
+        }
+        public FramesPerSecond getFramesPerSecond() {
+            return framesPerSecond;
         }
     }
 
@@ -214,14 +281,19 @@ public class Stream {
         return API.publishUrl(this.publishRtmpHost, this.id, this.publishKey, this.publishSecurity, 0);
     }
     public Map<String, String> rtmpLiveUrls() {
-        return API.rtmpLiveUrl(this.playRtmpHost, this.id, this.profiles);
+        return API.rtmpLiveUrl(this.liveRtmpHost, this.id, this.profiles);
     }
     public Map<String, String> hlsLiveUrls() {
-        return API.hlsLiveUrl(this.playHlsHost, this.id, this.profiles);
+        return API.hlsLiveUrl(this.liveHttpHost, this.id, this.profiles);
     }
     public Map<String, String> hlsPlaybackUrls(long start, long end) throws PiliException {
-        return API.hlsPlaybackUrl(this.playHlsHost,  this.id, start, end,  this.profiles);
+        return API.hlsPlaybackUrl(this.playbackHttpHost,  this.id, start, end,  this.profiles);
     }
+
+    public Map<String, String> httpFlvLiveUrls() {
+        return API.httpFlvLiveUrl(this.liveHttpHost, this.id, this.profiles);
+    }
+
     public String delete() throws PiliException {
         return API.deleteStream(mAuth, this.id);
     }
@@ -235,6 +307,20 @@ public class Stream {
     }
     public SaveAsResponse saveAs(String fileName, String format, long startTime, long endTime) throws PiliException {
         return saveAs(fileName, format, startTime, endTime, null);
+    }
+
+    public SnapshotResponse snapshot(String name, String format) throws PiliException {
+        return API.snapshot(mAuth, this.id, name, format, 0, null);
+    }
+    public SnapshotResponse snapshot(String name, String format, long time, String notifyUrl) throws PiliException {
+        return API.snapshot(mAuth, this.id, name, format, time, notifyUrl);
+    }
+
+    public Stream enable() throws PiliException {
+        return API.updateStream(mAuth, this.id, null, null, false);
+    }
+    public Stream disable() throws PiliException {
+        return API.updateStream(mAuth, this.id, null, null, true);
     }
 }
 
