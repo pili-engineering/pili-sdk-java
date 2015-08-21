@@ -301,6 +301,7 @@ or
 String fileName;
 String format;
 long time;
+String notifyUrl = "http://your_notify_url";
 
 try {
     SnapshotResponse resp = stream.snapshot(fileName, format, time, notifyUrl);
