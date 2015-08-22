@@ -488,7 +488,7 @@ try {
 }
 ```
 > While invoking `saveAs` and `snapshot`, you can get processing state via Qiniu fop service using persistentId. </p>
-> API: curl -D GET http://api.qiniu.com/status/get/prefop?id=<PersistentId> </p>
+> API: curl -D GET http://api.qiniu.com/status/get/prefop?id=persistentId  </p>
 > Doc reference: http://developer.qiniu.com/docs/v6/api/overview/fop/persistent-fop.html#pfop-status
 
 ##### Delete a stream
