@@ -19,6 +19,10 @@ public class Pili {
         mHubName = hubName;
     }
 
+    public void config() {
+        API.config();
+    }
+
     public Stream createStream() throws PiliException {
         return API.createStream(mAuth, mHubName, null, null, null);
     }
@@ -32,11 +36,15 @@ public class Pili {
     }
 
     public StreamList listStreams() throws PiliException {
-        return API.listStreams(mAuth, mHubName, null, 0);
+        return API.listStreams(mAuth, mHubName, null, 0, null);
     }
 
     public StreamList listStreams(String marker, long limit) throws PiliException {
-        return API.listStreams(mAuth, mHubName, marker, limit);
+        return API.listStreams(mAuth, mHubName, marker, limit, null);
+    }
+
+    public StreamList listStreams(String marker, long limit, String titlePrefix) throws PiliException {
+        return API.listStreams(mAuth, mHubName, marker, limit, titlePrefix);
     }
 
 }

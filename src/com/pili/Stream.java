@@ -131,11 +131,13 @@ public class Stream {
         private String url;
         private String targetUrl;
         private String persistentId;
+        private String mJsonString;
 
         public SaveAsResponse(JsonObject jsonObj) {
             url = jsonObj.get("url").getAsString();
             targetUrl = jsonObj.get("targetUrl").getAsString();
             persistentId = jsonObj.get("persistentId").getAsString();
+            mJsonString = jsonObj.toString();
         }
 
         public String getUrl() {
@@ -147,14 +149,21 @@ public class Stream {
         public String getPersistentId() {
             return persistentId;
         }
+        
+        @Override
+        public String toString() {
+            return mJsonString;
+        }
     }
 
     public static class SnapshotResponse {
         private String targetUrl;
         private String persistentId;
+        private String mJsonString;
         public SnapshotResponse(JsonObject jsonObj) {
             targetUrl = jsonObj.get("targetUrl").getAsString();
             persistentId = jsonObj.get("persistentId").getAsString();
+            mJsonString = jsonObj.toString();
         }
         
         public String getTargetUrl() {
@@ -162,6 +171,11 @@ public class Stream {
         }
         public String getPersistentId() {
             return persistentId;
+        }
+        
+        @Override
+        public String toString() {
+            return mJsonString;
         }
     }
 
@@ -209,6 +223,7 @@ public class Stream {
         private String status;
         private long bytesPerSecond;
         private FramesPerSecond framesPerSecond;
+        private String mJsonString;
         public Status(JsonObject jsonObj) {
             addr = jsonObj.get("addr").getAsString();
             status = jsonObj.get("status").getAsString();
@@ -219,6 +234,7 @@ public class Stream {
             int video = framesPerSecondJsonObj.get("video").getAsInt();
             int data = framesPerSecondJsonObj.get("data").getAsInt();
             framesPerSecond = new FramesPerSecond(audio, video, data);
+            mJsonString = jsonObj.toString();
         }
         public String getAddr() {
             return addr;
@@ -231,6 +247,11 @@ public class Stream {
         }
         public FramesPerSecond getFramesPerSecond() {
             return framesPerSecond;
+        }
+        
+        @Override
+        public String toString() {
+            return mJsonString;
         }
     }
 
@@ -266,11 +287,15 @@ public class Stream {
     }
 
     public SegmentList segments() throws PiliException {
-        return API.getStreamSegments(mAuth, this.id, 0, 0);
+        return API.getStreamSegments(mAuth, this.id, 0, 0, 0);
     }
 
     public SegmentList segments(long start, long end) throws PiliException {
-        return API.getStreamSegments(mAuth, this.id, start, end);
+        return API.getStreamSegments(mAuth, this.id, start, end, 0);
+    }
+
+    public SegmentList segments(long start, long end, int limit) throws PiliException {
+        return API.getStreamSegments(mAuth, this.id, start, end, limit);
     }
 
     public Status status() throws PiliException {

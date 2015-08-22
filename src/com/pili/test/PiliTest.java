@@ -11,6 +11,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.pili.Configuration;
 import com.pili.Pili;
 import com.pili.PiliException;
 import com.pili.Stream;
@@ -684,6 +685,21 @@ public class PiliTest {
                 assertEquals(BAD_REQ_MSG, e.getMessage());
             }
         }
+    }
+
+    @Test
+    public void testConfig() {
+        final String testKey = "test_key";
+        final String testValue00 = "test_value00";
+        final String testValue11 = "test_value11";
+        Configuration.getInstance().setString(testKey, testValue00);
+        mPili.config();
+        assertEquals(testValue00, Configuration.getInstance().getString(testKey));
+
+        Configuration.getInstance().setString(testKey, testValue11);
+        mPili.config();
+        assertEquals(testValue11, Configuration.getInstance().getString(testKey));
+
     }
 
     @After

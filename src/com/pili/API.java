@@ -27,10 +27,15 @@ import common.MessageConfig;
 import common.Utils;
 
 public class API {
-    private static final String API_BASE_URL = 
-            String.format("http://%s/%s", Config.DEFAULT_API_HOST, Config.API_VERSION);
+    private static String API_BASE_URL = 
+            String.format("http://%s/%s", Config.DEFAULT_API_HOST, Config.DEFAULT_API_VERSION);
 
     private static final OkHttpClient mOkHttpClient = new OkHttpClient();
+    public static void config() {
+        String apiHost = Configuration.getInstance().getString(Configuration.KEY_API_HOST, Config.DEFAULT_API_HOST);
+        String apiVersion = Configuration.getInstance().getString(Configuration.KEY_API_VERSION, Config.DEFAULT_API_VERSION);
+        API_BASE_URL = String.format("http://%s/%s", apiHost, apiVersion);
+    }
 
     // Create a new stream
     public static Stream createStream(Auth auth, String hubName, String title, String publishKey, String publishSecurity) throws PiliException {
@@ -125,7 +130,7 @@ public class API {
     }
 
     // List stream
-    public static StreamList listStreams(Auth auth, String hubName, String startMarker, long limitCount) throws PiliException {
+    public static StreamList listStreams(Auth auth, String hubName, String startMarker, long limitCount, String titlePrefix) throws PiliException {
         try {
             hubName = URLEncoder.encode(hubName, Config.UTF8);
             if (Utils.isArgNotEmpty(startMarker)) {
@@ -141,6 +146,9 @@ public class API {
         }
         if (limitCount > 0) {
             urlStr += "&limit=" + limitCount;
+        }
+        if (Utils.isArgNotEmpty(titlePrefix)) {
+            urlStr += "&title=" + titlePrefix;
         }
         Response response = null;
         try {
@@ -421,13 +429,16 @@ public class API {
     }
 
     // Get recording segments from an exist stream
-    public static SegmentList getStreamSegments(Auth auth, String streamId, long startTime, long endTime) throws PiliException {
+    public static SegmentList getStreamSegments(Auth auth, String streamId, long startTime, long endTime, int limitCount) throws PiliException {
         if (streamId == null) {
             throw new PiliException(MessageConfig.NULL_STREAM_ID_EXCEPTION_MSG);
         }
         String urlStr = String.format("%s/streams/%s/segments", API_BASE_URL, streamId);
         if (startTime > 0 && endTime > 0 && startTime < endTime) {
             urlStr += "?start=" + startTime + "&end=" + endTime;
+        }
+        if (limitCount > 0) {
+            urlStr += "&limit=" + limitCount;
         }
         Response response = null;
         try {
