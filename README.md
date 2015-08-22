@@ -23,32 +23,32 @@
     - [x] stream.delete()
 
 ## Contents
-- [Installation](#Installation)
-- [Dependency](#Dependency)
-- [Runtime Requirement](#Runtime-Requirement)
-- [Usage](#Usage)
-    - [Configuration](#Configuration)
-    - [Client](#Client)
-        - [Instantiate a Pili client](#Instantiate-a-Pili-client)
-        - [Create a new Stream](#Create-a-new-Stream)
-        - [Get an exit Stream](#Get-an-exist-stream)
-        - [List streams](#List-streams)
-    - [Stream](#Stream)
-        - [To JSON string](#To-JSON-string)
-        - [Update a Stream](#Update-a-Stream)
-        - [Disable a Stream](#Disable-a-Stream)
-        - [Enable a Stream](#Enable-a-Stream)
-        - [Get Stream status](#Get-Stream-status)
-        - [Generate RTMP publish URL](#Generate-RTMP-publish-URL)
-        - [Generate RTMP live play URLs](#Generate-RTMP-live-play-URLs)
-        - [Generate HLS play URLs](#Generate-HLS-play-URLs)
-        - [Generate Http-Flv live play URLs](#Generate-Http-Flv-live-play-URLs)
-        - [Get Stream segments](#Get-Stream-segments)
-        - [Generate HLS playback URLs](#Generate-HLS-playback-URLs)
-        - [Snapshot Stream](#Snapshot-Stream)
-        - [Save Stream as a file](#Save-Stream-as-a-file)
-        - [Delete a Stream](#Delete-a-stream)
-- [History](#History)
+- [Installation](#installation)
+- [Dependency](#dependency)
+- [Runtime Requirement](#runtime-requirement)
+- [Usage](#usage)
+    - [Configuration](#configuration)
+    - [Client](#client)
+        - [Instantiate a Pili client](#instantiate-a-pili-client)
+        - [Create a new Stream](#create-a-new-stream)
+        - [Get an exit Stream](#get-an-exist-stream)
+        - [List streams](#list-streams)
+    - [Stream](#stream)
+        - [To JSON string](#to-json-string)
+        - [Update a Stream](#update-a-stream)
+        - [Disable a Stream](#disable-a-stream)
+        - [Enable a Stream](#enable-a-stream)
+        - [Get Stream status](#get-stream-status)
+        - [Generate RTMP publish URL](#generate-rtmp-publish-url)
+        - [Generate RTMP live play URLs](#generate-rtmp-live-play-urls)
+        - [Generate HLS play URLs](#generate-hls-play-urls)
+        - [Generate Http-Flv live play URLs](#generate-http-flv-live-play-urls)
+        - [Get Stream segments](#get-stream-segments)
+        - [Generate HLS playback URLs](#generate-hls-playback-urls)
+        - [Snapshot Stream](#snapshot-stream)
+        - [Save Stream as a file](#save-stream-as-a-file)
+        - [Delete a Stream](#delete-a-stream)
+- [History](#history)
 
 ### Installation
 You can download **pili-sdk-java-v1.4.0.jar** file in the **release** folder.
@@ -75,8 +75,8 @@ If you want to run the SDK on JDK 1.6 environment, you can download the compatib
   // Replace with your hub name
   public static final String HUB = "Pili_HubName";
 ```
-
-#### Instantiate a Pili client
+#### Client
+##### Instantiate a Pili client
 ```JAVA
   // Instantiate an Pili client
   Pili client = new Pili(AK, SK, HUB_NAME);
@@ -86,7 +86,7 @@ If you want to run the SDK on JDK 1.6 environment, you can download the compatib
   client.config();
 ```
 
-#### Create a new stream
+##### Create a new stream
 ```JAVA
 // Create a new Stream
   String title           = null;     // optional, auto-generated as default
@@ -140,7 +140,7 @@ or
   }
 ```
 
-#### Get an exist stream
+##### Get an exist stream
 ```JAVA
   String streamId = mStream.getStreamId();
   try {
@@ -181,7 +181,7 @@ or
 }
 ```
 
-#### List streams
+##### List streams
 ```JAVA
   try {
       String marker      = null;      // optional
@@ -219,7 +219,8 @@ or
     e.printStackTrace();
   }
 ```
-#### To JSON string
+#### Stream
+##### To JSON string
 ```JAVA
 String streamJsonString = stream.toJsonString();
 System.out.println("Stream toJSONString()");
@@ -254,7 +255,7 @@ System.out.println(streamJsonString);
      }
  */
 ```
-#### Update a Stream
+##### Update a Stream
 ```JAVA
 // Update a Stream
 String newPublishKey       = "new_secret_words"; // optional
@@ -297,7 +298,8 @@ try {
     e.printStackTrace();
 }
 ```
-#### Disable a Stream
+
+##### Disable a Stream
 ```JAVA
 // Disable a Stream
 try {
@@ -314,7 +316,7 @@ try {
 }
 ```
 
-#### Enable a Stream
+##### Enable a Stream
 ```JAVA
 // Enable a Stream
 try {
@@ -331,7 +333,7 @@ try {
 }
 ```
 
-#### Get Stream status
+##### Get Stream status
 ```JAVA
 // Get Stream status
 try {
@@ -356,7 +358,7 @@ try {
 }
 ```
 
-#### Generate RTMP publish URL
+##### Generate RTMP publish URL
 ```JAVA
 // Generate RTMP publish URL
 try {
@@ -371,7 +373,7 @@ try {
 }
 ```
 
-#### Generate RTMP live play URLs
+##### Generate RTMP live play URLs
 ```JAVA
 // Generate RTMP live play URLs
 String originUrl = stream.rtmpLiveUrls().get(Stream.ORIGIN);
@@ -380,7 +382,7 @@ System.out.println(originUrl);
 // rtmp://ey636h.live1-rtmp.z1.pili.qiniucdn.com/test-hub/55d8113ee3ba5723280000dc
 ```
 
-#### Generate HLS play URLs
+##### Generate HLS play URLs
 ```JAVA
 // Generate HLS play URLs
 String originLiveHlsUrl = stream.hlsLiveUrls().get(Stream.ORIGIN);
@@ -389,7 +391,7 @@ System.out.println(originLiveHlsUrl);
 // http://ey636h.live1-http.z1.pili.qiniucdn.com/test-hub/55d8119ee3ba5723280000dd.m3u8
 ```
 
-#### Generate Http Flv live play URLs
+##### Generate Http Flv live play URLs
 ```JAVA
 // Generate Http-Flv live play URLs
 String originLiveFlvUrl = stream.httpFlvLiveUrls().get(Stream.ORIGIN);
@@ -398,7 +400,7 @@ System.out.println(originLiveFlvUrl);
 // http://ey636h.live1-http.z1.pili.qiniucdn.com/test-hub/55d8119ee3ba5723280000dd.flv
 ```
 
-#### Get Stream segments
+##### Get Stream segments
 ```JAVA
 // Get Stream segments
 long start = 0;    // optional, in second, unix timestamp
@@ -420,7 +422,7 @@ try {
 }
 ```
 
-#### Generate HLS playback URLs
+##### Generate HLS playback URLs
 ```JAVA
 // Generate HLS playback URLs
 long startHlsPlayback     = 1440226094;  // required, in second, unix timestamp
@@ -437,7 +439,7 @@ try {
 }
 ```
 
-#### Snapshot Stream
+##### Snapshot Stream
 ```JAVA
 // Snapshot Stream
 String format    = "jpg";                      // required
@@ -461,7 +463,7 @@ try {
 }
 ```
 
-#### Save Stream as a file
+##### Save Stream as a file
 ```JAVA
 // Save Stream as a file
 String saveAsFormat    = "mp4";                            // required
@@ -486,7 +488,7 @@ try {
 }
 ```
 
-#### Delete a stream
+##### Delete a stream
 ```JAVA
 // Delete a Stream
 try {
@@ -501,23 +503,23 @@ try {
 ```
 
 ##History
-* 1.4.0
-- Update client functions
-  - client.createStream()
-  - client.getStream()
-  - client.listStreams()
-- Add Stream operations
-  - stream.toJsonString()
-  - stream.update()
-  - stream.disable()
-  - stream.enable()
-  - stream.status()
-  - stream.segments()
-  - stream.rtmpPublishUrl()
-  - stream.rtmpLiveUrls()
-  - stream.hlsLiveUrls()
-  - stream.httpFlvLiveUrls()
-  - stream.hlsPlaybackUrls()
-  - stream.snapshot()
-  - stream.saveAs()
-  - stream.delete()
+- 1.4.0
+  - Update client functions
+    - client.createStream()
+    - client.getStream()
+    - client.listStreams()
+  - Add Stream operations
+    - stream.toJsonString()
+    - stream.update()
+    - stream.disable()
+    - stream.enable()
+    - stream.status()
+    - stream.segments()
+    - stream.rtmpPublishUrl()
+    - stream.rtmpLiveUrls()
+    - stream.hlsLiveUrls()
+    - stream.httpFlvLiveUrls()
+    - stream.hlsPlaybackUrls()
+    - stream.snapshot()
+    - stream.saveAs()
+    - stream.delete()
