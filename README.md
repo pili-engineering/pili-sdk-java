@@ -87,9 +87,9 @@ If you want to run the SDK on JDK 1.6 environment, you can download the compatib
 #### Hub
 ##### Instantiate a Pili Hub object
 ```JAVA
-    // Instantiate an Hub object
-    Credentials credentials = new Credentials(new MacKeys(AK, SK)); // Credentials Object
-    Hub hub = new Hub(credentials, HUB_NAME);
+  // Instantiate an Hub object
+  Credentials credentials = new Credentials(new MacKeys(AK, SK)); // Credentials Object
+  Hub hub = new Hub(credentials, HUB_NAME);
 ```
 
 ##### Create a new stream
