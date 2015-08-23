@@ -1,4 +1,4 @@
-package com.pili;
+package com.qiniu;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
@@ -11,33 +11,20 @@ import javax.crypto.spec.SecretKeySpec;
 import common.Config;
 import common.UrlSafeBase64;
 
-public class Auth {
+public class Credentials {
     private static final String DIGEST_AUTH_PREFIX = "Qiniu";
     private SecretKeySpec mSkSpec;
-    private MacKeys mMacKeys;
-    public static class MacKeys {
-        private String accessKey;
-        private String secretKey;
-        
-        public MacKeys(String ak, String sk) {
-            if (ak == null || sk == null) {
-                throw new IllegalArgumentException("Invalid accessKey or secretKey!!");
-            }
-            accessKey = ak;
-            secretKey = sk;
-        }
-    }
+    private String mAccessKey;
+    private String mSecretKey;
 
-    private Auth() {
-    }
-
-    public Auth(MacKeys macKeys) {
-        if (macKeys == null) {
-            throw new NullPointerException("Invalid macKeys:" + macKeys);
+    public Credentials(String ak, String sk) {
+        if (ak == null || sk == null) {
+            throw new IllegalArgumentException("Invalid accessKey or secretKey!!");
         }
-        mMacKeys = macKeys;
+        mAccessKey = ak;
+        mSecretKey = sk;
         try {
-            mSkSpec = new SecretKeySpec(mMacKeys.secretKey.getBytes(Config.UTF8), "HmacSHA1");
+            mSkSpec = new SecretKeySpec(mSecretKey.getBytes(Config.UTF8), "HmacSHA1");
         } catch (UnsupportedEncodingException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -72,7 +59,7 @@ public class Auth {
                 !"application/octet-stream".equals(contentType)) {
             sb.append(new String(body));
         }
-        return String.format("%s %s:%s", DIGEST_AUTH_PREFIX, mMacKeys.accessKey, signData(sb.toString()));
+        return String.format("%s %s:%s", DIGEST_AUTH_PREFIX, mAccessKey, signData(sb.toString()));
     }
 
     private static byte[] digest(String secret, String data) throws SignatureException {

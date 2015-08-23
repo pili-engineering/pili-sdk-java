@@ -11,11 +11,12 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
+import com.qiniu.Credentials;
 
 public class Stream {
     public static final String ORIGIN = "ORIGIN";
     private String mStreamJsonStr;
-    private Auth mAuth;
+    private Credentials mCredentials;
 
     private String id;
     private String createdAt;       // Time ISO 8601
@@ -27,10 +28,12 @@ public class Stream {
     private boolean disabled;
     private String[] profiles;
     private String publishRtmpHost;
-    private String playHlsHost;
-    private String playRtmpHost;
+    private String liveRtmpHost;
+    private String liveHttpHost;
+    private String playbackHttpHost;
 
     public Stream(JsonObject jsonObj) {
+//        System.out.println("Stream:" + jsonObj.toString());
         id = jsonObj.get("id").getAsString();
         hub = jsonObj.get("hub").getAsString();
         createdAt = jsonObj.get("createdAt").getAsString();
@@ -45,18 +48,26 @@ public class Stream {
 
         JsonObject hosts = jsonObj.getAsJsonObject("hosts");
         JsonObject publish = hosts.getAsJsonObject("publish");
-        JsonObject play = hosts.getAsJsonObject("play");
+        JsonObject live = hosts.getAsJsonObject("live");
+        JsonObject playback = hosts.getAsJsonObject("playback");
 
-        publishRtmpHost = publish.get("rtmp").getAsString();
-        playHlsHost = play.get("hls").getAsString();
-        playRtmpHost = play.get("rtmp").getAsString();
+        if (publish != null) {
+            publishRtmpHost = publish.get("rtmp").getAsString();
+        }
+        if (live != null) {
+            liveRtmpHost = live.get("rtmp").getAsString();
+            liveHttpHost = live.get("http").getAsString();
+        }
+        if (playback != null) {
+            playbackHttpHost = playback.get("http").getAsString();
+        }
 
         mStreamJsonStr = jsonObj.toString();
     }
 
-    public Stream(JsonObject jsonObject, Auth auth) {
+    public Stream(JsonObject jsonObject, Credentials credentials) {
         this(jsonObject);
-        mAuth = auth;
+        mCredentials = credentials;
     }
 
     public String[] getProfiles() {
@@ -65,11 +76,14 @@ public class Stream {
     public String getPublishRtmpHost() {
         return publishRtmpHost;
     }
-    public String getPlayHlsHost() {
-        return playHlsHost;
+    public String getLiveRtmpHost() {
+        return liveRtmpHost;
     }
-    public String getPlayRtmpHost() {
-        return playRtmpHost;
+    public String getLiveHttpHost() {
+        return liveHttpHost;
+    }
+    public String getPlaybackHttpHost() {
+        return playbackHttpHost;
     }
     public String getStreamId() {
         return id;
@@ -116,11 +130,13 @@ public class Stream {
         private String url;
         private String targetUrl;
         private String persistentId;
+        private String mJsonString;
 
         public SaveAsResponse(JsonObject jsonObj) {
             url = jsonObj.get("url").getAsString();
             targetUrl = jsonObj.get("targetUrl").getAsString();
             persistentId = jsonObj.get("persistentId").getAsString();
+            mJsonString = jsonObj.toString();
         }
 
         public String getUrl() {
@@ -131,6 +147,55 @@ public class Stream {
         }
         public String getPersistentId() {
             return persistentId;
+        }
+        
+        @Override
+        public String toString() {
+            return mJsonString;
+        }
+    }
+
+    public static class SnapshotResponse {
+        private String targetUrl;
+        private String persistentId;
+        private String mJsonString;
+        public SnapshotResponse(JsonObject jsonObj) {
+            targetUrl = jsonObj.get("targetUrl").getAsString();
+            persistentId = jsonObj.get("persistentId").getAsString();
+            mJsonString = jsonObj.toString();
+        }
+        
+        public String getTargetUrl() {
+            return targetUrl;
+        }
+        public String getPersistentId() {
+            return persistentId;
+        }
+        
+        @Override
+        public String toString() {
+            return mJsonString;
+        }
+    }
+
+    public static class FramesPerSecond {
+        private float audio;
+        private float video;
+        private float data;
+        public FramesPerSecond(float audio, float video, float data) {
+            this.audio = audio;
+            this.video = video;
+            this.data = data;
+        }
+        
+        public float getAudio() {
+            return audio;
+        }
+        public float getVideo() {
+            return video;
+        }
+        public float getData() {
+            return data;
         }
     }
 
@@ -155,9 +220,24 @@ public class Stream {
     public static class Status {
         private String addr;
         private String status;
+        private float bytesPerSecond;
+        private FramesPerSecond framesPerSecond;
+        private String mJsonString;
         public Status(JsonObject jsonObj) {
             addr = jsonObj.get("addr").getAsString();
             status = jsonObj.get("status").getAsString();
+            try {
+                bytesPerSecond = jsonObj.get("bytesPerSecond").getAsFloat();
+                
+                JsonObject framesPerSecondJsonObj = jsonObj.getAsJsonObject("framesPerSecond");
+                float audio = framesPerSecondJsonObj.get("audio").getAsFloat();
+                float video = framesPerSecondJsonObj.get("video").getAsFloat();
+                float data = framesPerSecondJsonObj.get("data").getAsFloat();
+                framesPerSecond = new FramesPerSecond(audio, video, data);
+            } catch (NullPointerException e) {
+                e.printStackTrace();
+            }
+            mJsonString = jsonObj.toString();
         }
         public String getAddr() {
             return addr;
@@ -165,12 +245,23 @@ public class Stream {
         public String getStatus() {
             return status;
         }
+        public float getBytesPerSecond() {
+            return bytesPerSecond;
+        }
+        public FramesPerSecond getFramesPerSecond() {
+            return framesPerSecond;
+        }
+        
+        @Override
+        public String toString() {
+            return mJsonString;
+        }
     }
 
     public static class StreamList {
         private String marker;
         private List<Stream> itemList;
-        public StreamList(JsonObject jsonObj, Auth auth) {
+        public StreamList(JsonObject jsonObj, Credentials auth) {
             this.marker = jsonObj.get("marker").getAsString();
 
             try {
@@ -195,35 +286,44 @@ public class Stream {
     }
 
     public Stream update(String publishKey, String publishSecrity, boolean disabled) throws PiliException {
-        return API.updateStream(mAuth, this.id, publishKey, publishSecrity, disabled);
+        return API.updateStream(mCredentials, this.id, publishKey, publishSecrity, disabled);
     }
 
     public SegmentList segments() throws PiliException {
-        return API.getStreamSegments(mAuth, this.id, 0, 0);
+        return API.getStreamSegments(mCredentials, this.id, 0, 0, 0);
     }
 
     public SegmentList segments(long start, long end) throws PiliException {
-        return API.getStreamSegments(mAuth, this.id, start, end);
+        return API.getStreamSegments(mCredentials, this.id, start, end, 0);
+    }
+
+    public SegmentList segments(long start, long end, int limit) throws PiliException {
+        return API.getStreamSegments(mCredentials, this.id, start, end, limit);
     }
 
     public Status status() throws PiliException {
-        return API.getStreamStatus(mAuth, this.id);
+        return API.getStreamStatus(mCredentials, this.id);
     }
 
     public String rtmpPublishUrl() throws PiliException {
-        return API.publishUrl(this.publishRtmpHost, this.id, this.publishKey, this.publishSecurity, 0);
+        return API.publishUrl(this, 0);
     }
     public Map<String, String> rtmpLiveUrls() {
-        return API.rtmpLiveUrl(this.playRtmpHost, this.id, this.profiles);
+        return API.rtmpLiveUrl(this);
     }
     public Map<String, String> hlsLiveUrls() {
-        return API.hlsLiveUrl(this.playHlsHost, this.id, this.profiles);
+        return API.hlsLiveUrl(this);
     }
     public Map<String, String> hlsPlaybackUrls(long start, long end) throws PiliException {
-        return API.hlsPlaybackUrl(this.playHlsHost,  this.id, start, end,  this.profiles);
+        return API.hlsPlaybackUrl(this, start, end);
     }
+
+    public Map<String, String> httpFlvLiveUrls() {
+        return API.httpFlvLiveUrl(this);
+    }
+
     public String delete() throws PiliException {
-        return API.deleteStream(mAuth, this.id);
+        return API.deleteStream(mCredentials, this.id);
     }
 
     public String toJsonString() {
@@ -231,10 +331,24 @@ public class Stream {
     }
 
     public SaveAsResponse saveAs(String fileName, String format, long startTime, long endTime, String notifyUrl) throws PiliException {
-        return API.saveAs(mAuth, this.id, fileName, format, startTime, endTime, notifyUrl);
+        return API.saveAs(mCredentials, this.id, fileName, format, startTime, endTime, notifyUrl);
     }
     public SaveAsResponse saveAs(String fileName, String format, long startTime, long endTime) throws PiliException {
         return saveAs(fileName, format, startTime, endTime, null);
+    }
+
+    public SnapshotResponse snapshot(String name, String format) throws PiliException {
+        return API.snapshot(mCredentials, this.id, name, format, 0, null);
+    }
+    public SnapshotResponse snapshot(String name, String format, long time, String notifyUrl) throws PiliException {
+        return API.snapshot(mCredentials, this.id, name, format, time, notifyUrl);
+    }
+
+    public Stream enable() throws PiliException {
+        return API.updateStream(mCredentials, this.id, null, null, false);
+    }
+    public Stream disable() throws PiliException {
+        return API.updateStream(mCredentials, this.id, null, null, true);
     }
 }
 
