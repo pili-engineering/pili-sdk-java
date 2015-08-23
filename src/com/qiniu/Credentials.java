@@ -1,4 +1,4 @@
-package com.pili;
+package com.qiniu;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
@@ -11,7 +11,7 @@ import javax.crypto.spec.SecretKeySpec;
 import common.Config;
 import common.UrlSafeBase64;
 
-public class Auth {
+public class Credentials {
     private static final String DIGEST_AUTH_PREFIX = "Qiniu";
     private SecretKeySpec mSkSpec;
     private MacKeys mMacKeys;
@@ -28,10 +28,10 @@ public class Auth {
         }
     }
 
-    private Auth() {
+    private Credentials() {
     }
 
-    public Auth(MacKeys macKeys) {
+    public Credentials(MacKeys macKeys) {
         if (macKeys == null) {
             throw new NullPointerException("Invalid macKeys:" + macKeys);
         }
