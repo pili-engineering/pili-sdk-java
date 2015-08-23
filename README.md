@@ -18,21 +18,21 @@
     - [x] stream.httpFlvLiveUrls()
     - [x] stream.segments()
     - [x] stream.hlsPlaybackUrls()
-    - [x] stream.snapshot()
     - [x] stream.saveAs()
+    - [x] stream.snapshot()
     - [x] stream.delete()
 
 ## Contents
 - [Installation](#installation)
-- [Dependency](#dependency)
-- [Runtime Requirement](#runtime-requirement)
+- [Dependencies](#dependencies)
+- [Runtime Requirements](#runtime-requirements)
 - [Usage](#usage)
     - [Configuration](#configuration)
     - [Hub](#hub)
         - [Instantiate a Pili Hub object](#instantiate-a-pili-hub-object)
         - [Create a new Stream](#create-a-new-stream)
         - [Get an exit Stream](#get-an-exist-stream)
-        - [List streams](#list-streams)
+        - [List Streams](#list-streams)
     - [Stream](#stream)
         - [To JSON string](#to-json-string)
         - [Update a Stream](#update-a-stream)
@@ -41,39 +41,44 @@
         - [Get Stream status](#get-stream-status)
         - [Generate RTMP publish URL](#generate-rtmp-publish-url)
         - [Generate RTMP live play URLs](#generate-rtmp-live-play-urls)
-        - [Generate HLS play URLs](#generate-hls-play-urls)
+        - [Generate HLS live play URLs](#generate-hls-play-urls)
         - [Generate Http-Flv live play URLs](#generate-http-flv-live-play-urls)
         - [Get Stream segments](#get-stream-segments)
         - [Generate HLS playback URLs](#generate-hls-playback-urls)
-        - [Snapshot Stream](#snapshot-stream)
         - [Save Stream as a file](#save-stream-as-a-file)
+        - [Snapshot Stream](#snapshot-stream)
         - [Delete a Stream](#delete-a-stream)
 - [History](#history)
 
 ### Installation
+
 You can download **pili-sdk-java-v1.5.0.jar** file in the **release** folder.
 
-### Dependency
+### Dependencies
+
 You also need [okhttp][1], [okio][2], [Gson][3]
 
 [1]: http://square.github.io/okhttp/
 [2]: https://github.com/square/okio
 [3]: https://code.google.com/p/google-gson/downloads/detail?name=google-gson-2.2.4-release.zip&
 
-### Runtime Requirement
+### Runtime Requirements
+
 For Java, the minimum requirement is 1.7.
 
 If you want to run the SDK on JDK 1.6 environment, you can download the compatible jar of  [okhttp](https://raw.githubusercontent.com/qiniu/java-sdk/master/libs/okhttp-2.3.0-SNAPSHOT.jar) and [okio](https://raw.githubusercontent.com/qiniu/java-sdk/master/libs/okio-1.3.0-SNAPSHOT.jar).
 
 ### Usage
+
 #### Configuration
+
 ```JAVA
   // Replace with your keys
   public static final String ACCESS_KEY = "Qiniu_AccessKey";
   public static final String SECRET_KEY = "Qiniu_SecretKey";
   
   // Replace with your hub name
-  public static final String HUB = "Pili_HubName";
+  public static final String HUB = "Pili_Hub_Name"; // The Hub must be exists before use
   
   // Change API host as necessary
   //
@@ -84,15 +89,18 @@ If you want to run the SDK on JDK 1.6 environment, you can download the compatib
     Configuration.getInstance().setAPIHost("pili-lte.qiniuapi.com");
   }
 ```
+
 #### Hub
+
 ##### Instantiate a Pili Hub object
 ```JAVA
   // Instantiate an Hub object
-  Credentials credentials = new Credentials(new MacKeys(AK, SK)); // Credentials Object
-  Hub hub = new Hub(credentials, HUB_NAME);
+  Credentials credentials = new Credentials(new MacKeys(ACCESS_KEY, SECRET_KEY)); // Credentials Object
+  Hub hub = new Hub(credentials, HUB_NAME); // Hub Object
 ```
 
 ##### Create a new stream
+
 ```JAVA
 // Create a new Stream
   String title           = null;     // optional, auto-generated as default
@@ -101,7 +109,7 @@ If you want to run the SDK on JDK 1.6 environment, you can download the compatib
   Stream stream = null;
   try {
       stream = hub.createStream(title, publishKey, publishSecurity);
-      System.out.println("Client createStream:");
+      System.out.println("hub.createStream:");
       System.out.println(stream.toJsonString());
       /*
       {
@@ -122,11 +130,7 @@ If you want to run the SDK on JDK 1.6 environment, you can download the compatib
                    "rtmp":"ey636h.live1-rtmp.z1.pili.qiniucdn.com"
                },
                "playback":{
-                   "http":"ey636h.hls.z1.pili.qiniucdn.com"
-               },
-               "play":{
-                   "hls":"ey636h.live1-http.z1.pili.qiniucdn.com",
-                   "rtmp":"ey636h.live1-rtmp.z1.pili.qiniucdn.com"
+                   "http":"ey636h.playback1.z1.pili.qiniucdn.com"
                }
            }
        }
@@ -146,12 +150,13 @@ or
   }
 ```
 
-##### Get an exist stream
+##### Get an exist Stream
+
 ```JAVA
-  String streamId = mStream.getStreamId();
+  String streamId = stream.getStreamId();
   try {
-    stream = client.getStream(streamId);
-    System.out.println("Client getStream:");
+    stream = hub.getStream(streamId);
+    System.out.println("hub.getStream:");
     System.out.println(stream.toJsonString());
     /*
     {
@@ -172,11 +177,7 @@ or
                  "rtmp":"ey636h.live1-rtmp.z1.pili.qiniucdn.com"
              },
              "playback":{
-                 "http":"ey636h.hls.z1.pili.qiniucdn.com"
-             },
-             "play":{
-                 "hls":"ey636h.live1-http.z1.pili.qiniucdn.com",
-                 "rtmp":"ey636h.live1-rtmp.z1.pili.qiniucdn.com"
+                 "http":"ey636h.playback1.z1.pili.qiniucdn.com"
              }
          }
      }
@@ -187,15 +188,16 @@ or
 }
 ```
 
-##### List streams
+##### List Streams
+
 ```JAVA
   try {
       String marker      = null;      // optional
       long limit         = 0;         // optional
       String titlePrefix = null;      // optional
 
-      StreamList streamList = client.listStreams(marker, limit, titlePrefix);
-      System.out.println("Client listStreams()");
+      StreamList streamList = hub.listStreams(marker, limit, titlePrefix);
+      System.out.println("hub.listStreams()");
       System.out.println("marker:" + streamList.getMarker());
       List<Stream> list = streamList.getStreams();
       for (Stream s : list) {
@@ -215,7 +217,7 @@ or
 
 ```JAVA
   try {
-    StreamList list = mPili.listStreams();
+    StreamList list = hub.listStreams();
     if (list != null) {
         for (Stream stream : list.getStreams()) {
             printStream(stream);
@@ -226,7 +228,9 @@ or
   }
 ```
 #### Stream
+
 ##### To JSON string
+
 ```JAVA
 String streamJsonString = stream.toJsonString();
 System.out.println("Stream toJSONString()");
@@ -251,17 +255,14 @@ System.out.println(streamJsonString);
                  "rtmp":"ey636h.live1-rtmp.z1.pili.qiniucdn.com"
              },
              "playback":{
-                 "http":"ey636h.hls.z1.pili.qiniucdn.com"
-             },
-             "play":{
-                 "hls":"ey636h.live1-http.z1.pili.qiniucdn.com",
-                 "rtmp":"ey636h.live1-rtmp.z1.pili.qiniucdn.com"
+                 "http":"ey636h.playback1.z1.pili.qiniucdn.com"
              }
          }
      }
  */
 ```
 ##### Update a Stream
+
 ```JAVA
 // Update a Stream
 String newPublishKey       = "new_secret_words"; // optional
@@ -291,10 +292,6 @@ try {
              },
              "playback":{
                  "http":"ey636h.hls.z1.pili.qiniucdn.com"
-             },
-             "play":{
-                 "hls":"ey636h.live1-http.z1.pili.qiniucdn.com",
-                 "rtmp":"ey636h.live1-rtmp.z1.pili.qiniucdn.com"
              }
          }
      }
@@ -306,6 +303,7 @@ try {
 ```
 
 ##### Disable a Stream
+
 ```JAVA
 // Disable a Stream
 try {
@@ -323,6 +321,7 @@ try {
 ```
 
 ##### Enable a Stream
+
 ```JAVA
 // Enable a Stream
 try {
@@ -340,6 +339,7 @@ try {
 ```
 
 ##### Get Stream status
+
 ```JAVA
 // Get Stream status
 try {
@@ -349,12 +349,12 @@ try {
     /*
     {
         "addr":"222.73.202.226:2572",
-        "status":"disconnected",
-        "bytesPerSecond":0,
+        "status":"connected",
+        "bytesPerSecond":16870.200000000001,
         "framesPerSecond":{
-            "audio":0,
-            "video":0,
-            "data":0
+            "audio":42.200000000000003,
+            "video":14.733333333333333,
+            "data":0.066666666666666666
          }
      }
     */
@@ -365,6 +365,7 @@ try {
 ```
 
 ##### Generate RTMP publish URL
+
 ```JAVA
 // Generate RTMP publish URL
 try {
@@ -380,6 +381,7 @@ try {
 ```
 
 ##### Generate RTMP live play URLs
+
 ```JAVA
 // Generate RTMP live play URLs
 String originUrl = stream.rtmpLiveUrls().get(Stream.ORIGIN);
@@ -388,7 +390,8 @@ System.out.println(originUrl);
 // rtmp://ey636h.live1-rtmp.z1.pili.qiniucdn.com/test-hub/55d8113ee3ba5723280000dc
 ```
 
-##### Generate HLS play URLs
+##### Generate HLS live play URLs
+
 ```JAVA
 // Generate HLS play URLs
 String originLiveHlsUrl = stream.hlsLiveUrls().get(Stream.ORIGIN);
@@ -398,6 +401,7 @@ System.out.println(originLiveHlsUrl);
 ```
 
 ##### Generate Http Flv live play URLs
+
 ```JAVA
 // Generate Http-Flv live play URLs
 String originLiveFlvUrl = stream.httpFlvLiveUrls().get(Stream.ORIGIN);
@@ -407,6 +411,7 @@ System.out.println(originLiveFlvUrl);
 ```
 
 ##### Get Stream segments
+
 ```JAVA
 // Get Stream segments
 long start = 0;    // optional, in second, unix timestamp
@@ -429,6 +434,7 @@ try {
 ```
 
 ##### Generate HLS playback URLs
+
 ```JAVA
 // Generate HLS playback URLs
 long startHlsPlayback     = 1440315411;  // required, in second, unix timestamp
@@ -445,13 +451,44 @@ try {
 }
 ```
 
+##### Save Stream as a file
+
+```JAVA
+// Save Stream as a file
+String saveAsFormat    = "mp4";                            // required
+String saveAsName      = "videoName" + "." + saveAsFormat; // required
+long saveAsStart       = 1440315411;                       // required, in second, unix timestamp
+long saveAsEnd         = 1440315435;                       // required, in second, unix timestamp
+String saveAsNotifyUrl = null;                             // optional
+try {
+    SaveAsResponse response = stream.saveAs(saveAsName, saveAsFormat, saveAsStart, saveAsEnd, saveAsNotifyUrl);
+    System.out.println("Stream saveAs()");
+    System.out.println(response.toString());
+    /*
+     {
+         "url":"http://ey636h.vod1.z1.pili.qiniucdn.com/recordings/z1.test-hub.55d81a72e3ba5723280000ec/videoName.m3u8",
+         "targetUrl":"http://ey636h.vod1.z1.pili.qiniucdn.com/recordings/z1.test-hub.55d81a72e3ba5723280000ec/videoName.mp4",
+         "persistentId":"z1.55d81c6c7823de5a49ad77b3"
+     }
+    */
+} catch (PiliException e) {
+    // TODO Auto-generated catch block
+    e.printStackTrace();
+}
+```
+
+While invoking `saveAs()` and `snapshot()`, you can get processing state via Qiniu fop service using `persistentId`.   
+API: `curl -D GET http://api.qiniu.com/status/get/prefop?id={persistentId}`  
+Doc reference: <http://developer.qiniu.com/docs/v6/api/overview/fop/persistent-fop.html#pfop-status>  
+
 ##### Snapshot Stream
+
 ```JAVA
 // Snapshot Stream
 String format    = "jpg";                      // required
 String name      = "imageName" + "." + format; // required
-long time        = 1440315411;  // optional, in second, unix timestamp
-String notifyUrl = null;        // optional
+long time        = 1440315411;                 // optional, in second, unix timestamp
+String notifyUrl = null;                       // optional
 
 try {
     SnapshotResponse response = stream.snapshot(name, format, time, notifyUrl);
@@ -459,7 +496,7 @@ try {
     System.out.println(response.toString());
     /*
      {
-         "targetUrl":"http://ey636h.ts1.z1.pili.qiniucdn.com/snapshots/z1.test-hub.55d81a72e3ba5723280000ec/imageName.jpg",
+         "targetUrl":"http://ey636h.static1.z1.pili.qiniucdn.com/snapshots/z1.test-hub.55d81a72e3ba5723280000ec/imageName.jpg",
          "persistentId":"z1.55d81c247823de5a49ad729c"
      }
      */
@@ -469,35 +506,8 @@ try {
 }
 ```
 
-##### Save Stream as a file
-```JAVA
-// Save Stream as a file
-String saveAsFormat    = "mp4";                            // required
-String saveAsName      = "videoName" + "." + saveAsFormat; // required
-long saveAsStart       = 1440315411;  // required, in second, unix timestamp
-long saveAsEnd         = 1440315435;  // required, in second, unix timestamp
-String saveAsNotifyUrl = null;        // optional
-try {
-    SaveAsResponse response = stream.saveAs(saveAsName, saveAsFormat, saveAsStart, saveAsEnd, saveAsNotifyUrl);
-    System.out.println("Stream saveAs()");
-    System.out.println(response.toString());
-    /*
-     {
-         "url":"http://ey636h.ts1.z1.pili.qiniucdn.com/recordings/z1.test-hub.55d81a72e3ba5723280000ec/videoName.m3u8",
-         "targetUrl":"http://ey636h.ts1.z1.pili.qiniucdn.com/recordings/z1.test-hub.55d81a72e3ba5723280000ec/videoName.mp4",
-         "persistentId":"z1.55d81c6c7823de5a49ad77b3"
-     }
-    */
-} catch (PiliException e) {
-    // TODO Auto-generated catch block
-    e.printStackTrace();
-}
-```
-> While invoking `saveAs` and `snapshot`, you can get processing state via Qiniu fop service using persistentId. </p>
-> API: `curl -D GET http://api.qiniu.com/status/get/prefop?id=<persistentId>`  </p>
-> Doc reference: `http://developer.qiniu.com/docs/v6/api/overview/fop/persistent-fop.html#pfop-status`
-
 ##### Delete a stream
+
 ```JAVA
 // Delete a Stream
 try {

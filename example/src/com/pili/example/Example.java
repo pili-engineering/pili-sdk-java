@@ -16,11 +16,11 @@ import com.qiniu.Credentials;
 
 public class Example {
     // Replace with your keys here
-    private static final String AK = "Qiniu_AccessKey";
-    private static final String SK = "Qiniu_SecretKey";
+    private static final String ACCESS_KEY = "Qiniu_AccessKey";
+    private static final String SECRET_KEY = "Qiniu_SecretKey";
 
     // Replace with your hub name
-    private static final String HUB_NAME = "Pili_HubName";
+    private static final String HUB_NAME = "Pili_Hub_Name";
 
     // Change API host as necessary
     //
@@ -37,7 +37,7 @@ public class Example {
         //////////////////////////////////////////////////////////////////////////////////////////
 
         // Instantiate an Hub object
-        Credentials credentials = new Credentials(AK, SK); // Credentials Object
+        Credentials credentials = new Credentials(ACCESS_KEY, SECRET_KEY); // Credentials Object
         Hub hub = new Hub(credentials, HUB_NAME);
 
         // Create a new Stream
@@ -47,7 +47,7 @@ public class Example {
         Stream stream = null;
         try {
             stream = hub.createStream(title, publishKey, publishSecurity);
-            System.out.println("Client createStream:");
+            System.out.println("hub.createStream:");
             System.out.println(stream.toJsonString());
             /*
             {
@@ -61,18 +61,14 @@ public class Example {
                 "publishSecurity":"dynamic",
                 "hosts":{
                     "publish":{
-                        "rtmp":"ey636h.pub.z1.pili.qiniup.com"
+                        "rtmp":"ey636h.publish.z1.pili.qiniup.com"
                      },
                      "live":{
                          "http":"ey636h.live1-http.z1.pili.qiniucdn.com",
                          "rtmp":"ey636h.live1-rtmp.z1.pili.qiniucdn.com"
                      },
                      "playback":{
-                         "http":"ey636h.hls.z1.pili.qiniucdn.com"
-                     },
-                     "play":{
-                         "hls":"ey636h.live1-http.z1.pili.qiniucdn.com",
-                         "rtmp":"ey636h.live1-rtmp.z1.pili.qiniucdn.com"
+                         "http":"ey636h.playback1.z1.pili.qiniucdn.com"
                      }
                  }
              }
@@ -85,7 +81,7 @@ public class Example {
         // Get Stream
         try {
             stream = hub.getStream(stream.getStreamId());
-            System.out.println("Client getStream:");
+            System.out.println("hub.getStream:");
             System.out.println(stream.toJsonString());
             /*
             {
@@ -99,18 +95,14 @@ public class Example {
                 "publishSecurity":"dynamic",
                 "hosts":{
                     "publish":{
-                        "rtmp":"ey636h.pub.z1.pili.qiniup.com"
+                        "rtmp":"ey636h.publish.z1.pili.qiniup.com"
                      },
                      "live":{
                          "http":"ey636h.live1-http.z1.pili.qiniucdn.com",
                          "rtmp":"ey636h.live1-rtmp.z1.pili.qiniucdn.com"
                      },
                      "playback":{
-                         "http":"ey636h.hls.z1.pili.qiniucdn.com"
-                     },
-                     "play":{
-                         "hls":"ey636h.live1-http.z1.pili.qiniucdn.com",
-                         "rtmp":"ey636h.live1-rtmp.z1.pili.qiniucdn.com"
+                         "http":"ey636h.playback1.z1.pili.qiniucdn.com"
                      }
                  }
              }
@@ -127,7 +119,7 @@ public class Example {
             String titlePrefix = null;      // optional
 
             StreamList streamList = hub.listStreams(marker, limit, titlePrefix);
-            System.out.println("Client listStreams()");
+            System.out.println("hub.listStreams()");
             System.out.println("marker:" + streamList.getMarker());
             List<Stream> list = streamList.getStreams();
             for (Stream s : list) {
@@ -165,18 +157,14 @@ public class Example {
                 "publishSecurity":"dynamic",
                 "hosts":{
                     "publish":{
-                        "rtmp":"ey636h.pub.z1.pili.qiniup.com"
+                        "rtmp":"ey636h.publish.z1.pili.qiniup.com"
                      },
                      "live":{
                          "http":"ey636h.live1-http.z1.pili.qiniucdn.com",
                          "rtmp":"ey636h.live1-rtmp.z1.pili.qiniucdn.com"
                      },
                      "playback":{
-                         "http":"ey636h.hls.z1.pili.qiniucdn.com"
-                     },
-                     "play":{
-                         "hls":"ey636h.live1-http.z1.pili.qiniucdn.com",
-                         "rtmp":"ey636h.live1-rtmp.z1.pili.qiniucdn.com"
+                         "http":"ey636h.playback1.z1.pili.qiniucdn.com"
                      }
                  }
              }
@@ -203,7 +191,7 @@ public class Example {
                 "publishSecurity":"static",
                 "hosts":{
                     "publish":{
-                        "rtmp":"ey636h.pub.z1.pili.qiniup.com"
+                        "rtmp":"ey636h.publish.z1.pili.qiniup.com"
                      },
                      "live":{
                          "http":"ey636h.live1-http.z1.pili.qiniucdn.com",
@@ -211,10 +199,6 @@ public class Example {
                      },
                      "playback":{
                          "http":"ey636h.hls.z1.pili.qiniucdn.com"
-                     },
-                     "play":{
-                         "hls":"ey636h.live1-http.z1.pili.qiniucdn.com",
-                         "rtmp":"ey636h.live1-rtmp.z1.pili.qiniucdn.com"
                      }
                  }
              }
@@ -279,7 +263,7 @@ public class Example {
             String publishUrl = stream.rtmpPublishUrl();
             System.out.println("Stream rtmpPublishUrl()");
             System.out.println(publishUrl);
-            // rtmp://ey636h.pub.z0.pili.qiniup.com/test-hub/55d810aae3ba5723280000db?nonce=1440223404&token=hIVJje0ZOX9hp7yPIvGBmJ_6Qxo=
+            // rtmp://ey636h.publish.z1.pili.qiniup.com/test-hub/55d810aae3ba5723280000db?nonce=1440223404&token=hIVJje0ZOX9hp7yPIvGBmJ_6Qxo=
              
         } catch (PiliException e) {
             // TODO Auto-generated catch block
@@ -340,8 +324,8 @@ public class Example {
         // Snapshot Stream
         String format    = "jpg";                      // required
         String name      = "imageName" + "." + format; // required
-        long time        = 1440315411;  // optional, in second, unix timestamp
-        String notifyUrl = null;        // optional
+        long time        = 1440315411;                 // optional, in second, unix timestamp
+        String notifyUrl = null;                       // optional
         
         try {
             SnapshotResponse response = stream.snapshot(name, format, time, notifyUrl);
@@ -349,8 +333,8 @@ public class Example {
             System.out.println(response.toString());
             /*
              {
-                 "targetUrl":"http://ey636h.ts1.z0.pili.qiniucdn.com/snapshots/z0.test-hub.55d81a72e3ba5723280000ec/imageName.jpg",
-                 "persistentId":"z0.55d81c247823de5a49ad729c"
+                 "targetUrl":"http://ey636h.static1.z0.pili.qiniucdn.com/snapshots/z1.test-hub.55d81a72e3ba5723280000ec/imageName.jpg",
+                 "persistentId":"z1.55d81c247823de5a49ad729c"
              }
              */
         } catch (PiliException e) {
@@ -361,18 +345,18 @@ public class Example {
         // Save Stream as a file
         String saveAsFormat    = "mp4";                            // required
         String saveAsName      = "videoName" + "." + saveAsFormat; // required
-        long saveAsStart       = 1440315411;  // required, in second, unix timestamp
-        long saveAsEnd         = 1440315435;  // required, in second, unix timestamp
-        String saveAsNotifyUrl = null;        // optional
+        long saveAsStart       = 1440315411;                       // required, in second, unix timestamp
+        long saveAsEnd         = 1440315435;                       // required, in second, unix timestamp
+        String saveAsNotifyUrl = null;                             // optional
         try {
             SaveAsResponse response = stream.saveAs(saveAsName, saveAsFormat, saveAsStart, saveAsEnd, saveAsNotifyUrl);
             System.out.println("Stream saveAs()");
             System.out.println(response.toString());
             /*
              {
-                 "url":"http://ey636h.ts1.z0.pili.qiniucdn.com/recordings/z0.test-hub.55d81a72e3ba5723280000ec/videoName.m3u8",
-                 "targetUrl":"http://ey636h.ts1.z0.pili.qiniucdn.com/recordings/z0.test-hub.55d81a72e3ba5723280000ec/videoName.mp4",
-                 "persistentId":"z0.55d81c6c7823de5a49ad77b3"
+                 "url":"http://ey636h.vod1.z1.pili.qiniucdn.com/recordings/z1.test-hub.55d81a72e3ba5723280000ec/videoName.m3u8",
+                 "targetUrl":"http://ey636h.vod1.z1.pili.qiniucdn.com/recordings/z1.test-hub.55d81a72e3ba5723280000ec/videoName.mp4",
+                 "persistentId":"z1.55d81c6c7823de5a49ad77b3"
              }
             */
         } catch (PiliException e) {
