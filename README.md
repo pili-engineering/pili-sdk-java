@@ -88,7 +88,7 @@ If you want to run the SDK on JDK 1.6 environment, you can download the compatib
 ##### Instantiate a Pili Hub object
 ```JAVA
   // Instantiate an Hub object
-  Credentials credentials = new Credentials(new MacKeys(AK, SK)); // Credentials Object
+  Credentials credentials = new Credentials(ACCESS_KEY, SECRET_KEY); // Credentials Object
   Hub hub = new Hub(credentials, HUB_NAME);
 ```
 
@@ -98,7 +98,7 @@ If you want to run the SDK on JDK 1.6 environment, you can download the compatib
   String title           = null;     // optional, auto-generated as default
   String publishKey      = null;     // optional, auto-generated as default
   String publishSecurity = null;     // optional, can be "dynamic" or "static", "dynamic" as default
-  Stream stream = null;
+  Stream stream          = null;
   try {
       stream = hub.createStream(title, publishKey, publishSecurity);
       System.out.println("Client createStream:");
@@ -271,6 +271,7 @@ try {
     Stream newStream = stream.update(newPublishKey, newPublishSecurity, newDisabled);
     System.out.println("Stream update()");
     System.out.println(newStream.toJsonString());
+    stream = newStream;
     /*
     {
         "id":"z1.test-hub.55d80075e3ba5723280000d2",
