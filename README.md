@@ -74,6 +74,15 @@ If you want to run the SDK on JDK 1.6 environment, you can download the compatib
   
   // Replace with your hub name
   public static final String HUB = "Pili_HubName";
+  
+  // Change API host as necessary
+  //
+  // pili.qiniuapi.com as deafult
+  // pili-lte.qiniuapi.com is the latest RC version
+  //
+  static {
+    Configuration.getInstance().setAPIHost("pili-lte.qiniuapi.com");
+  }
 ```
 #### Hub
 ##### Instantiate a Pili Hub object
@@ -81,13 +90,6 @@ If you want to run the SDK on JDK 1.6 environment, you can download the compatib
     // Instantiate an Hub object
     Credentials credentials = new Credentials(new MacKeys(AK, SK)); // Credentials Object
     Hub hub = new Hub(credentials, HUB_NAME);
-
-    // Change API host as necessary
-    //
-    // pili.qiniuapi.com as deafult
-    // pili-lte.qiniuapi.com is the latest RC version
-    //
-    hub.config(Configuration.KEY_API_HOST, "pili-lte.qiniuapi.com");
 ```
 
 ##### Create a new stream
