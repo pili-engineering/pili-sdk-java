@@ -3,9 +3,9 @@
 ## Features
 
 - Stream Create,Get,List
-    - [x] client.createStream()
-    - [x] client.getStream()
-    - [x] client.listStreams()
+    - [x] hub.createStream()
+    - [x] hub.getStream()
+    - [x] hub.listStreams()
 - Stream operations else
     - [x] stream.toJsonString()
     - [x] stream.update()
@@ -28,8 +28,8 @@
 - [Runtime Requirement](#runtime-requirement)
 - [Usage](#usage)
     - [Configuration](#configuration)
-    - [Client](#client)
-        - [Instantiate a Pili client](#instantiate-a-pili-client)
+    - [Hub](#hub)
+        - [Instantiate a Pili Hub object](#instantiate-a-pili-hub-object)
         - [Create a new Stream](#create-a-new-stream)
         - [Get an exit Stream](#get-an-exist-stream)
         - [List streams](#list-streams)
@@ -51,7 +51,7 @@
 - [History](#history)
 
 ### Installation
-You can download **pili-sdk-java-v1.4.0.jar** file in the **release** folder.
+You can download **pili-sdk-java-v1.5.0.jar** file in the **release** folder.
 
 ### Dependency
 You also need [okhttp][1], [okio][2], [Gson][3]
@@ -75,15 +75,19 @@ If you want to run the SDK on JDK 1.6 environment, you can download the compatib
   // Replace with your hub name
   public static final String HUB = "Pili_HubName";
 ```
-#### Client
-##### Instantiate a Pili client
+#### Hub
+##### Instantiate a Pili Hub object
 ```JAVA
-  // Instantiate an Pili client
-  Pili client = new Pili(AK, SK, HUB_NAME);
+    // Instantiate an Hub object
+    Credentials credentials = new Credentials(new MacKeys(AK, SK)); // Credentials Object
+    Hub hub = new Hub(credentials, HUB_NAME);
 
-  // Change API host
-  Configuration.getInstance().setString(Configuration.KEY_API_HOST, "pili-lte.qiniuapi.com");
-  client.config();
+    // Change API host as necessary
+    //
+    // pili.qiniuapi.com as deafult
+    // pili-lte.qiniuapi.com is the latest RC version
+    //
+    hub.config(Configuration.KEY_API_HOST, "pili-lte.qiniuapi.com");
 ```
 
 ##### Create a new stream
@@ -94,12 +98,12 @@ If you want to run the SDK on JDK 1.6 environment, you can download the compatib
   String publishSecurity = null;     // optional, can be "dynamic" or "static", "dynamic" as default
   Stream stream = null;
   try {
-      stream = client.createStream(title, publishKey, publishSecurity);
+      stream = hub.createStream(title, publishKey, publishSecurity);
       System.out.println("Client createStream:");
       System.out.println(stream.toJsonString());
       /*
       {
-          "id":"z0.test-hub.55d80075e3ba5723280000d2",
+          "id":"z1.test-hub.55d80075e3ba5723280000d2",
           "createdAt":"2015-08-22T04:54:13.539Z",
           "updatedAt":"2015-08-22T04:54:13.539Z",
           "title":"55d80075e3ba5723280000d2",
@@ -109,7 +113,7 @@ If you want to run the SDK on JDK 1.6 environment, you can download the compatib
           "publishSecurity":"dynamic",
           "hosts":{
               "publish":{
-                  "rtmp":"ey636h.pub.z1.pili.qiniup.com"
+                  "rtmp":"ey636h.publish.z1.pili.qiniup.com"
                },
                "live":{
                    "http":"ey636h.live1-http.z1.pili.qiniucdn.com",
@@ -134,7 +138,7 @@ or
 
 ```JAVA
   try {
-    Stream stream = mPili.createStream();
+    Stream stream = hub.createStream();
   } catch (PiliException e) {
     e.printStackTrace();
   }
@@ -149,7 +153,7 @@ or
     System.out.println(stream.toJsonString());
     /*
     {
-        "id":"z0.test-hub.55d80075e3ba5723280000d2",
+        "id":"z1.test-hub.55d80075e3ba5723280000d2",
         "createdAt":"2015-08-22T04:54:13.539Z",
         "updatedAt":"2015-08-22T04:54:13.539Z",
         "title":"55d80075e3ba5723280000d2",
@@ -159,7 +163,7 @@ or
         "publishSecurity":"dynamic",
         "hosts":{
             "publish":{
-                "rtmp":"ey636h.pub.z1.pili.qiniup.com"
+                "rtmp":"ey636h.publish.z1.pili.qiniup.com"
              },
              "live":{
                  "http":"ey636h.live1-http.z1.pili.qiniucdn.com",
@@ -228,7 +232,7 @@ System.out.println(streamJsonString);
 
 /*
     {
-        "id":"z0.test-hub.55d80075e3ba5723280000d2",
+        "id":"z1.test-hub.55d80075e3ba5723280000d2",
         "createdAt":"2015-08-22T04:54:13.539Z",
         "updatedAt":"2015-08-22T04:54:13.539Z",
         "title":"55d80075e3ba5723280000d2",
@@ -238,7 +242,7 @@ System.out.println(streamJsonString);
         "publishSecurity":"dynamic",
         "hosts":{
             "publish":{
-                "rtmp":"ey636h.pub.z1.pili.qiniup.com"
+                "rtmp":"ey636h.publish.z1.pili.qiniup.com"
              },
              "live":{
                  "http":"ey636h.live1-http.z1.pili.qiniucdn.com",
@@ -267,7 +271,7 @@ try {
     System.out.println(newStream.toJsonString());
     /*
     {
-        "id":"z0.test-hub.55d80075e3ba5723280000d2",
+        "id":"z1.test-hub.55d80075e3ba5723280000d2",
         "createdAt":"2015-08-22T04:54:13.539Z",
         "updatedAt":"2015-08-22T01:53:02.738973745-04:00",
         "title":"55d80075e3ba5723280000d2",
@@ -277,7 +281,7 @@ try {
         "publishSecurity":"static",
         "hosts":{
             "publish":{
-                "rtmp":"ey636h.pub.z1.pili.qiniup.com"
+                "rtmp":"ey636h.publish.z1.pili.qiniup.com"
              },
              "live":{
                  "http":"ey636h.live1-http.z1.pili.qiniucdn.com",
@@ -365,7 +369,7 @@ try {
     String publishUrl = stream.rtmpPublishUrl();
     System.out.println("Stream rtmpPublishUrl()");
     System.out.println(publishUrl);
-    // rtmp://ey636h.pub.z0.pili.qiniup.com/test-hub/55d810aae3ba5723280000db?nonce=1440223404&token=hIVJje0ZOX9hp7yPIvGBmJ_6Qxo=
+    // rtmp://ey636h.publish.z1.pili.qiniup.com/test-hub/55d810aae3ba5723280000db?nonce=1440223404&token=hIVJje0ZOX9hp7yPIvGBmJ_6Qxo=
      
 } catch (PiliException e) {
     // TODO Auto-generated catch block
@@ -414,7 +418,7 @@ try {
         System.out.println("start:" + segment.getStart() + ",end:" + segment.getEnd());
     }
     /*
-         start:1440226094,end:1440226130
+         start:1440315411,end:1440315435
      */
 } catch (PiliException e) {
     // TODO Auto-generated catch block
@@ -425,14 +429,14 @@ try {
 ##### Generate HLS playback URLs
 ```JAVA
 // Generate HLS playback URLs
-long startHlsPlayback     = 1440226094;  // required, in second, unix timestamp
-long endHlsPlayback       = 1440226130;  // required, in second, unix timestamp
+long startHlsPlayback     = 1440315411;  // required, in second, unix timestamp
+long endHlsPlayback       = 1440315435;  // required, in second, unix timestamp
 try {
     String hlsPlaybackUrl = stream.hlsPlaybackUrls(startHlsPlayback, endHlsPlayback).get(Stream.ORIGIN);
     
     System.out.println("Stream hlsPlaybackUrls()");
     System.out.println(hlsPlaybackUrl);
-    // http://ey636h.playback1.z1.pili.qiniucdn.com/test-hub/55d8119ee3ba5723280000dd.m3u8?start=1440226094&end=1440226130
+    // http://ey636h.playback1.z1.pili.qiniucdn.com/test-hub/55d8119ee3ba5723280000dd.m3u8?start=1440315411&end=1440315435
 } catch (PiliException e) {
     // TODO Auto-generated catch block
     e.printStackTrace();
@@ -444,7 +448,7 @@ try {
 // Snapshot Stream
 String format    = "jpg";                      // required
 String name      = "imageName" + "." + format; // required
-long time        = 1440226094;  // optional, in second, unix timestamp
+long time        = 1440315411;  // optional, in second, unix timestamp
 String notifyUrl = null;        // optional
 
 try {
@@ -453,8 +457,8 @@ try {
     System.out.println(response.toString());
     /*
      {
-         "targetUrl":"http://ey636h.ts1.z0.pili.qiniucdn.com/snapshots/z0.test-hub.55d81a72e3ba5723280000ec/imageName.jpg",
-         "persistentId":"z0.55d81c247823de5a49ad729c"
+         "targetUrl":"http://ey636h.ts1.z1.pili.qiniucdn.com/snapshots/z1.test-hub.55d81a72e3ba5723280000ec/imageName.jpg",
+         "persistentId":"z1.55d81c247823de5a49ad729c"
      }
      */
 } catch (PiliException e) {
@@ -468,8 +472,8 @@ try {
 // Save Stream as a file
 String saveAsFormat    = "mp4";                            // required
 String saveAsName      = "videoName" + "." + saveAsFormat; // required
-long saveAsStart       = 1440226094;  // required, in second, unix timestamp
-long saveAsEnd         = 1440226130;  // required, in second, unix timestamp
+long saveAsStart       = 1440315411;  // required, in second, unix timestamp
+long saveAsEnd         = 1440315435;  // required, in second, unix timestamp
 String saveAsNotifyUrl = null;        // optional
 try {
     SaveAsResponse response = stream.saveAs(saveAsName, saveAsFormat, saveAsStart, saveAsEnd, saveAsNotifyUrl);
@@ -477,9 +481,9 @@ try {
     System.out.println(response.toString());
     /*
      {
-         "url":"http://ey636h.ts1.z0.pili.qiniucdn.com/recordings/z0.test-hub.55d81a72e3ba5723280000ec/videoName.m3u8",
-         "targetUrl":"http://ey636h.ts1.z0.pili.qiniucdn.com/recordings/z0.test-hub.55d81a72e3ba5723280000ec/videoName.mp4",
-         "persistentId":"z0.55d81c6c7823de5a49ad77b3"
+         "url":"http://ey636h.ts1.z1.pili.qiniucdn.com/recordings/z1.test-hub.55d81a72e3ba5723280000ec/videoName.m3u8",
+         "targetUrl":"http://ey636h.ts1.z1.pili.qiniucdn.com/recordings/z1.test-hub.55d81a72e3ba5723280000ec/videoName.mp4",
+         "persistentId":"z1.55d81c6c7823de5a49ad77b3"
      }
     */
 } catch (PiliException e) {
@@ -505,13 +509,13 @@ try {
 }
 ```
 
-##History
-- 1.4.0
-  - Update client functions
-    - client.createStream()
-    - client.getStream()
-    - client.listStreams()
-  - Add Stream operations
+## History
+- 1.5.0
+  - Add Stream Create,Get,List
+    - hub.createStream()
+    - hub.getStream()
+    - hub.listStreams()
+  - Add Stream operations else
     - stream.toJsonString()
     - stream.update()
     - stream.disable()
