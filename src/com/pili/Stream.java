@@ -11,11 +11,12 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
+import com.qiniu.Credentials;
 
 public class Stream {
     public static final String ORIGIN = "ORIGIN";
     private String mStreamJsonStr;
-    private Auth mAuth;
+    private Credentials mCredentials;
 
     private String id;
     private String createdAt;       // Time ISO 8601
@@ -58,9 +59,9 @@ public class Stream {
         mStreamJsonStr = jsonObj.toString();
     }
 
-    public Stream(JsonObject jsonObject, Auth auth) {
+    public Stream(JsonObject jsonObject, Credentials credentials) {
         this(jsonObject);
-        mAuth = auth;
+        mCredentials = credentials;
     }
 
     public String[] getProfiles() {
@@ -258,7 +259,7 @@ public class Stream {
     public static class StreamList {
         private String marker;
         private List<Stream> itemList;
-        public StreamList(JsonObject jsonObj, Auth auth) {
+        public StreamList(JsonObject jsonObj, Credentials auth) {
             this.marker = jsonObj.get("marker").getAsString();
 
             try {
@@ -283,23 +284,23 @@ public class Stream {
     }
 
     public Stream update(String publishKey, String publishSecrity, boolean disabled) throws PiliException {
-        return API.updateStream(mAuth, this.id, publishKey, publishSecrity, disabled);
+        return API.updateStream(mCredentials, this.id, publishKey, publishSecrity, disabled);
     }
 
     public SegmentList segments() throws PiliException {
-        return API.getStreamSegments(mAuth, this.id, 0, 0, 0);
+        return API.getStreamSegments(mCredentials, this.id, 0, 0, 0);
     }
 
     public SegmentList segments(long start, long end) throws PiliException {
-        return API.getStreamSegments(mAuth, this.id, start, end, 0);
+        return API.getStreamSegments(mCredentials, this.id, start, end, 0);
     }
 
     public SegmentList segments(long start, long end, int limit) throws PiliException {
-        return API.getStreamSegments(mAuth, this.id, start, end, limit);
+        return API.getStreamSegments(mCredentials, this.id, start, end, limit);
     }
 
     public Status status() throws PiliException {
-        return API.getStreamStatus(mAuth, this.id);
+        return API.getStreamStatus(mCredentials, this.id);
     }
 
     public String rtmpPublishUrl() throws PiliException {
@@ -320,7 +321,7 @@ public class Stream {
     }
 
     public String delete() throws PiliException {
-        return API.deleteStream(mAuth, this.id);
+        return API.deleteStream(mCredentials, this.id);
     }
 
     public String toJsonString() {
@@ -328,24 +329,24 @@ public class Stream {
     }
 
     public SaveAsResponse saveAs(String fileName, String format, long startTime, long endTime, String notifyUrl) throws PiliException {
-        return API.saveAs(mAuth, this.id, fileName, format, startTime, endTime, notifyUrl);
+        return API.saveAs(mCredentials, this.id, fileName, format, startTime, endTime, notifyUrl);
     }
     public SaveAsResponse saveAs(String fileName, String format, long startTime, long endTime) throws PiliException {
         return saveAs(fileName, format, startTime, endTime, null);
     }
 
     public SnapshotResponse snapshot(String name, String format) throws PiliException {
-        return API.snapshot(mAuth, this.id, name, format, 0, null);
+        return API.snapshot(mCredentials, this.id, name, format, 0, null);
     }
     public SnapshotResponse snapshot(String name, String format, long time, String notifyUrl) throws PiliException {
-        return API.snapshot(mAuth, this.id, name, format, time, notifyUrl);
+        return API.snapshot(mCredentials, this.id, name, format, time, notifyUrl);
     }
 
     public Stream enable() throws PiliException {
-        return API.updateStream(mAuth, this.id, null, null, false);
+        return API.updateStream(mCredentials, this.id, null, null, false);
     }
     public Stream disable() throws PiliException {
-        return API.updateStream(mAuth, this.id, null, null, true);
+        return API.updateStream(mCredentials, this.id, null, null, true);
     }
 }
 

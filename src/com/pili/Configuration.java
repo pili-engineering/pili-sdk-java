@@ -18,7 +18,7 @@ public class Configuration {
 
     public static final String KEY_API_HOST = "api_host";
     public static final String KEY_API_VERSION = "api_version";
-    public static final String KEY_HTTPS_ENABLED = "https_enabled";
+    public static final String KEY_USE_HTTPS = "use_https";
 
     public final boolean containsKey(String name) {
         return mMap.containsKey(name);
@@ -80,6 +80,13 @@ public class Configuration {
      * Sets the value of a string key.
      */
     public final void setString(String name, String value) {
+        mMap.put(name, value);
+    }
+
+    /**
+     * Sets the value of a Object key.
+     */
+    public final void setValue(String name, Object value) {
         mMap.put(name, value);
     }
 }

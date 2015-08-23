@@ -16,6 +16,7 @@ import com.pili.Stream.SegmentList;
 import com.pili.Stream.SnapshotResponse;
 import com.pili.Stream.Status;
 import com.pili.Stream.StreamList;
+import com.qiniu.Credentials;
 import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
@@ -38,7 +39,7 @@ public class API {
     }
 
     // Create a new stream
-    public static Stream createStream(Auth auth, String hubName, String title, String publishKey, String publishSecurity) throws PiliException {
+    public static Stream createStream(Credentials credentials, String hubName, String title, String publishKey, String publishSecurity) throws PiliException {
         String urlStr = API_BASE_URL + "/streams";
         JsonObject json = new JsonObject();
         json.addProperty("hub", hubName);
@@ -60,7 +61,7 @@ public class API {
             
             String contentType = "application/json";
             byte[] body = json.toString().getBytes(Config.UTF8);
-            String macToken = auth.signRequest(url, "POST", body, contentType);
+            String macToken = credentials.signRequest(url, "POST", body, contentType);
             RequestBody rBody = RequestBody.create(MediaType.parse(contentType), body);
             Request request = new Request.Builder()
             .url(url)
@@ -82,7 +83,7 @@ public class API {
             JsonParser parser = new JsonParser();
             try {
                 JsonObject jsonObj = parser.parse(response.body().string()).getAsJsonObject();
-                return new Stream(jsonObj, auth);
+                return new Stream(jsonObj, credentials);
             } catch (IOException e) {
                 e.printStackTrace();
                 throw new PiliException(e);
@@ -93,7 +94,7 @@ public class API {
     }
 
     // Get an exist stream
-    public static Stream getStream(Auth auth, String streamId) throws PiliException {
+    public static Stream getStream(Credentials credentials, String streamId) throws PiliException {
         if (streamId == null) {
             throw new PiliException(MessageConfig.NULL_STREAM_ID_EXCEPTION_MSG);
         }
@@ -102,7 +103,7 @@ public class API {
         try {
             URL url = new URL(urlStr);
             
-            String macToken = auth.signRequest(url, "GET", null, null);
+            String macToken = credentials.signRequest(url, "GET", null, null);
             Request request = new Request.Builder()
             .url(url)
             .get()
@@ -119,7 +120,7 @@ public class API {
             JsonParser parser = new JsonParser();
             try {
                 JsonObject jsonObj = parser.parse(response.body().string()).getAsJsonObject();
-                return new Stream(jsonObj, auth);
+                return new Stream(jsonObj, credentials);
             } catch (IOException e) {
                 e.printStackTrace();
                 throw new PiliException(e);
@@ -130,7 +131,7 @@ public class API {
     }
 
     // List stream
-    public static StreamList listStreams(Auth auth, String hubName, String startMarker, long limitCount, String titlePrefix) throws PiliException {
+    public static StreamList listStreams(Credentials credentials, String hubName, String startMarker, long limitCount, String titlePrefix) throws PiliException {
         try {
             hubName = URLEncoder.encode(hubName, Config.UTF8);
             if (Utils.isArgNotEmpty(startMarker)) {
@@ -153,7 +154,7 @@ public class API {
         Response response = null;
         try {
             URL url = new URL(urlStr);
-            String macToken = auth.signRequest(url, "GET", null, null);
+            String macToken = credentials.signRequest(url, "GET", null, null);
             Request request = new Request.Builder()
             .url(url)
             .get()
@@ -171,7 +172,7 @@ public class API {
             JsonParser parser = new JsonParser();
             try {
                 JsonObject jsonObj = parser.parse(response.body().string()).getAsJsonObject();
-                return new StreamList(jsonObj, auth);
+                return new StreamList(jsonObj, credentials);
             } catch (IOException e) {
                 e.printStackTrace();
                 throw new PiliException(e);
@@ -182,7 +183,7 @@ public class API {
     }
 
     // get stream status
-    public static Status getStreamStatus(Auth auth, String streamId) throws PiliException {
+    public static Status getStreamStatus(Credentials credentials, String streamId) throws PiliException {
         if (streamId == null) {
             throw new PiliException(MessageConfig.NULL_STREAM_ID_EXCEPTION_MSG);
         }
@@ -191,7 +192,7 @@ public class API {
         try {
             URL url = new URL(urlStr);
 
-            String macToken = auth.signRequest(url, "GET", null, null);
+            String macToken = credentials.signRequest(url, "GET", null, null);
             Request request = new Request.Builder()
             .url(url)
             .get()
@@ -219,7 +220,7 @@ public class API {
     }
 
     // Update an exist stream
-    public static Stream updateStream(Auth auth, String streamId, String publishKey, String publishSecurity, boolean disabled) throws PiliException {
+    public static Stream updateStream(Credentials credentials, String streamId, String publishKey, String publishSecurity, boolean disabled) throws PiliException {
         if (streamId == null) {
             throw new PiliException(MessageConfig.NULL_STREAM_ID_EXCEPTION_MSG);
         }
@@ -239,7 +240,7 @@ public class API {
             URL url = new URL(urlStr);
 
             String contentType = "application/json";
-            String macToken = auth.signRequest(url, "POST", body, contentType);
+            String macToken = credentials.signRequest(url, "POST", body, contentType);
             MediaType type = MediaType.parse(contentType);
             RequestBody rBody = RequestBody.create(type, body);
             Request request = new Request.Builder()
@@ -260,7 +261,7 @@ public class API {
             JsonParser parser = new JsonParser();
             try {
                 JsonObject jsonObj = parser.parse(response.body().string()).getAsJsonObject();
-                return new Stream(jsonObj, auth);
+                return new Stream(jsonObj, credentials);
             } catch (IOException e) {
                 e.printStackTrace();
                 throw new PiliException(e);
@@ -271,7 +272,7 @@ public class API {
     }
 
     // Delete stream
-    public static String deleteStream(Auth auth, String streamId) throws PiliException {
+    public static String deleteStream(Credentials credentials, String streamId) throws PiliException {
         if (streamId == null) {
             throw new PiliException(MessageConfig.NULL_STREAM_ID_EXCEPTION_MSG);
         }
@@ -281,7 +282,7 @@ public class API {
         try {
             URL url = new URL(urlStr);
             
-            String macToken = auth.signRequest(url, "DELETE", null, null);
+            String macToken = credentials.signRequest(url, "DELETE", null, null);
             Request request = new Request.Builder()
             .url(url)
             .delete()
@@ -303,7 +304,7 @@ public class API {
         }
     }
 
-    public static SaveAsResponse saveAs(Auth auth, String streamId, String fileName, String format, 
+    public static SaveAsResponse saveAs(Credentials credentials, String streamId, String fileName, String format, 
             long start, long end, String notifyUrl) throws PiliException {
         if (streamId == null) {
             throw new PiliException(MessageConfig.NULL_STREAM_ID_EXCEPTION_MSG);
@@ -337,7 +338,7 @@ public class API {
 
             String contentType = "application/json";
             byte[] body = json.toString().getBytes(Config.UTF8);
-            String macToken = auth.signRequest(url, "POST", body, contentType);
+            String macToken = credentials.signRequest(url, "POST", body, contentType);
             MediaType type = MediaType.parse(contentType);
             RequestBody rBody = RequestBody.create(type, body);
             Request request = new Request.Builder()
@@ -367,7 +368,7 @@ public class API {
         }
     }
 
-    public static SnapshotResponse snapshot(Auth auth, String streamId, String fileName, String format, 
+    public static SnapshotResponse snapshot(Credentials credentials, String streamId, String fileName, String format, 
             long time, String notifyUrl) throws PiliException {
         if (streamId == null) {
             throw new PiliException(MessageConfig.NULL_STREAM_ID_EXCEPTION_MSG);
@@ -398,7 +399,7 @@ public class API {
 
             String contentType = "application/json";
             byte[] body = json.toString().getBytes(Config.UTF8);
-            String macToken = auth.signRequest(url, "POST", body, contentType);
+            String macToken = credentials.signRequest(url, "POST", body, contentType);
             MediaType type = MediaType.parse(contentType);
             RequestBody rBody = RequestBody.create(type, body);
             Request request = new Request.Builder()
@@ -429,7 +430,7 @@ public class API {
     }
 
     // Get recording segments from an exist stream
-    public static SegmentList getStreamSegments(Auth auth, String streamId, long startTime, long endTime, int limitCount) throws PiliException {
+    public static SegmentList getStreamSegments(Credentials credentials, String streamId, long startTime, long endTime, int limitCount) throws PiliException {
         if (streamId == null) {
             throw new PiliException(MessageConfig.NULL_STREAM_ID_EXCEPTION_MSG);
         }
@@ -443,7 +444,7 @@ public class API {
         Response response = null;
         try {
             URL url = new URL(urlStr);
-            String macToken = auth.signRequest(url, "GET", null, null);
+            String macToken = credentials.signRequest(url, "GET", null, null);
             Request request = new Request.Builder()
             .url(url)
             .get()
@@ -573,7 +574,7 @@ public class API {
         String baseUri = Utils.getPath(streamId) + "?nonce=" + nonce;
         String publishToken = null;
         try {
-            publishToken = Auth.sign(publishKey, baseUri);
+            publishToken = Credentials.sign(publishKey, baseUri);
         } catch (SignatureException e) {
             e.printStackTrace();
             throw new PiliException(e);

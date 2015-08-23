@@ -12,7 +12,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.pili.Configuration;
-import com.pili.Pili;
+import com.pili.Hub;
 import com.pili.PiliException;
 import com.pili.Stream;
 import com.pili.Stream.SaveAsResponse;
@@ -21,6 +21,8 @@ import com.pili.Stream.SegmentList;
 import com.pili.Stream.SnapshotResponse;
 import com.pili.Stream.Status;
 import com.pili.Stream.StreamList;
+import com.qiniu.Credentials;
+import com.qiniu.Credentials.MacKeys;
 
 import common.Config;
 import common.MessageConfig;
@@ -59,14 +61,15 @@ public class PiliTest {
     private static final String EXPECTED_BASE_FLV_LIVEURL = "http://" + "xxx.live1-http.z1.pili.qiniucdn.com" + "/" + HUB_NAME;
     private static final String EXPECTED_SAVEAS_BASE_URL = "http://" + "xxx.ts.z1.pili.qiniucdn.com" + "/" + HUB_NAME;
 
-    private Pili mPili = new Pili(ACCESS_KEY, SECRET_KEY, HUB_NAME);
+    private Credentials mCredentials = new Credentials(new MacKeys(ACCESS_KEY, SECRET_KEY));
+    private Hub mHub = new Hub(mCredentials, HUB_NAME);
     private Stream mStream = null;
     private List<Stream> mTestCreatedStreamList = new ArrayList<Stream>();;
 
     @Before
     public void prepareStream() {
         try {
-            mStream = mPili.createStream(PRE_STREAM_PRESET_TITLE, null, PRE_STREAM_PRESET_PUBLISH_SECURITY);
+            mStream = mHub.createStream(PRE_STREAM_PRESET_TITLE, null, PRE_STREAM_PRESET_PUBLISH_SECURITY);
         } catch (PiliException e) {
             e.printStackTrace();
         }
@@ -75,7 +78,7 @@ public class PiliTest {
     @Test
     public void testCreateStream() {
         try {
-            Stream stream = mPili.createStream();
+            Stream stream = mHub.createStream();
             mTestCreatedStreamList.add(stream);
             assertNotNull(stream);
             assertNotNull(stream.getStreamId());
@@ -89,7 +92,7 @@ public class PiliTest {
         }
 
         try {
-            Stream stream = mPili.createStream(null, null, null);
+            Stream stream = mHub.createStream(null, null, null);
             mTestCreatedStreamList.add(stream);
             assertNotNull(stream);
             assertNotNull(stream.getStreamId());
@@ -109,7 +112,7 @@ public class PiliTest {
         String[] titles = new String[] {"1", "12", "123", "1234", "t", "-", "_", "titl"};
         for (String title : titles) {
             try {
-                Stream stream = mPili.createStream(title, null, null);
+                Stream stream = mHub.createStream(title, null, null);
                 mTestCreatedStreamList.add(stream);
                 fail();
             } catch (PiliException e) {
@@ -123,7 +126,7 @@ public class PiliTest {
             maxTitleStr += i;
         }
         try {
-            Stream stream = mPili.createStream(maxTitleStr, null, null);
+            Stream stream = mHub.createStream(maxTitleStr, null, null);
             mTestCreatedStreamList.add(stream);
             fail();
         } catch (PiliException e) {
@@ -132,9 +135,9 @@ public class PiliTest {
 
         // recreate stream test
         try {
-            Stream stream1 = mPili.createStream("test1", null, null);
+            Stream stream1 = mHub.createStream("test1", null, null);
             mTestCreatedStreamList.add(stream1);
-            Stream stream2 = mPili.createStream("test1", null, null);
+            Stream stream2 = mHub.createStream("test1", null, null);
             mTestCreatedStreamList.add(stream2);
             fail();
         } catch (PiliException e) {
@@ -145,14 +148,14 @@ public class PiliTest {
     @Test
     public void testGetStream() {
         try {
-            mPili.getStream(null);
+            mHub.getStream(null);
             fail();
         } catch (PiliException e) {
             assertEquals(NULL_STREAM_ID_EXCEPTION_MSG, e.getMessage());
         }
 
         try {
-            mPili.getStream(INVALID_STREAM_ID);
+            mHub.getStream(INVALID_STREAM_ID);
             fail();
         } catch (PiliException e) {
             assertEquals(NOT_FOUND_MSG, e.getMessage());
@@ -164,7 +167,7 @@ public class PiliTest {
         }
 
         try {
-            Stream stream = mPili.getStream(mStream.getStreamId());
+            Stream stream = mHub.getStream(mStream.getStreamId());
             assertNotNull(stream);
             assertNotNull(stream.getCreatedAt());
             assertNotNull(stream.getUpdatedAt());
@@ -182,8 +185,8 @@ public class PiliTest {
     @Test
     public void testListStreams() {
         try {
-            System.out.println("mPili=" + mPili);
-            StreamList streamList = mPili.listStreams();
+            System.out.println("mHub=" + mHub);
+            StreamList streamList = mHub.listStreams();
             if (streamList != null) {
                 assertNotNull(streamList.getMarker());
                 assertNotNull(streamList.getStreams());
@@ -198,7 +201,7 @@ public class PiliTest {
         String[] markers = new String[] {null, "", " ", "  "};
         for (String marker : markers) {
             try {
-                StreamList streamList = mPili.listStreams(marker, 0);
+                StreamList streamList = mHub.listStreams(marker, 0);
                 if (streamList != null) {
                     assertNotNull(streamList.getMarker());
                     assertNotNull(streamList.getStreams());
@@ -214,7 +217,7 @@ public class PiliTest {
         int[] limitCounts = new int[] {-1, 0, 1};
         for (int limitCount : limitCounts) {
             try {
-                StreamList streamList = mPili.listStreams(null, limitCount);
+                StreamList streamList = mHub.listStreams(null, limitCount);
                 if (streamList != null) {
                     assertNotNull(streamList.getMarker());
                     assertNotNull(streamList.getStreams());
@@ -229,11 +232,11 @@ public class PiliTest {
 
         try {
             final String title = "test_stream_list";
-            mPili.createStream(title, null, null);
+            mHub.createStream(title, null, null);
             boolean found = false;
             String marker = null;
             while(!found) {
-                StreamList streamList = mPili.listStreams(marker, 300);
+                StreamList streamList = mHub.listStreams(marker, 300);
                 marker = streamList.getMarker();
                 List<Stream> list = streamList.getStreams();
                 for (Stream stream : list) {
@@ -542,7 +545,7 @@ public class PiliTest {
         }
 
         try {
-            Stream stream = mPili.getStream(streamId);
+            Stream stream = mHub.getStream(streamId);
             List<Segment> list = stream.segments().getSegmentList();
             Segment s = list.get(list.size() - 1);
             long start = s.getStart();
@@ -693,11 +696,11 @@ public class PiliTest {
         final String testValue00 = "test_value00";
         final String testValue11 = "test_value11";
         Configuration.getInstance().setString(testKey, testValue00);
-        mPili.config();
+        mHub.config(testKey, testValue00);
         assertEquals(testValue00, Configuration.getInstance().getString(testKey));
 
         Configuration.getInstance().setString(testKey, testValue11);
-        mPili.config();
+        mHub.config(testKey, testValue11);
         assertEquals(testValue11, Configuration.getInstance().getString(testKey));
 
     }

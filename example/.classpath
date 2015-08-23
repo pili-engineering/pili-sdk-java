@@ -3,8 +3,8 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.launching.macosx.MacOSXType/Java SE 7 [1.7.0_75]"/>
 	<classpathentry kind="lib" path="libs/gson-2.2.4.jar"/>
-	<classpathentry kind="lib" path="libs/pili-sdk-java-v1.4.0.jar"/>
 	<classpathentry kind="lib" path="libs/okhttp-2.4.0.jar"/>
 	<classpathentry kind="lib" path="libs/okio-1.5.0.jar"/>
+	<classpathentry kind="lib" path="libs/pili-sdk-java-v1.5.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

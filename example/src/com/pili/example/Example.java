@@ -3,7 +3,7 @@ package com.pili.example;
 import java.util.List;
 
 import com.pili.Configuration;
-import com.pili.Pili;
+import com.pili.Hub;
 import com.pili.PiliException;
 import com.pili.Stream;
 import com.pili.Stream.SaveAsResponse;
@@ -12,6 +12,8 @@ import com.pili.Stream.SegmentList;
 import com.pili.Stream.SnapshotResponse;
 import com.pili.Stream.Status;
 import com.pili.Stream.StreamList;
+import com.qiniu.Credentials;
+import com.qiniu.Credentials.MacKeys;
 
 public class Example {
     // Replace with your keys here
@@ -23,15 +25,19 @@ public class Example {
 
     public static void main(String[] args) {
         //////////////////////////////////////////////////////////////////////////////////////////
-        // Client begin
+        // Hub begin
         //////////////////////////////////////////////////////////////////////////////////////////
         
-        // Instantiate an Pili client
-        Pili client = new Pili(AK, SK, HUB_NAME);
+        // Instantiate an Hub object
+        Credentials credentials = new Credentials(new MacKeys(AK, SK)); // Credentials Object
+        Hub hub = new Hub(credentials, HUB_NAME);
 
-        // Change API host
-        Configuration.getInstance().setString(Configuration.KEY_API_HOST, "pili-lte.qiniuapi.com");
-        client.config();
+        // Change API host as necessary
+        //
+        // pili.qiniuapi.com as deafult
+        // pili-lte.qiniuapi.com is the latest RC version
+        //
+        hub.config(Configuration.KEY_API_HOST, "pili-lte.qiniuapi.com");
 
         // Create a new Stream
         String title           = null;     // optional, auto-generated as default
@@ -39,15 +45,15 @@ public class Example {
         String publishSecurity = null;     // optional, can be "dynamic" or "static", "dynamic" as default
         Stream stream = null;
         try {
-            stream = client.createStream(title, publishKey, publishSecurity);
+            stream = hub.createStream(title, publishKey, publishSecurity);
             System.out.println("Client createStream:");
             System.out.println(stream.toJsonString());
             /*
             {
-                "id":"z0.test-hub.55d80075e3ba5723280000d2",
+                "id":"z1.test-hub.55d97350eb6f92638c00000a",
                 "createdAt":"2015-08-22T04:54:13.539Z",
                 "updatedAt":"2015-08-22T04:54:13.539Z",
-                "title":"55d80075e3ba5723280000d2",
+                "title":"55d97350eb6f92638c00000a",
                 "hub":"test-hub",
                 "disabled":false,
                 "publishKey":"ca11e07f094c3a6e",
@@ -77,12 +83,12 @@ public class Example {
 
         // Get Stream
         try {
-            stream = client.getStream(stream.getStreamId());
+            stream = hub.getStream(stream.getStreamId());
             System.out.println("Client getStream:");
             System.out.println(stream.toJsonString());
             /*
             {
-                "id":"z0.test-hub.55d80075e3ba5723280000d2",
+                "id":"z1.test-hub.55d80075e3ba5723280000d2",
                 "createdAt":"2015-08-22T04:54:13.539Z",
                 "updatedAt":"2015-08-22T04:54:13.539Z",
                 "title":"55d80075e3ba5723280000d2",
@@ -119,7 +125,7 @@ public class Example {
             long limit         = 0;         // optional
             String titlePrefix = null;      // optional
 
-            StreamList streamList = client.listStreams(marker, limit, titlePrefix);
+            StreamList streamList = hub.listStreams(marker, limit, titlePrefix);
             System.out.println("Client listStreams()");
             System.out.println("marker:" + streamList.getMarker());
             List<Stream> list = streamList.getStreams();
@@ -136,7 +142,7 @@ public class Example {
             e.printStackTrace();
         }
         //////////////////////////////////////////////////////////////////////////////////////////
-        // Client end
+        // Hub end
         //////////////////////////////////////////////////////////////////////////////////////////
 
         //////////////////////////////////////////////////////////////////////////////////////////
@@ -148,7 +154,7 @@ public class Example {
         
         /*
             {
-                "id":"z0.test-hub.55d80075e3ba5723280000d2",
+                "id":"z1.test-hub.55d80075e3ba5723280000d2",
                 "createdAt":"2015-08-22T04:54:13.539Z",
                 "updatedAt":"2015-08-22T04:54:13.539Z",
                 "title":"55d80075e3ba5723280000d2",
@@ -185,7 +191,7 @@ public class Example {
             System.out.println(newStream.toJsonString());
             /*
             {
-                "id":"z0.test-hub.55d80075e3ba5723280000d2",
+                "id":"z1.test-hub.55d80075e3ba5723280000d2",
                 "createdAt":"2015-08-22T04:54:13.539Z",
                 "updatedAt":"2015-08-22T01:53:02.738973745-04:00",
                 "title":"55d80075e3ba5723280000d2",
@@ -308,7 +314,7 @@ public class Example {
                 System.out.println("start:" + segment.getStart() + ",end:" + segment.getEnd());
             }
             /*
-                 start:1440226094,end:1440226130
+                 start:1440315411,end:1440315435
              */
         } catch (PiliException e) {
             // TODO Auto-generated catch block
@@ -316,14 +322,14 @@ public class Example {
         }
 
         // Generate HLS playback URLs
-        long startHlsPlayback     = 1440226094;  // required, in second, unix timestamp
-        long endHlsPlayback       = 1440226130;  // required, in second, unix timestamp
+        long startHlsPlayback     = 1440315411;  // required, in second, unix timestamp
+        long endHlsPlayback       = 1440315435;  // required, in second, unix timestamp
         try {
             String hlsPlaybackUrl = stream.hlsPlaybackUrls(startHlsPlayback, endHlsPlayback).get(Stream.ORIGIN);
             
             System.out.println("Stream hlsPlaybackUrls()");
             System.out.println(hlsPlaybackUrl);
-            // http://ey636h.playback1.z1.pili.qiniucdn.com/test-hub/55d8119ee3ba5723280000dd.m3u8?start=1440226094&end=1440226130
+            // http://ey636h.playback1.z1.pili.qiniucdn.com/test-hub/55d8119ee3ba5723280000dd.m3u8?start=1440315411&end=1440315435
         } catch (PiliException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -332,7 +338,7 @@ public class Example {
         // Snapshot Stream
         String format    = "jpg";                      // required
         String name      = "imageName" + "." + format; // required
-        long time        = 1440226094;  // optional, in second, unix timestamp
+        long time        = 1440315411;  // optional, in second, unix timestamp
         String notifyUrl = null;        // optional
         
         try {
@@ -353,8 +359,8 @@ public class Example {
         // Save Stream as a file
         String saveAsFormat    = "mp4";                            // required
         String saveAsName      = "videoName" + "." + saveAsFormat; // required
-        long saveAsStart       = 1440226094;  // required, in second, unix timestamp
-        long saveAsEnd         = 1440226130;  // required, in second, unix timestamp
+        long saveAsStart       = 1440315411;  // required, in second, unix timestamp
+        long saveAsEnd         = 1440315435;  // required, in second, unix timestamp
         String saveAsNotifyUrl = null;        // optional
         try {
             SaveAsResponse response = stream.saveAs(saveAsName, saveAsFormat, saveAsStart, saveAsEnd, saveAsNotifyUrl);
