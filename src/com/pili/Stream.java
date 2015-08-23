@@ -51,10 +51,16 @@ public class Stream {
         JsonObject live = hosts.getAsJsonObject("live");
         JsonObject playback = hosts.getAsJsonObject("playback");
 
-        publishRtmpHost = publish.get("rtmp").getAsString();
-        liveRtmpHost = live.get("rtmp").getAsString();
-        liveHttpHost = live.get("http").getAsString();
-        playbackHttpHost = playback.get("http").getAsString();
+        if (publish != null) {
+            publishRtmpHost = publish.get("rtmp").getAsString();
+        }
+        if (live != null) {
+            liveRtmpHost = live.get("rtmp").getAsString();
+            liveHttpHost = live.get("http").getAsString();
+        }
+        if (playback != null) {
+            playbackHttpHost = playback.get("http").getAsString();
+        }
 
         mStreamJsonStr = jsonObj.toString();
     }
@@ -78,14 +84,6 @@ public class Stream {
     }
     public String getPlaybackHttpHost() {
         return playbackHttpHost;
-    }
-    @Deprecated
-    public String getPlayHlsHost() {
-        return playbackHttpHost;
-    }
-    @Deprecated
-    public String getPlayRtmpHost() {
-        return liveRtmpHost;
     }
     public String getStreamId() {
         return id;
@@ -181,22 +179,22 @@ public class Stream {
     }
 
     public static class FramesPerSecond {
-        private int audio;
-        private int video;
-        private int data;
-        public FramesPerSecond(int audio, int video, int data) {
+        private float audio;
+        private float video;
+        private float data;
+        public FramesPerSecond(float audio, float video, float data) {
             this.audio = audio;
             this.video = video;
             this.data = data;
         }
         
-        public int getAudio() {
+        public float getAudio() {
             return audio;
         }
-        public int getVideo() {
+        public float getVideo() {
             return video;
         }
-        public int getData() {
+        public float getData() {
             return data;
         }
     }
@@ -222,19 +220,23 @@ public class Stream {
     public static class Status {
         private String addr;
         private String status;
-        private long bytesPerSecond;
+        private float bytesPerSecond;
         private FramesPerSecond framesPerSecond;
         private String mJsonString;
         public Status(JsonObject jsonObj) {
             addr = jsonObj.get("addr").getAsString();
             status = jsonObj.get("status").getAsString();
-            bytesPerSecond = jsonObj.get("bytesPerSecond").getAsLong();
-            
-            JsonObject framesPerSecondJsonObj = jsonObj.getAsJsonObject("framesPerSecond");
-            int audio = framesPerSecondJsonObj.get("audio").getAsInt();
-            int video = framesPerSecondJsonObj.get("video").getAsInt();
-            int data = framesPerSecondJsonObj.get("data").getAsInt();
-            framesPerSecond = new FramesPerSecond(audio, video, data);
+            try {
+                bytesPerSecond = jsonObj.get("bytesPerSecond").getAsFloat();
+                
+                JsonObject framesPerSecondJsonObj = jsonObj.getAsJsonObject("framesPerSecond");
+                float audio = framesPerSecondJsonObj.get("audio").getAsFloat();
+                float video = framesPerSecondJsonObj.get("video").getAsFloat();
+                float data = framesPerSecondJsonObj.get("data").getAsFloat();
+                framesPerSecond = new FramesPerSecond(audio, video, data);
+            } catch (NullPointerException e) {
+                e.printStackTrace();
+            }
             mJsonString = jsonObj.toString();
         }
         public String getAddr() {
@@ -243,7 +245,7 @@ public class Stream {
         public String getStatus() {
             return status;
         }
-        public long getBytesPerSecond() {
+        public float getBytesPerSecond() {
             return bytesPerSecond;
         }
         public FramesPerSecond getFramesPerSecond() {
@@ -304,20 +306,20 @@ public class Stream {
     }
 
     public String rtmpPublishUrl() throws PiliException {
-        return API.publishUrl(this.publishRtmpHost, this.id, this.publishKey, this.publishSecurity, 0);
+        return API.publishUrl(this, 0);
     }
     public Map<String, String> rtmpLiveUrls() {
-        return API.rtmpLiveUrl(this.liveRtmpHost, this.id, this.profiles);
+        return API.rtmpLiveUrl(this);
     }
     public Map<String, String> hlsLiveUrls() {
-        return API.hlsLiveUrl(this.liveHttpHost, this.id, this.profiles);
+        return API.hlsLiveUrl(this);
     }
     public Map<String, String> hlsPlaybackUrls(long start, long end) throws PiliException {
-        return API.hlsPlaybackUrl(this.playbackHttpHost,  this.id, start, end,  this.profiles);
+        return API.hlsPlaybackUrl(this, start, end);
     }
 
     public Map<String, String> httpFlvLiveUrls() {
-        return API.httpFlvLiveUrl(this.liveHttpHost, this.id, this.profiles);
+        return API.httpFlvLiveUrl(this);
     }
 
     public String delete() throws PiliException {

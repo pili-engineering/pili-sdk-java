@@ -476,29 +476,26 @@ public class API {
     }
     
     //Generate a RTMP publish URL
-    public static String publishUrl(String rtmpPubHost, String streamId, String publishKey, String publishSecurity, long nonce) 
+    public static String publishUrl(Stream stream, long nonce) 
             throws PiliException {
-        if (!Utils.isArgNotEmpty(rtmpPubHost)) {
-            throw new PiliException(MessageConfig.ILLEGAL_RTMP_PUBLISH_URL_MSG);
-        }
         final String defaultScheme = "rtmp";
-        if ("dynamic".equals(publishSecurity)) {
-            return generateDynamicUrl(rtmpPubHost, streamId, publishKey, nonce, defaultScheme);
-        } else if ("static".equals(publishSecurity)) {
-            return generateStaticUrl(rtmpPubHost, streamId, publishKey, defaultScheme);
+        if ("dynamic".equals(stream.getPublishSecurity())) {
+            return generateDynamicUrl(stream, nonce, defaultScheme);
+        } else if ("static".equals(stream.getPublishSecurity())) {
+            return generateStaticUrl(stream, defaultScheme);
         } else {
             // "dynamic" as default 
-            return generateDynamicUrl(rtmpPubHost, streamId, publishKey, nonce, defaultScheme);
+            return generateDynamicUrl(stream, nonce, defaultScheme);
         }
     }
 
     //Generate RTMP live play URL
-    public static Map<String, String> rtmpLiveUrl(String liveRtmpHost, String streamId, String[] profiles) {
+    public static Map<String, String> rtmpLiveUrl(Stream stream) {
         final String defaultScheme = "rtmp";
-        String baseUri = Utils.getPath(streamId);
-        String url = defaultScheme + "://" + liveRtmpHost + baseUri;
+        final String url = String.format("%s://%s/%s/%s",defaultScheme, stream.getLiveRtmpHost(), stream.getHubName(), stream.getTitle());
         Map<String, String> dictionary = new HashMap<String, String>();
         dictionary.put(Stream.ORIGIN, url);
+        String[] profiles = stream.getProfiles();
         if (profiles != null) {
             for (String p : profiles) {
                 dictionary.put(p, url + '@' + p);
@@ -508,12 +505,12 @@ public class API {
     }
 
     //Generate HLS live play URL
-    public static Map<String, String> hlsLiveUrl(String liveHttpHlsHost, String streamId, String[] profiles) {
+    public static Map<String, String> hlsLiveUrl(Stream stream) {
         final String defaultScheme = "http";
-        String baseUri = Utils.getPath(streamId);
-        final String url = defaultScheme + "://" + liveHttpHlsHost + baseUri;
+        final String url = String.format("%s://%s/%s/%s",defaultScheme, stream.getLiveHttpHost(), stream.getHubName(), stream.getTitle());
         Map<String, String> dictionary = new HashMap<String, String>();
         dictionary.put(Stream.ORIGIN, url + ".m3u8");
+        String[] profiles = stream.getProfiles();
         if (profiles != null) {
             for (String p : profiles) {
                 dictionary.put(p, url + '@' + p + ".m3u8");
@@ -523,11 +520,11 @@ public class API {
     }
 
     //Generate HLS playback URL
-    public static Map<String, String> hlsPlaybackUrl(String playbackHttpHls, String streamId, long startTime, long endTime, String[] profiles) 
+    public static Map<String, String> hlsPlaybackUrl(Stream stream, long startTime, long endTime) 
             throws PiliException {
         final String defaultScheme = "http";
-        String baseUri = Utils.getPath(streamId);
-        final String url = defaultScheme + "://" + playbackHttpHls + baseUri;
+
+        final String url = String.format("%s://%s/%s/%s",defaultScheme, stream.getPlaybackHttpHost(), stream.getHubName(), stream.getTitle());
         String queryPara = null;
         if (startTime > 0 && endTime > 0 && startTime < endTime) {
             queryPara = "?start=" +startTime + "&end=" +endTime;
@@ -536,6 +533,7 @@ public class API {
         }
         Map<String, String> dictionary = new HashMap<String, String>();
         dictionary.put(Stream.ORIGIN, url + ".m3u8" + queryPara);
+        String[] profiles = stream.getProfiles();
         if (profiles != null) {
             for (String p : profiles) {
                 dictionary.put(p, url + '@' + p + ".m3u8" + queryPara);
@@ -544,15 +542,15 @@ public class API {
         return dictionary;
     }
 
-    public static Map<String, String> httpFlvLiveUrl(String liveHttpFlvHost, String streamId, String[] profiles) {
+    public static Map<String, String> httpFlvLiveUrl(Stream stream) {
         /* 
          * http://liveHttpFlvHost/hub/title@480p.flv
          */
         final String defaultScheme = "http";
-        String baseUri = Utils.getPath(streamId);
-        final String url = defaultScheme + "://" + liveHttpFlvHost + baseUri;
+        final String url = String.format("%s://%s/%s/%s",defaultScheme, stream.getLiveHttpHost(), stream.getHubName(), stream.getTitle());
         Map<String, String> dictionary = new HashMap<String, String>();
         dictionary.put(Stream.ORIGIN, url + ".flv");
+        String[] profiles = stream.getProfiles();
         if (profiles != null) {
             for (String p : profiles) {
                 dictionary.put(p, url + '@' + p + ".flv");
@@ -561,22 +559,22 @@ public class API {
         return dictionary;
     }
 
-    private static String generateStaticUrl(String rtmpPubHost, String streamId, String publishKey, String scheme) {
-        return String.format("%s://%s%s?key=%s", scheme, rtmpPubHost, Utils.getPath(streamId), publishKey);
+    private static String generateStaticUrl(Stream stream, String scheme) {
+        return String.format("%s://%s/%s/%s?key=%s", scheme, stream.getPublishRtmpHost(), stream.getHubName(), stream.getTitle(), stream.getPublishKey());
     }
 
-    private static String generateDynamicUrl(String rtmpPubHost, String streamId, String publishKey, long nonce, String scheme) throws PiliException {
+    private static String generateDynamicUrl(Stream stream, long nonce, String scheme) throws PiliException {
         if (nonce <= 0) {
             nonce = System.currentTimeMillis() / 1000; // the unit should be second
         }
-        String baseUri = Utils.getPath(streamId) + "?nonce=" + nonce;
+        final String baseUri = "/" + stream.getHubName() + "/" + stream.getTitle() + "?nonce=" + nonce;
         String publishToken = null;
         try {
-            publishToken = Credentials.sign(publishKey, baseUri);
+            publishToken = Credentials.sign(stream.getPublishKey(), baseUri);
         } catch (SignatureException e) {
             e.printStackTrace();
             throw new PiliException(e);
         }
-        return String.format("%s://%s%s&token=%s", scheme, rtmpPubHost, baseUri, publishToken);
+        return String.format("%s://%s%s&token=%s", scheme, stream.getPublishRtmpHost(), baseUri, publishToken);
     }
 }

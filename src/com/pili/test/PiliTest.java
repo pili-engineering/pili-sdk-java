@@ -22,7 +22,6 @@ import com.pili.Stream.SnapshotResponse;
 import com.pili.Stream.Status;
 import com.pili.Stream.StreamList;
 import com.qiniu.Credentials;
-import com.qiniu.Credentials.MacKeys;
 
 import common.Config;
 import common.MessageConfig;
@@ -34,7 +33,7 @@ public class PiliTest {
 
     // Replace with your hub name
     public static final String HUB_NAME = "hubName";
-    
+
     private static final String INVALID_STREAM_ID = "_invalidStreamId";
     private static final String INVALID_HUB_NAME = "_invalidHubName";
     private static final String INVALID_PUBLISH_SECURITY = "_invalidPublisSecurity";
@@ -55,16 +54,19 @@ public class PiliTest {
     private static final String PRE_STREAM_PRESET_PUBLISH_SECURITY = "static";
     private static final String PRE_STREAM_PRESET_TITLE = "test4Title";
 
-    private static final String EXPECTED_BASE_PUBLISH_URL = "rtmp://" + "xxx.pub.z1.pili.qiniup.com" + "/" + HUB_NAME + "/" + PRE_STREAM_PRESET_TITLE;
+    private static final String EXPECTED_BASE_PUBLISH_URL = "rtmp://" + "xxx.publish.z1.pili.qiniup.com" + "/" + HUB_NAME + "/" + PRE_STREAM_PRESET_TITLE;
     private static final String EXPECTED_BASE_RTMP_LIVEURL = "rtmp://" + "xxx.live1-rtmp.z1.pili.qiniucdn.com" + "/" + HUB_NAME;
     private static final String EXPECTED_BASE_HLS_LIVEURL = "http://" + "xxx.live1-http.z1.pili.qiniucdn.com" + "/" + HUB_NAME;
     private static final String EXPECTED_BASE_FLV_LIVEURL = "http://" + "xxx.live1-http.z1.pili.qiniucdn.com" + "/" + HUB_NAME;
     private static final String EXPECTED_SAVEAS_BASE_URL = "http://" + "xxx.ts.z1.pili.qiniucdn.com" + "/" + HUB_NAME;
 
-    private Credentials mCredentials = new Credentials(new MacKeys(ACCESS_KEY, SECRET_KEY));
+    private Credentials mCredentials = new Credentials(ACCESS_KEY, SECRET_KEY);
     private Hub mHub = new Hub(mCredentials, HUB_NAME);
     private Stream mStream = null;
-    private List<Stream> mTestCreatedStreamList = new ArrayList<Stream>();;
+    private List<Stream> mTestCreatedStreamList = new ArrayList<Stream>();
+    static {
+        Configuration.getInstance().setAPIHost("pili-lte.qiniuapi.com");
+    }
 
     @Before
     public void prepareStream() {
@@ -267,10 +269,10 @@ public class PiliTest {
             assertNotNull(streamStatus);
             assertNotNull(streamStatus.getAddr());
             assertEquals(STREAM_STATUS_DISCONNECTED, streamStatus.getStatus());
-            assertEquals(0, streamStatus.getBytesPerSecond());
-            assertEquals(0, streamStatus.getFramesPerSecond().getAudio());
-            assertEquals(0, streamStatus.getFramesPerSecond().getVideo());
-            assertEquals(0, streamStatus.getFramesPerSecond().getData());
+            assertEquals(0.0f, streamStatus.getBytesPerSecond(), 0.001f);
+            assertEquals(0.0f, streamStatus.getFramesPerSecond().getAudio(), 0.001f);
+            assertEquals(0.0f, streamStatus.getFramesPerSecond().getVideo(), 0.001f);
+            assertEquals(0.0f, streamStatus.getFramesPerSecond().getData(), 0.001f);
         } catch (PiliException e) {
         }
     }

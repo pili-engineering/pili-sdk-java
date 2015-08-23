@@ -13,7 +13,6 @@ import com.pili.Stream.SnapshotResponse;
 import com.pili.Stream.Status;
 import com.pili.Stream.StreamList;
 import com.qiniu.Credentials;
-import com.qiniu.Credentials.MacKeys;
 
 public class Example {
     // Replace with your keys here
@@ -38,7 +37,7 @@ public class Example {
         //////////////////////////////////////////////////////////////////////////////////////////
 
         // Instantiate an Hub object
-        Credentials credentials = new Credentials(new MacKeys(AK, SK)); // Credentials Object
+        Credentials credentials = new Credentials(AK, SK); // Credentials Object
         Hub hub = new Hub(credentials, HUB_NAME);
 
         // Create a new Stream
@@ -191,6 +190,7 @@ public class Example {
             Stream newStream = stream.update(newPublishKey, newPublishSecurity, newDisabled);
             System.out.println("Stream update()");
             System.out.println(newStream.toJsonString());
+            stream = newStream;
             /*
             {
                 "id":"z1.test-hub.55d80075e3ba5723280000d2",
