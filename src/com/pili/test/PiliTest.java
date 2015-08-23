@@ -690,21 +690,6 @@ public class PiliTest {
         }
     }
 
-    @Test
-    public void testConfig() {
-        final String testKey = "test_key";
-        final String testValue00 = "test_value00";
-        final String testValue11 = "test_value11";
-        Configuration.getInstance().setString(testKey, testValue00);
-        mHub.config(testKey, testValue00);
-        assertEquals(testValue00, Configuration.getInstance().getString(testKey));
-
-        Configuration.getInstance().setString(testKey, testValue11);
-        mHub.config(testKey, testValue11);
-        assertEquals(testValue11, Configuration.getInstance().getString(testKey));
-
-    }
-
     @After
     public void clear() {
         if (mStream != null) {

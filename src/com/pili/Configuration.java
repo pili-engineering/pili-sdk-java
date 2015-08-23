@@ -1,7 +1,7 @@
 package com.pili;
 
-import java.util.HashMap;
-import java.util.Map;
+import common.Config;
+import common.Utils;
 
 public class Configuration {
     private Configuration() {}
@@ -14,79 +14,25 @@ public class Configuration {
         return ConfigurationHolder.instance;
     }
 
-    private Map<String, Object> mMap = new HashMap<String, Object>();
+    boolean USE_HTTPS = Config.DEFAULT_USE_HTTPS;
+    String API_HOST = Config.DEFAULT_API_HOST;
+    String API_VERSION = Config.DEFAULT_API_VERSION;
 
-    public static final String KEY_API_HOST = "api_host";
-    public static final String KEY_API_VERSION = "api_version";
-    public static final String KEY_USE_HTTPS = "use_https";
-
-    public final boolean containsKey(String name) {
-        return mMap.containsKey(name);
-    }
-
-    Map<String, Object> getMap() {
-        return mMap;
-    }
-
-    /**
-     * Returns the value of an integer key.
-     */
-    public final int getInteger(String name) {
-        return ((Integer)mMap.get(name)).intValue();
-    }
-
-    /**
-     * Returns the value of an Boolean key.
-     */
-    public final boolean getBoolean(String name) {
-        return ((Boolean)mMap.get(name)).booleanValue();
-    }
-
-    /**
-     * Returns the value of a string key.
-     */
-    public final String getString(String name) {
-        return mMap.get(name).toString();
-    }
-
-    /**
-     * Returns the value of an String key, or the default value if the
-     * key is missing or is for another type value.
-     */
-    public final String getString(String name, String defaultValue) {
-        try {
-            return getString(name);
+    public void setAPIHost(String apiHost) {
+        if (!Utils.isArgNotEmpty(apiHost)) {
+            throw new IllegalArgumentException("Illegal API Host:" + apiHost);
         }
-        catch (NullPointerException  e) { /* no such field */ }
-        catch (ClassCastException e) { /* field of different type */ }
-        return defaultValue;
+        API_HOST = apiHost;
     }
 
-    /**
-     * Sets the value of an integer key.
-     */
-    public final void setInteger(String name, int value) {
-        mMap.put(name, Integer.valueOf(value));
+    public void setAPIVersion(String apiVersion) {
+        if (!Utils.isArgNotEmpty(apiVersion)) {
+            throw new IllegalArgumentException("Illegal API Version:" + apiVersion);
+        }
+        API_VERSION = apiVersion;
     }
 
-    /**
-     * Sets the value of an Boolean key.
-     */
-    public final void setBoolean(String name, Boolean value) {
-        mMap.put(name, Boolean.valueOf(value));
-    }
-
-    /**
-     * Sets the value of a string key.
-     */
-    public final void setString(String name, String value) {
-        mMap.put(name, value);
-    }
-
-    /**
-     * Sets the value of a Object key.
-     */
-    public final void setValue(String name, Object value) {
-        mMap.put(name, value);
-    }
+//    public void setHttpsEnabled(boolean enabled) {
+//        USE_HTTPS = enabled;
+//    }
 }

@@ -21,11 +21,6 @@ public class Hub {
         mHubName = hubName;
     }
 
-    public void config(String key, Object value) {
-        Configuration.getInstance().setValue(key, value);
-        API.config();
-    }
-
     public Stream createStream() throws PiliException {
         return API.createStream(mCredentials, mHubName, null, null, null);
     }

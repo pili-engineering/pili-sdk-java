@@ -28,18 +28,16 @@ import common.MessageConfig;
 import common.Utils;
 
 public class API {
-    private static String API_BASE_URL = 
-            String.format("http://%s/%s", Config.DEFAULT_API_HOST, Config.DEFAULT_API_VERSION);
+    private static final String API_BASE_URL = String.format("%s://%s/%s",
+            Configuration.getInstance().USE_HTTPS ? "https" : "http",
+            Configuration.getInstance().API_HOST, 
+            Configuration.getInstance().API_VERSION);
 
     private static final OkHttpClient mOkHttpClient = new OkHttpClient();
-    public static void config() {
-        String apiHost = Configuration.getInstance().getString(Configuration.KEY_API_HOST, Config.DEFAULT_API_HOST);
-        String apiVersion = Configuration.getInstance().getString(Configuration.KEY_API_VERSION, Config.DEFAULT_API_VERSION);
-        API_BASE_URL = String.format("http://%s/%s", apiHost, apiVersion);
-    }
 
     // Create a new stream
     public static Stream createStream(Credentials credentials, String hubName, String title, String publishKey, String publishSecurity) throws PiliException {
+//        System.out.println("createStream:" + API_BASE_URL);
         String urlStr = API_BASE_URL + "/streams";
         JsonObject json = new JsonObject();
         json.addProperty("hub", hubName);
