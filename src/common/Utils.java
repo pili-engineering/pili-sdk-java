@@ -21,9 +21,9 @@ public class Utils {
         return arg != null && !arg.trim().isEmpty();
     }
 
-    public static String getPath(String streamId) {
-        String[] res = streamId.split("\\.");
-        // res[1] -> hub, res[2] -> title
-        return String.format("/%s/%s", res[1], res[2]);
-    }
+//    public static String getPath(String streamId) {
+//        String[] res = streamId.split("\\.");
+//        // res[1] -> hub, res[2] -> title
+//        return String.format("/%s/%s", res[1], res[2]);
+//    }
 }
