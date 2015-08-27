@@ -28,7 +28,7 @@ public class Example {
     // pili-lte.qiniuapi.com is the latest RC version
     //
     // static {
-    //     Configuration.getInstance().setAPIHost("pili-lte.qiniuapi.com"); // default
+    //     Configuration.getInstance().setAPIHost("pili.qiniuapi.com"); // default
     // }
 
     public static void main(String[] args) {
