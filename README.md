@@ -86,7 +86,7 @@ If you want to run the SDK on JDK 1.6 environment, you can download the compatib
   // pili-lte.qiniuapi.com is the latest RC version
   //
   // static {
-  //    Configuration.getInstance().setAPIHost("pili-lte.qiniuapi.com"); // default
+  //    Configuration.getInstance().setAPIHost("pili.qiniuapi.com"); // default
   // }
 ```
 
