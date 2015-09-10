@@ -5,6 +5,6 @@
 	<classpathentry kind="lib" path="libs/gson-2.2.4.jar"/>
 	<classpathentry kind="lib" path="libs/okhttp-2.4.0.jar"/>
 	<classpathentry kind="lib" path="libs/okio-1.5.0.jar"/>
-	<classpathentry kind="lib" path="libs/pili-sdk-java-v1.5.0.jar"/>
+	<classpathentry kind="lib" path="libs/pili-sdk-java-v1.5.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

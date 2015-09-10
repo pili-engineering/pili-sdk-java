@@ -29,8 +29,11 @@ public class Stream {
     private String[] profiles;
     private String publishRtmpHost;
     private String liveRtmpHost;
-    private String liveHttpHost;
-    private String playbackHttpHost;
+//    private String liveHttpHost;
+    private String liveHdlHost;
+    private String liveHlsHost;
+    private String playbackHlshost;
+//    private String playbackHttpHost;
 
     public Stream(JsonObject jsonObj) {
 //        System.out.println("Stream:" + jsonObj.toString());
@@ -55,11 +58,14 @@ public class Stream {
             publishRtmpHost = publish.get("rtmp").getAsString();
         }
         if (live != null) {
+            liveHdlHost = live.get("hdl").getAsString();
+            liveHlsHost = live.get("hls").getAsString();
             liveRtmpHost = live.get("rtmp").getAsString();
-            liveHttpHost = live.get("http").getAsString();
+//            liveHttpHost = live.get("http").getAsString();
         }
         if (playback != null) {
-            playbackHttpHost = playback.get("http").getAsString();
+//            playbackHttpHost = playback.get("http").getAsString();
+            playbackHlshost = playback.get("hls").getAsString();
         }
 
         mStreamJsonStr = jsonObj.toString();
@@ -79,11 +85,22 @@ public class Stream {
     public String getLiveRtmpHost() {
         return liveRtmpHost;
     }
-    public String getLiveHttpHost() {
-        return liveHttpHost;
+
+//    public String getLiveHttpHost() {
+//        return liveHttpHost;
+//    }
+//    public String getPlaybackHttpHost() {
+//        return playbackHttpHost;
+//    }
+ 
+    public String getPlaybackHlshost() {
+        return playbackHlshost;
     }
-    public String getPlaybackHttpHost() {
-        return playbackHttpHost;
+    public String getLiveHdlHost() {
+        return liveHdlHost;
+    }
+    public String getLiveHlsHost() {
+        return liveHlsHost;
     }
     public String getStreamId() {
         return id;
@@ -222,11 +239,13 @@ public class Stream {
         private String status;
         private float bytesPerSecond;
         private FramesPerSecond framesPerSecond;
+        private String startFrom;
         private String mJsonString;
         public Status(JsonObject jsonObj) {
             addr = jsonObj.get("addr").getAsString();
             status = jsonObj.get("status").getAsString();
             try {
+                startFrom = jsonObj.get("startFrom").getAsString();
                 bytesPerSecond = jsonObj.get("bytesPerSecond").getAsFloat();
                 
                 JsonObject framesPerSecondJsonObj = jsonObj.getAsJsonObject("framesPerSecond");
@@ -250,6 +269,10 @@ public class Stream {
         }
         public FramesPerSecond getFramesPerSecond() {
             return framesPerSecond;
+        }
+        
+        public String getStartFrom() {
+            return startFrom;
         }
         
         @Override
