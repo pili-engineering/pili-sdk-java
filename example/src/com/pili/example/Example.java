@@ -69,7 +69,7 @@ public class Example {
                          "rtmp":"ey636h.live1-rtmp.z1.pili.qiniucdn.com"
                      },
                      "playback":{
-                         "hls":"062l4t.playback1.z1.pili.qiniucdn.com”,
+                         "hls":"ey636h.playback1.z1.pili.qiniucdn.com”,
                      }
                  }
              }
@@ -104,7 +104,7 @@ public class Example {
                          "rtmp":"ey636h.live1-rtmp.z1.pili.qiniucdn.com"
                      },
                      "playback":{
-                         "hls":"062l4t.playback1.z1.pili.qiniucdn.com”
+                         "hls":"ey636h.playback1.z1.pili.qiniucdn.com”
                      }
                  }
              }
@@ -167,7 +167,7 @@ public class Example {
                          "rtmp":"ey636h.live1-rtmp.z1.pili.qiniucdn.com"
                      },
                      "playback":{
-                         "hls":"062l4t.playback1.z1.pili.qiniucdn.com”
+                         "hls":"ey636h.playback1.z1.pili.qiniucdn.com”
                      }
                  }
              }
@@ -202,7 +202,7 @@ public class Example {
                          "rtmp":"ey636h.live1-rtmp.z1.pili.qiniucdn.com"
                      },
                      "playback":{
-                         "hls":"062l4t.playback1.z1.pili.qiniucdn.com”
+                         "hls":"ey636h.playback1.z1.pili.qiniucdn.com”
                      }
                  }
              }
