@@ -131,7 +131,7 @@ If you want to run the SDK on JDK 1.6 environment, you can download the compatib
                    "rtmp":"ey636h.live1-rtmp.z1.pili.qiniucdn.com"
                },
                "playback":{
-                   "hls":"ey636h.playback1.z1.pili.qiniucdn.com”,
+                   "hls":"ey636h.playback1.z1.pili.qiniucdn.com”
                }
            }
        }
@@ -179,7 +179,7 @@ or
                   "rtmp":"ey636h.live1-rtmp.z1.pili.qiniucdn.com"
              },
              "playback":{
-                  "hls":"ey636h.playback1.z1.pili.qiniucdn.com”,
+                  "hls":"ey636h.playback1.z1.pili.qiniucdn.com”
              }
          }
      }
@@ -258,7 +258,7 @@ System.out.println(streamJsonString);
                   "rtmp":"ey636h.live1-rtmp.z1.pili.qiniucdn.com"
              },
              "playback":{
-                  "hls":"ey636h.playback1.z1.pili.qiniucdn.com”,
+                  "hls":"ey636h.playback1.z1.pili.qiniucdn.com”
              }
          }
      }
@@ -296,7 +296,7 @@ try {
                   "rtmp":"ey636h.live1-rtmp.z1.pili.qiniucdn.com"
              },
              "playback":{
-                  "hls":"ey636h.playback1.z1.pili.qiniucdn.com”,
+                  "hls":"ey636h.playback1.z1.pili.qiniucdn.com”
              }
          }
      }
