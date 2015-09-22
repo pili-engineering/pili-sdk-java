@@ -1,111 +1,112 @@
-# Pili Streaming Cloud server-side library for JAVA
+# PILI直播 JAVA服务端SDK 使用指南
 
-## Features
+## 功能列表
 
-- Stream Create,Get,List
-    - [x] hub.createStream()
-    - [x] hub.getStream()
-    - [x] hub.listStreams()
-- Stream operations else
-    - [x] stream.toJsonString()
-    - [x] stream.update()
-    - [x] stream.disable()
-    - [x] stream.enable()
-    - [x] stream.status()
-    - [x] stream.rtmpPublishUrl()
-    - [x] stream.rtmpLiveUrls()
-    - [x] stream.hlsLiveUrls()
-    - [x] stream.httpFlvLiveUrls()
-    - [x] stream.segments()
-    - [x] stream.hlsPlaybackUrls()
-    - [x] stream.saveAs()
-    - [x] stream.snapshot()
-    - [x] stream.delete()
+- 直播流的创建、获取和列举
+    - [x] hub.createStream()  // 创建流
+    - [x] hub.getStream()  // 获取流
+    - [x] hub.listStreams()  // 列举流
+- 直播流的其他功能
+    - [x] stream.toJsonString()  // 流信息转为json
+    - [x] stream.update()      // 更新流
+    - [x] stream.disable()      // 禁用流
+    - [x] stream.enable()    // 启用流
+    - [x] stream.status()     // 获取流状态
+    - [x] stream.rtmpPublishUrl()   // 生成推流地址
+    - [x] stream.rtmpLiveUrls()    // 生成rtmp播放地址
+    - [x] stream.hlsLiveUrls()   // 生成hls播放地址
+    - [x] stream.httpFlvLiveUrls()   // 生成flv播放地址
+    - [x] stream.segments()      // 获取流片段
+    - [x] stream.hlsPlaybackUrls()  // 生成hls回看地址
+    - [x] stream.saveAs()        // 流另存为文件
+    - [x] stream.snapshot()      // 获取快照
+    - [x] stream.delete()    // 删除流
 
-## Contents
-- [Installation](#installation)
-- [Dependencies](#dependencies)
-- [Runtime Requirements](#runtime-requirements)
-- [Usage](#usage)
-    - [Configuration](#configuration)
+## 目录
+- [安装](#installation)
+- [依赖包](#dependencies)
+- [运行要求](#runtime-requirements)
+- [用法](#usage)
+    - [配置](#configuration)
     - [Hub](#hub)
-        - [Instantiate a Pili Hub object](#instantiate-a-pili-hub-object)
-        - [Create a new Stream](#create-a-new-stream)
-        - [Get an exit Stream](#get-an-exist-stream)
-        - [List Streams](#list-streams)
-    - [Stream](#stream)
-        - [To JSON string](#to-json-string)
-        - [Update a Stream](#update-a-stream)
-        - [Disable a Stream](#disable-a-stream)
-        - [Enable a Stream](#enable-a-stream)
-        - [Get Stream status](#get-stream-status)
-        - [Generate RTMP publish URL](#generate-rtmp-publish-url)
-        - [Generate RTMP live play URLs](#generate-rtmp-live-play-urls)
-        - [Generate HLS live play URLs](#generate-hls-play-urls)
-        - [Generate Http-Flv live play URLs](#generate-http-flv-live-play-urls)
-        - [Get Stream segments](#get-stream-segments)
-        - [Generate HLS playback URLs](#generate-hls-playback-urls)
-        - [Save Stream as a file](#save-stream-as-a-file)
-        - [Snapshot Stream](#snapshot-stream)
-        - [Delete a Stream](#delete-a-stream)
+        - [实例化hub对象](#instantiate-a-pili-hub-object)
+        - [创建流](#create-a-new-stream)
+        - [获取流](#get-an-exist-stream)
+        - [列举流](#list-streams)
+    - [直播流](#stream)
+        - [流信息转为json](#to-json-string)
+        - [更新流](#update-a-stream)
+        - [禁用流](#disable-a-stream)
+        - [启用流](#enable-a-stream)
+        - [获取流状态](#get-stream-status)
+        - [生成推流地址](#generate-rtmp-publish-url)
+        - [生成rtmp播放地址](#generate-rtmp-live-play-urls)
+        - [生成hls播放地址](#generate-hls-play-urls)
+        - [生成flv播放地址](#generate-http-flv-live-play-urls)
+        - [获取流片段](#get-stream-segments)
+        - [生成hls回看地址](#generate-hls-playback-urls)
+        - [流另存为文件](#save-stream-as-a-file)
+        - [获取快照](#snapshot-stream)
+        - [删除流](#delete-a-stream)
 - [History](#history)
 
-### Installation
+<a id="installation"></a>
+### 安装
 
-You can download **pili-sdk-java-v1.5.0.jar** file in the **release** folder.
+你可以在当前发布的页面中下载 **pili-sdk-java-v1.5.0.jar** 
+<a id="dependencies"></a>
+### 依赖包
 
-### Dependencies
-
-You also need [okhttp][1], [okio][2], [Gson][3]
+你需要下载并依赖 [okhttp][1], [okio][2], [Gson][3]
 
 [1]: http://square.github.io/okhttp/
 [2]: https://github.com/square/okio
 [3]: https://code.google.com/p/google-gson/downloads/detail?name=google-gson-2.2.4-release.zip&
+<a id="runtime-requirements"></a>
+### 运行要求
 
-### Runtime Requirements
+最低要求JDK 1.7
 
-For Java, the minimum requirement is 1.7.
-
-If you want to run the SDK on JDK 1.6 environment, you can download the compatible jar of  [okhttp](https://raw.githubusercontent.com/qiniu/java-sdk/master/libs/okhttp-2.3.0-SNAPSHOT.jar) and [okio](https://raw.githubusercontent.com/qiniu/java-sdk/master/libs/okio-1.3.0-SNAPSHOT.jar).
-
-### Usage
-
-#### Configuration
+如果你需要在1.6的JDK下使用, 你需要下载并依赖这些jar包: [okhttp](https://raw.githubusercontent.com/qiniu/java-sdk/master/libs/okhttp-2.3.0-SNAPSHOT.jar) 和 [okio](https://raw.githubusercontent.com/qiniu/java-sdk/master/libs/okio-1.3.0-SNAPSHOT.jar).
+<a id="usage"></a>
+### 用法
+<a id="configuration"></a>
+#### 配置
 
 ```JAVA
-  // Replace with your keys
+  // 替换为你的AK和SK
   public static final String ACCESS_KEY = "Qiniu_AccessKey";
   public static final String SECRET_KEY = "Qiniu_SecretKey";
   
-  // Replace with your hub name
+  // 替换为你的HUB
   public static final String HUB = "Pili_Hub_Name"; // The Hub must be exists before use
   
-  // Change API host as necessary
+  // 如果需要可以更改 API host
   //
-  // pili.qiniuapi.com as default
-  // pili-lte.qiniuapi.com is the latest RC version
+  // 默认为 pili.qiniuapi.com
+  // pili-lte.qiniuapi.com 为最新版本
   //
   // static {
-  //    Configuration.getInstance().setAPIHost("pili.qiniuapi.com"); // default
+  //    Configuration.getInstance().setAPIHost("pili.qiniuapi.com"); // 默认
   // }
 ```
 
 #### Hub
-
-##### Instantiate a Pili Hub object
+<a id="instantiate-a-pili-hub-object"></a>
+##### 实例化hub对象
 ```JAVA
-  // Instantiate an Hub object
-  Credentials credentials = new Credentials(ACCESS_KEY, SECRET_KEY); // Credentials Object
-  Hub hub = new Hub(credentials, HUB_NAME); // Hub Object
+  // 实例化hub对象
+  Credentials credentials = new Credentials(ACCESS_KEY, SECRET_KEY); 
+  Hub hub = new Hub(credentials, HUB_NAME); 
 ```
-
-##### Create a new stream
+<a id="create-a-new-stream"></a>
+##### 创建流
 
 ```JAVA
 // Create a new Stream
-  String title           = null;     // optional, auto-generated as default
-  String publishKey      = null;     // optional, auto-generated as default
-  String publishSecurity = null;     // optional, can be "dynamic" or "static", "dynamic" as default
+  String title           = null;     // 可选，默认自动生成
+  String publishKey      = null;     // 可选，默认自动生成
+  String publishSecurity = null;     // 可选, 可以为 "dynamic" 或 "static", 默认为 "dynamic"
   Stream stream = null;
   try {
       stream = hub.createStream(title, publishKey, publishSecurity);
@@ -149,8 +150,8 @@ or
     e.printStackTrace();
   }
 ```
-
-##### Get an exist Stream
+<a id="get-an-exist-stream"></a>
+##### 获取流
 
 ```JAVA
   String streamId = stream.getStreamId();
@@ -187,14 +188,14 @@ or
     e.printStackTrace();
 }
 ```
-
-##### List Streams
+<a id="list-streams"></a>
+##### 列举流
 
 ```JAVA
   try {
-      String marker      = null;      // optional
-      long limit         = 0;         // optional
-      String titlePrefix = null;      // optional
+      String marker      = null;      // 可选
+      long limit         = 0;         // 可选
+      String titlePrefix = null;      // 可选
 
       StreamList streamList = hub.listStreams(marker, limit, titlePrefix);
       System.out.println("hub.listStreams()");
@@ -227,9 +228,10 @@ or
     e.printStackTrace();
   }
 ```
-#### Stream
-
-##### To JSON string
+<a id="stream"></a>
+#### 直播流
+<a id="to-json-string"></a>
+##### 流信息转为json
 
 ```JAVA
 String streamJsonString = stream.toJsonString();
@@ -261,13 +263,14 @@ System.out.println(streamJsonString);
      }
  */
 ```
-##### Update a Stream
+<a id="update-a-stream"></a>
+##### 更新流
 
 ```JAVA
-// Update a Stream
-String newPublishKey       = "new_secret_words"; // optional
-String newPublishSecurity  = "static";           // optional, can be "dynamic" or "static"
-boolean newDisabled        = true;               // optional, can be "true" of "false"
+// 更新流属性，可以更改PublishKey、PublishSecurity以及Disabled状态
+String newPublishKey       = "new_secret_words"; // 可选
+String newPublishSecurity  = "static";           // 可选, 可以是"dynamic" 或 "static"
+boolean newDisabled        = true;               // 可选, 可以是"true" 或 "false"
 try {
     Stream newStream = stream.update(newPublishKey, newPublishSecurity, newDisabled);
     System.out.println("Stream update()");
@@ -302,11 +305,11 @@ try {
     e.printStackTrace();
 }
 ```
-
-##### Disable a Stream
+<a id="disable-a-stream"></a>
+##### 禁用流
 
 ```JAVA
-// Disable a Stream
+// 禁用流
 try {
     Stream disabledStream = stream.disable();
     System.out.println("Stream disable()");
@@ -320,11 +323,11 @@ try {
     e.printStackTrace();
 }
 ```
-
-##### Enable a Stream
+<a id="enable-a-stream"></a>
+##### 启用流
 
 ```JAVA
-// Enable a Stream
+// 启用流
 try {
     Stream enabledStream = stream.enable();
     System.out.println("Stream enable()");
@@ -338,11 +341,11 @@ try {
     e.printStackTrace();
 }
 ```
-
-##### Get Stream status
+<a id="get-stream-status"></a>
+##### 获取流状态
 
 ```JAVA
-// Get Stream status
+// 获取流的状态判定推流端是否断开
 try {
     Status status = stream.status();
     System.out.println("Stream status()");
@@ -364,11 +367,11 @@ try {
     e.printStackTrace();
 }
 ```
-
-##### Generate RTMP publish URL
+<a id="generate-rtmp-publish-url"></a>
+##### 生成推流地址
 
 ```JAVA
-// Generate RTMP publish URL
+// 生成推流地址
 try {
     String publishUrl = stream.rtmpPublishUrl();
     System.out.println("Stream rtmpPublishUrl()");
@@ -380,41 +383,41 @@ try {
     e.printStackTrace();
 }
 ```
-
-##### Generate RTMP live play URLs
+<a id="generate-rtmp-live-play-urls"></a>
+##### 生成rtmp播放地址
 
 ```JAVA
-// Generate RTMP live play URLs
+// 生成rtmp播放地址
 String originUrl = stream.rtmpLiveUrls().get(Stream.ORIGIN);
 System.out.println("Stream rtmpLiveUrls()");
 System.out.println(originUrl);
 // rtmp://ey636h.live1-rtmp.z1.pili.qiniucdn.com/test-hub/55d8113ee3ba5723280000dc
 ```
-
-##### Generate HLS live play URLs
+<a id="generate-hls-play-urls"></a>
+##### 生成hls播放地址
 
 ```JAVA
-// Generate HLS play URLs
+// 生成hls播放地址
 String originLiveHlsUrl = stream.hlsLiveUrls().get(Stream.ORIGIN);
 System.out.println("Stream hlsLiveUrls()");
 System.out.println(originLiveHlsUrl);
 // http://ey636h.live1-http.z1.pili.qiniucdn.com/test-hub/55d8119ee3ba5723280000dd.m3u8
 ```
-
-##### Generate Http Flv live play URLs
+<a id="generate-http-flv-live-play-urls"></a>
+##### 生成flv播放地址
 
 ```JAVA
-// Generate Http-Flv live play URLs
+// 生成flv播放地址
 String originLiveFlvUrl = stream.httpFlvLiveUrls().get(Stream.ORIGIN);
 System.out.println("Stream httpFlvLiveUrls()");
 System.out.println(originLiveFlvUrl);
 // http://ey636h.live1-http.z1.pili.qiniucdn.com/test-hub/55d8119ee3ba5723280000dd.flv
 ```
-
-##### Get Stream segments
+<a id="get-stream-segments"></a>
+##### 获取流片段
 
 ```JAVA
-// Get Stream segments
+// 获取直播流每次推流开始和结束时间点的集合
 long start = 0;    // optional, in second, unix timestamp
 long end   = 0;    // optional, in second, unix timestamp
 int limit  = 0;    // optional, int
@@ -433,11 +436,11 @@ try {
     e.printStackTrace();
 }
 ```
-
-##### Generate HLS playback URLs
+<a id="generate-hls-playback-urls"></a>
+##### 生成hls回看地址
 
 ```JAVA
-// Generate HLS playback URLs
+// 生成hls回看地址
 long startHlsPlayback     = 1440315411;  // required, in second, unix timestamp
 long endHlsPlayback       = 1440315435;  // required, in second, unix timestamp
 try {
@@ -451,11 +454,11 @@ try {
     e.printStackTrace();
 }
 ```
-
-##### Save Stream as a file
+<a id="save-stream-as-a-file"></a>
+##### 流另存为文件
 
 ```JAVA
-// Save Stream as a file
+// 将流另存为一个文件
 String saveAsFormat    = "mp4";                            // required
 String saveAsName      = "videoName" + "." + saveAsFormat; // required
 long saveAsStart       = 1440315411;                       // required, in second, unix timestamp
@@ -478,18 +481,18 @@ try {
 }
 ```
 
-While invoking `saveAs()` and `snapshot()`, you can get processing state via Qiniu fop service using `persistentId`.   
+当使用 `saveAs()` 和 `snapshot()` 的时候, 由于是异步处理， 你可以在七牛的FOP接口上使用 `persistentId`来获取处理进度.参考如下：   
 API: `curl -D GET http://api.qiniu.com/status/get/prefop?id={persistentId}`  
-Doc reference: <http://developer.qiniu.com/docs/v6/api/overview/fop/persistent-fop.html#pfop-status>  
-
-##### Snapshot Stream
+文档说明: <http://developer.qiniu.com/docs/v6/api/overview/fop/persistent-fop.html#pfop-status>  
+<a id="snapshot-stream"></a>
+##### 获取快照
 
 ```JAVA
 // Snapshot Stream
-String format    = "jpg";                      // required
-String name      = "imageName" + "." + format; // required
-long time        = 1440315411;                 // optional, in second, unix timestamp
-String notifyUrl = null;                       // optional
+String format    = "jpg";                      // 必须
+String name      = "imageName" + "." + format; // 必须
+long time        = 1440315411;                 // 可选, 单位是秒, 数值是unix时间戳
+String notifyUrl = null;                       // 可选
 
 try {
     SnapshotResponse response = stream.snapshot(name, format, time, notifyUrl);
@@ -506,11 +509,11 @@ try {
     e.printStackTrace();
 }
 ```
-
-##### Delete a stream
+<a id="delete-a-stream"></a>
+##### 删除流
 
 ```JAVA
-// Delete a Stream
+// 删除流
 try {
     String res = stream.delete();
     System.out.println("Stream delete()");
