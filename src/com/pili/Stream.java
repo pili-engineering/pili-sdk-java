@@ -29,11 +29,9 @@ public class Stream {
     private String[] profiles;
     private String publishRtmpHost;
     private String liveRtmpHost;
-//    private String liveHttpHost;
     private String liveHdlHost;
     private String liveHlsHost;
     private String playbackHlshost;
-//    private String playbackHttpHost;
 
     public Stream(JsonObject jsonObj) {
 //        System.out.println("Stream:" + jsonObj.toString());
@@ -61,10 +59,8 @@ public class Stream {
             liveHdlHost = live.get("hdl").getAsString();
             liveHlsHost = live.get("hls").getAsString();
             liveRtmpHost = live.get("rtmp").getAsString();
-//            liveHttpHost = live.get("http").getAsString();
         }
         if (playback != null) {
-//            playbackHttpHost = playback.get("http").getAsString();
             playbackHlshost = playback.get("hls").getAsString();
         }
 
@@ -86,13 +82,6 @@ public class Stream {
         return liveRtmpHost;
     }
 
-//    public String getLiveHttpHost() {
-//        return liveHttpHost;
-//    }
-//    public String getPlaybackHttpHost() {
-//        return playbackHttpHost;
-//    }
- 
     public String getPlaybackHlshost() {
         return playbackHlshost;
     }

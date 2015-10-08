@@ -64,12 +64,12 @@ public class Example {
                         "rtmp":"ey636h.publish.z1.pili.qiniup.com"
                      },
                      "live":{
-                         "hdl":"ey636h.live1-hdl.z1.pili.qiniucdn.com”,
-                         "hls":"ey636h.live1-hls.z1.pili.qiniucdn.com”,
+                         "hdl":"ey636h.live1-hdl.z1.pili.qiniucdn.com",
+                         "hls":"ey636h.live1-hls.z1.pili.qiniucdn.com",
                          "rtmp":"ey636h.live1-rtmp.z1.pili.qiniucdn.com"
                      },
                      "playback":{
-                         "hls":"ey636h.playback1.z1.pili.qiniucdn.com”,
+                         "hls":"ey636h.playback1.z1.pili.qiniucdn.com"
                      }
                  }
              }
@@ -99,12 +99,12 @@ public class Example {
                         "rtmp":"ey636h.publish.z1.pili.qiniup.com"
                      },
                      "live":{
-                         "hdl":"ey636h.live1-hdl.z1.pili.qiniucdn.com”,
-                         "hls":"ey636h.live1-hls.z1.pili.qiniucdn.com”,
+                         "hdl":"ey636h.live1-hdl.z1.pili.qiniucdn.com",
+                         "hls":"ey636h.live1-hls.z1.pili.qiniucdn.com",
                          "rtmp":"ey636h.live1-rtmp.z1.pili.qiniucdn.com"
                      },
                      "playback":{
-                         "hls":"ey636h.playback1.z1.pili.qiniucdn.com”
+                         "hls":"ey636h.playback1.z1.pili.qiniucdn.com"
                      }
                  }
              }
@@ -163,12 +163,12 @@ public class Example {
                         "rtmp":"ey636h.publish.z1.pili.qiniup.com"
                      },
                      "live":{
-                         "hdl":"ey636h.live1-hdl.z1.pili.qiniucdn.com”,
-                         "hls":"ey636h.live1-hls.z1.pili.qiniucdn.com”,
+                         "hdl":"ey636h.live1-hdl.z1.pili.qiniucdn.com",
+                         "hls":"ey636h.live1-hls.z1.pili.qiniucdn.com",
                          "rtmp":"ey636h.live1-rtmp.z1.pili.qiniucdn.com"
                      },
                      "playback":{
-                         "hls":"ey636h.playback1.z1.pili.qiniucdn.com”
+                         "hls":"ey636h.playback1.z1.pili.qiniucdn.com"
                      }
                  }
              }
@@ -198,12 +198,12 @@ public class Example {
                         "rtmp":"ey636h.publish.z1.pili.qiniup.com"
                      },
                      "live":{
-                         "hdl":"ey636h.live1-hdl.z1.pili.qiniucdn.com”,
-                         "hls":"ey636h.live1-hls.z1.pili.qiniucdn.com”,
+                         "hdl":"ey636h.live1-hdl.z1.pili.qiniucdn.com",
+                         "hls":"ey636h.live1-hls.z1.pili.qiniucdn.com",
                          "rtmp":"ey636h.live1-rtmp.z1.pili.qiniucdn.com"
                      },
                      "playback":{
-                         "hls":"ey636h.playback1.z1.pili.qiniucdn.com”
+                         "hls":"ey636h.playback1.z1.pili.qiniucdn.com"
                      }
                  }
              }
