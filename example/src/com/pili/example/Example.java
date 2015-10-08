@@ -64,11 +64,12 @@ public class Example {
                         "rtmp":"ey636h.publish.z1.pili.qiniup.com"
                      },
                      "live":{
-                         "http":"ey636h.live1-http.z1.pili.qiniucdn.com",
+                         "hdl":"ey636h.live1-hdl.z1.pili.qiniucdn.com",
+                         "hls":"ey636h.live1-hls.z1.pili.qiniucdn.com",
                          "rtmp":"ey636h.live1-rtmp.z1.pili.qiniucdn.com"
                      },
                      "playback":{
-                         "http":"ey636h.playback1.z1.pili.qiniucdn.com"
+                         "hls":"ey636h.playback1.z1.pili.qiniucdn.com"
                      }
                  }
              }
@@ -98,11 +99,12 @@ public class Example {
                         "rtmp":"ey636h.publish.z1.pili.qiniup.com"
                      },
                      "live":{
-                         "http":"ey636h.live1-http.z1.pili.qiniucdn.com",
+                         "hdl":"ey636h.live1-hdl.z1.pili.qiniucdn.com",
+                         "hls":"ey636h.live1-hls.z1.pili.qiniucdn.com",
                          "rtmp":"ey636h.live1-rtmp.z1.pili.qiniucdn.com"
                      },
                      "playback":{
-                         "http":"ey636h.playback1.z1.pili.qiniucdn.com"
+                         "hls":"ey636h.playback1.z1.pili.qiniucdn.com"
                      }
                  }
              }
@@ -114,11 +116,12 @@ public class Example {
 
         // List streams
         try {
+            String status      = null;      // optional, can only be "connected"
             String marker      = null;      // optional
             long limit         = 0;         // optional
             String titlePrefix = null;      // optional
 
-            StreamList streamList = hub.listStreams(marker, limit, titlePrefix);
+            StreamList streamList = hub.listStreams(status, marker, limit, titlePrefix);
             System.out.println("hub.listStreams()");
             System.out.println("marker:" + streamList.getMarker());
             List<Stream> list = streamList.getStreams();
@@ -160,11 +163,12 @@ public class Example {
                         "rtmp":"ey636h.publish.z1.pili.qiniup.com"
                      },
                      "live":{
-                         "http":"ey636h.live1-http.z1.pili.qiniucdn.com",
+                         "hdl":"ey636h.live1-hdl.z1.pili.qiniucdn.com",
+                         "hls":"ey636h.live1-hls.z1.pili.qiniucdn.com",
                          "rtmp":"ey636h.live1-rtmp.z1.pili.qiniucdn.com"
                      },
                      "playback":{
-                         "http":"ey636h.playback1.z1.pili.qiniucdn.com"
+                         "hls":"ey636h.playback1.z1.pili.qiniucdn.com"
                      }
                  }
              }
@@ -194,11 +198,12 @@ public class Example {
                         "rtmp":"ey636h.publish.z1.pili.qiniup.com"
                      },
                      "live":{
-                         "http":"ey636h.live1-http.z1.pili.qiniucdn.com",
+                         "hdl":"ey636h.live1-hdl.z1.pili.qiniucdn.com",
+                         "hls":"ey636h.live1-hls.z1.pili.qiniucdn.com",
                          "rtmp":"ey636h.live1-rtmp.z1.pili.qiniucdn.com"
                      },
                      "playback":{
-                         "http":"ey636h.hls.z1.pili.qiniucdn.com"
+                         "hls":"ey636h.playback1.z1.pili.qiniucdn.com"
                      }
                  }
              }
@@ -244,6 +249,7 @@ public class Example {
             /*
             {
                 "addr":"222.73.202.226:2572",
+                "startFrom": "2015-09-10T05:58:10.289+08:00",
                 "status":"disconnected",
                 "bytesPerSecond":0,
                 "framesPerSecond":{

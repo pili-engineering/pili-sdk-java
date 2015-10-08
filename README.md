@@ -52,7 +52,7 @@
 
 ### Installation
 
-You can download **pili-sdk-java-v1.5.0.jar** file in the **release** folder.
+You can download **pili-sdk-java-v1.5.1.jar** file in the **release** folder.
 
 ### Dependencies
 
@@ -126,11 +126,12 @@ If you want to run the SDK on JDK 1.6 environment, you can download the compatib
                   "rtmp":"ey636h.publish.z1.pili.qiniup.com"
                },
                "live":{
-                   "http":"ey636h.live1-http.z1.pili.qiniucdn.com",
+                   "hdl":"ey636h.live1-hdl.z1.pili.qiniucdn.com",
+                   "hls":"ey636h.live1-hls.z1.pili.qiniucdn.com",
                    "rtmp":"ey636h.live1-rtmp.z1.pili.qiniucdn.com"
                },
                "playback":{
-                   "http":"ey636h.playback1.z1.pili.qiniucdn.com"
+                   "hls":"ey636h.playback1.z1.pili.qiniucdn.com"
                }
            }
        }
@@ -170,14 +171,15 @@ or
         "publishSecurity":"dynamic",
         "hosts":{
             "publish":{
-                "rtmp":"ey636h.publish.z1.pili.qiniup.com"
+                  "rtmp":"ey636h.publish.z1.pili.qiniup.com"
              },
              "live":{
-                 "http":"ey636h.live1-http.z1.pili.qiniucdn.com",
-                 "rtmp":"ey636h.live1-rtmp.z1.pili.qiniucdn.com"
+                  "hdl":"ey636h.live1-hdl.z1.pili.qiniucdn.com",
+                  "hls":"ey636h.live1-hls.z1.pili.qiniucdn.com",
+                  "rtmp":"ey636h.live1-rtmp.z1.pili.qiniucdn.com"
              },
              "playback":{
-                 "http":"ey636h.playback1.z1.pili.qiniucdn.com"
+                  "hls":"ey636h.playback1.z1.pili.qiniucdn.com"
              }
          }
      }
@@ -192,11 +194,12 @@ or
 
 ```JAVA
   try {
+      String status      = null;      // optional, can only be "connected"
       String marker      = null;      // optional
       long limit         = 0;         // optional
       String titlePrefix = null;      // optional
 
-      StreamList streamList = hub.listStreams(marker, limit, titlePrefix);
+      StreamList streamList = hub.listStreams(status, marker, limit, titlePrefix);
       System.out.println("hub.listStreams()");
       System.out.println("marker:" + streamList.getMarker());
       List<Stream> list = streamList.getStreams();
@@ -248,14 +251,15 @@ System.out.println(streamJsonString);
         "publishSecurity":"dynamic",
         "hosts":{
             "publish":{
-                "rtmp":"ey636h.publish.z1.pili.qiniup.com"
+                  "rtmp":"ey636h.publish.z1.pili.qiniup.com"
              },
              "live":{
-                 "http":"ey636h.live1-http.z1.pili.qiniucdn.com",
-                 "rtmp":"ey636h.live1-rtmp.z1.pili.qiniucdn.com"
+                  "hdl":"ey636h.live1-hdl.z1.pili.qiniucdn.com",
+                  "hls":"ey636h.live1-hls.z1.pili.qiniucdn.com",
+                  "rtmp":"ey636h.live1-rtmp.z1.pili.qiniucdn.com"
              },
              "playback":{
-                 "http":"ey636h.playback1.z1.pili.qiniucdn.com"
+                  "hls":"ey636h.playback1.z1.pili.qiniucdn.com"
              }
          }
      }
@@ -285,14 +289,15 @@ try {
         "publishSecurity":"static",
         "hosts":{
             "publish":{
-                "rtmp":"ey636h.publish.z1.pili.qiniup.com"
+                  "rtmp":"ey636h.publish.z1.pili.qiniup.com"
              },
              "live":{
-                 "http":"ey636h.live1-http.z1.pili.qiniucdn.com",
-                 "rtmp":"ey636h.live1-rtmp.z1.pili.qiniucdn.com"
+                  "hdl":"ey636h.live1-hdl.z1.pili.qiniucdn.com",
+                  "hls":"ey636h.live1-hls.z1.pili.qiniucdn.com",
+                  "rtmp":"ey636h.live1-rtmp.z1.pili.qiniucdn.com"
              },
              "playback":{
-                 "http":"ey636h.hls.z1.pili.qiniucdn.com"
+                  "hls":"ey636h.playback1.z1.pili.qiniucdn.com"
              }
          }
      }
@@ -350,6 +355,7 @@ try {
     /*
     {
         "addr":"222.73.202.226:2572",
+        "startFrom": "2015-09-10T05:58:10.289+08:00",
         "status":"connected",
         "bytesPerSecond":16870.200000000001,
         "framesPerSecond":{
@@ -523,6 +529,11 @@ try {
 ```
 
 ## History
+- 1.5.1
+  - Update `Stream`'s `hosts`
+  - Add `startFrom` into `Stream status`
+  - Add `status` query parameter for `listStreams`
+
 - 1.5.0
   - Add Stream Create,Get,List
     - hub.createStream()
