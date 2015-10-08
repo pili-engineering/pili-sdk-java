@@ -34,15 +34,20 @@ public class Hub {
     }
 
     public StreamList listStreams() throws PiliException {
-        return API.listStreams(mCredentials, mHubName, null, 0, null);
+        return API.listStreams(mCredentials, mHubName, null, null, 0, null);
     }
 
     public StreamList listStreams(String marker, long limit) throws PiliException {
-        return API.listStreams(mCredentials, mHubName, marker, limit, null);
+        return API.listStreams(mCredentials, mHubName, null, marker, limit, null);
     }
 
     public StreamList listStreams(String marker, long limit, String titlePrefix) throws PiliException {
-        return API.listStreams(mCredentials, mHubName, marker, limit, titlePrefix);
+        return API.listStreams(mCredentials, mHubName, null, marker, limit, titlePrefix);
+    }
+
+    // status can only be connected
+    public StreamList listStreams(String status, String marker, long limit, String titlePrefix) throws PiliException {
+        return API.listStreams(mCredentials, mHubName, status, marker, limit, titlePrefix);
     }
 
 }

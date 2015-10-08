@@ -129,9 +129,16 @@ public class API {
     }
 
     // List stream
-    public static StreamList listStreams(Credentials credentials, String hubName, String startMarker, long limitCount, String titlePrefix) throws PiliException {
+    public static StreamList listStreams(Credentials credentials, String hubName, String status, String startMarker, long limitCount, String titlePrefix) throws PiliException {
         try {
             hubName = URLEncoder.encode(hubName, Config.UTF8);
+            if (Utils.isArgNotEmpty(status)) {
+                if ("connected".equals(status)) {
+                    status = URLEncoder.encode(status, Config.UTF8);
+                } else {
+                    throw new PiliException("status can only be connected");
+                }
+            }
             if (Utils.isArgNotEmpty(startMarker)) {
                 startMarker = URLEncoder.encode(startMarker, Config.UTF8);
             }
@@ -140,6 +147,9 @@ public class API {
             throw new PiliException(e);
         }
         String urlStr = String.format("%s/streams?hub=%s", API_BASE_URL, hubName);
+        if (Utils.isArgNotEmpty(status)) {
+            urlStr += "&status=" + status;
+        }
         if (Utils.isArgNotEmpty(startMarker)) {
             urlStr += "&marker=" + startMarker;
         }

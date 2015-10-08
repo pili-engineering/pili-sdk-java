@@ -116,11 +116,12 @@ public class Example {
 
         // List streams
         try {
+            String status      = null;      // optional, can only be "connected"
             String marker      = null;      // optional
             long limit         = 0;         // optional
             String titlePrefix = null;      // optional
 
-            StreamList streamList = hub.listStreams(marker, limit, titlePrefix);
+            StreamList streamList = hub.listStreams(status, marker, limit, titlePrefix);
             System.out.println("hub.listStreams()");
             System.out.println("marker:" + streamList.getMarker());
             List<Stream> list = streamList.getStreams();
