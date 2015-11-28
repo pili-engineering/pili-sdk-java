@@ -52,7 +52,7 @@
 
 ### Installation
 
-You can download **pili-sdk-java-v1.5.1.jar** file in the **release** folder.
+You can download **pili-sdk-java-v1.5.2.jar** file in the **release** folder.
 
 ### Dependencies
 
