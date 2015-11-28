@@ -206,16 +206,37 @@ public class Stream {
     }
 
     public static class SegmentList {
+        private long start;
+        private long end;
+        private int duration;
+
         private List<Segment> segmentList;
 
         public SegmentList(JsonObject jsonObj) {
+            start = jsonObj.get("start").getAsLong();
+            end = jsonObj.get("end").getAsLong();
+            duration = jsonObj.get("duration").getAsInt();
+
             JsonArray respArray = jsonObj.getAsJsonArray("segments");
             Iterator<JsonElement> it = respArray.iterator();
             segmentList = new ArrayList<Segment>();
+
             while (it.hasNext()) {
                 JsonObject json = it.next().getAsJsonObject();
                 segmentList.add(new Segment(json.get("start").getAsLong(), json.get("end").getAsLong()));
             }
+        }
+
+        public long getStart() {
+            return start;
+        }
+
+        public long getEnd() {
+            return end;
+        }
+
+        public int getDuration() {
+            return duration;
         }
 
         public List<Segment> getSegmentList() {
@@ -272,9 +293,11 @@ public class Stream {
 
     public static class StreamList {
         private String marker;
+        private boolean end;
         private List<Stream> itemList;
         public StreamList(JsonObject jsonObj, Credentials auth) {
             this.marker = jsonObj.get("marker").getAsString();
+            this.end = jsonObj.get("end").getAsBoolean();
 
             try {
                 JsonArray respArray = jsonObj.getAsJsonArray("items");
@@ -292,6 +315,11 @@ public class Stream {
         public String getMarker() {
             return marker;
         }
+
+        public boolean isEnd() {
+            return end;
+        }
+
         public List<Stream> getStreams() {
             return itemList;
         }
