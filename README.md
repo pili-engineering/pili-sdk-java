@@ -202,6 +202,7 @@ or
       StreamList streamList = hub.listStreams(status, marker, limit, titlePrefix);
       System.out.println("hub.listStreams()");
       System.out.println("marker:" + streamList.getMarker());
+      System.out.println("isEnd:" + streamList.isEnd());
       List<Stream> list = streamList.getStreams();
       for (Stream s : list) {
           // access the stream
@@ -209,6 +210,7 @@ or
       
       /*
        marker:10
+       isEnd:false
        stream object
        */
   } catch (PiliException e) {
@@ -426,12 +428,18 @@ long end   = 0;    // optional, in second, unix timestamp
 int limit  = 0;    // optional, int
 try {
     SegmentList segmentList = stream.segments(start, end, limit);
+    System.out.println("The earliest data of stream:" + segmentList.getStart()
+            + ",the latest data of stream:" + segmentList.getEnd());
 
+    System.out.println("The duration of the current segment:" + segmentList.getDuration());
+            
     System.out.println("Stream segments()");
     for (Segment segment : segmentList.getSegmentList()) {
         System.out.println("start:" + segment.getStart() + ",end:" + segment.getEnd());
     }
     /*
+         The earliest data of stream:1444298545,the latest data of stream:1444298612
+         The duration of the current segemnt:67
          start:1440315411,end:1440315435
      */
 } catch (PiliException e) {
@@ -452,6 +460,25 @@ try {
     System.out.println("Stream hlsPlaybackUrls()");
     System.out.println(hlsPlaybackUrl);
     // http://ey636h.playback1.z1.pili.qiniucdn.com/test-hub/55d8119ee3ba5723280000dd.m3u8?start=1440315411&end=1440315435
+} catch (PiliException e) {
+    // TODO Auto-generated catch block
+    e.printStackTrace();
+}
+```
+
+If you set illegal values to `startHlsPlayback` and `endHlsPlayback`, the query parameters of `start` and `end` will be set to -1.
+
+For example,
+```JAVA
+// both startHlsPlayback <= 0 , endHlsPlayback <= 0, and startHlsPlayback > endHlsPlayback are illegal values.
+long startHlsPlayback     = -1;  // <= 0
+long endHlsPlayback       = -1;  // <= 0
+try {
+    String hlsPlaybackUrl = stream.hlsPlaybackUrls(startHlsPlayback, endHlsPlayback).get(Stream.ORIGIN);
+    
+    System.out.println("Stream hlsPlaybackUrls()");
+    System.out.println(hlsPlaybackUrl);
+    // http://ey636h.playback1.z1.pili.qiniucdn.com/test-hub/55d8119ee3ba5723280000dd.m3u8?start=-1&end=-1
 } catch (PiliException e) {
     // TODO Auto-generated catch block
     e.printStackTrace();
@@ -529,6 +556,11 @@ try {
 ```
 
 ## History
+- 1.5.2
+  - Add `start`, `end`, and `duration` attributes into `SegmentList`
+  - Add `end` into `StreamList`
+  - Update `hlsPlaybackUrls` API
+
 - 1.5.1
   - Update `Stream`'s `hosts`
   - Add `startFrom` into `Stream status`
