@@ -539,7 +539,7 @@ public class API {
         if (startTime > 0 && endTime > 0 && startTime < endTime) {
             queryPara = "?start=" +startTime + "&end=" +endTime;
         } else {
-            throw new PiliException(MessageConfig.ILLEGAL_TIME_MSG);
+            queryPara = "?start=-1&end=-1";
         }
         Map<String, String> dictionary = new HashMap<String, String>();
         dictionary.put(Stream.ORIGIN, url + ".m3u8" + queryPara);

@@ -124,6 +124,7 @@ public class Example {
             StreamList streamList = hub.listStreams(status, marker, limit, titlePrefix);
             System.out.println("hub.listStreams()");
             System.out.println("marker:" + streamList.getMarker());
+            System.out.println("isEnd:" + streamList.isEnd());
             List<Stream> list = streamList.getStreams();
             for (Stream s : list) {
                 // access the stream
@@ -131,6 +132,7 @@ public class Example {
             
             /*
              marker:10
+             isEnd:false
              stream object
              */
         } catch (PiliException e) {
@@ -301,11 +303,18 @@ public class Example {
         try {
             SegmentList segmentList = stream.segments(start, end, limit);
 
+            System.out.println("The earliest data of stream:" + segmentList.getStart()
+                    + ",the latest data of stream:" + segmentList.getEnd());
+
+            System.out.println("The duration of the current segment:" + segmentList.getDuration());
+
             System.out.println("Stream segments()");
             for (Segment segment : segmentList.getSegmentList()) {
                 System.out.println("start:" + segment.getStart() + ",end:" + segment.getEnd());
             }
             /*
+                 The earliest data of stream:1444298545,the latest data of stream:1444298612
+                 The duration of the current segment:67
                  start:1440315411,end:1440315435
              */
         } catch (PiliException e) {
