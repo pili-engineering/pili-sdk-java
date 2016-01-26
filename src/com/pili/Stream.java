@@ -358,7 +358,7 @@ public class Stream {
         final String fileName = String.format("%d", System.currentTimeMillis() / 1000);
         final SaveAsResponse ret = API.saveAs(mCredentials, this.id, fileName, null, start, end, null);
         Map<String, String> dictionary = new HashMap<String, String>();
-        put(Stream.ORIGIN, ret.Url);
+        dictionary.put(Stream.ORIGIN, ret.Url);
         return dictionary;
     }
 
