@@ -52,7 +52,7 @@
 
 ### Installation
 
-You can download **pili-sdk-java-v1.5.2.jar** file in the **release** folder.
+You can download **pili-sdk-java-v1.5.3.jar** file in the **release** folder.
 
 ### Dependencies
 
@@ -76,10 +76,10 @@ If you want to run the SDK on JDK 1.6 environment, you can download the compatib
   // Replace with your keys
   public static final String ACCESS_KEY = "Qiniu_AccessKey";
   public static final String SECRET_KEY = "Qiniu_SecretKey";
-  
+
   // Replace with your hub name
   public static final String HUB = "Pili_Hub_Name"; // The Hub must be exists before use
-  
+
   // Change API host as necessary
   //
   // pili.qiniuapi.com as default
@@ -207,7 +207,7 @@ or
       for (Stream s : list) {
           // access the stream
       }
-      
+
       /*
        marker:10
        isEnd:false
@@ -320,7 +320,7 @@ try {
     System.out.println(disabledStream.isDisabled());
     /*
      * true
-     * 
+     *
      * */
 } catch (PiliException e) {
     // TODO Auto-generated catch block
@@ -338,7 +338,7 @@ try {
     System.out.println(enabledStream.isDisabled());
     /*
      * false
-     * 
+     *
      * */
 } catch (PiliException e) {
     // TODO Auto-generated catch block
@@ -382,7 +382,7 @@ try {
     System.out.println("Stream rtmpPublishUrl()");
     System.out.println(publishUrl);
     // rtmp://ey636h.publish.z1.pili.qiniup.com/test-hub/55d810aae3ba5723280000db?nonce=1440223404&token=hIVJje0ZOX9hp7yPIvGBmJ_6Qxo=
-     
+
 } catch (PiliException e) {
     // TODO Auto-generated catch block
     e.printStackTrace();
@@ -432,7 +432,7 @@ try {
             + ",the latest data of stream:" + segmentList.getEnd());
 
     System.out.println("The duration of the current segment:" + segmentList.getDuration());
-            
+
     System.out.println("Stream segments()");
     for (Segment segment : segmentList.getSegmentList()) {
         System.out.println("start:" + segment.getStart() + ",end:" + segment.getEnd());
@@ -456,7 +456,7 @@ long startHlsPlayback     = 1440315411;  // required, in second, unix timestamp
 long endHlsPlayback       = 1440315435;  // required, in second, unix timestamp
 try {
     String hlsPlaybackUrl = stream.hlsPlaybackUrls(startHlsPlayback, endHlsPlayback).get(Stream.ORIGIN);
-    
+
     System.out.println("Stream hlsPlaybackUrls()");
     System.out.println(hlsPlaybackUrl);
     // http://ey636h.playback1.z1.pili.qiniucdn.com/test-hub/55d8119ee3ba5723280000dd.m3u8?start=1440315411&end=1440315435
@@ -475,7 +475,7 @@ long startHlsPlayback     = -1;  // <= 0
 long endHlsPlayback       = -1;  // <= 0
 try {
     String hlsPlaybackUrl = stream.hlsPlaybackUrls(startHlsPlayback, endHlsPlayback).get(Stream.ORIGIN);
-    
+
     System.out.println("Stream hlsPlaybackUrls()");
     System.out.println(hlsPlaybackUrl);
     // http://ey636h.playback1.z1.pili.qiniucdn.com/test-hub/55d8119ee3ba5723280000dd.m3u8?start=-1&end=-1
@@ -556,6 +556,11 @@ try {
 ```
 
 ## History
+- 1.5.3
+  - `listStreams` return 0 item if no stream instead of Exception
+  - update `hlsPlaybackUrls` API by `saveAs`
+  - remove the check of `format` argument for `saveAs`
+
 - 1.5.2
   - Add `start`, `end`, and `duration` attributes into `SegmentList`
   - Add `end` into `StreamList`

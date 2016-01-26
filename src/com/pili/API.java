@@ -56,7 +56,7 @@ public class API {
         Response response = null;
         try {
             URL url = new URL(urlStr);
-            
+
             String contentType = "application/json";
             byte[] body = json.toString().getBytes(Config.UTF8);
             String macToken = credentials.signRequest(url, "POST", body, contentType);
@@ -70,7 +70,7 @@ public class API {
             .build();
 
             response = mOkHttpClient.newCall(request).execute();
-            
+
         } catch (Exception e) {
             e.printStackTrace();
             throw new PiliException(e);
@@ -100,7 +100,7 @@ public class API {
         Response response = null;
         try {
             URL url = new URL(urlStr);
-            
+
             String macToken = credentials.signRequest(url, "GET", null, null);
             Request request = new Request.Builder()
             .url(url)
@@ -322,10 +322,6 @@ public class API {
             throw new PiliException(MessageConfig.ILLEGAL_FILE_NAME_EXCEPTION_MSG);
         }
 
-        if (!Utils.isArgNotEmpty(format)) {
-            throw new PiliException(MessageConfig.ILLEGAL_FORMAT_EXCEPTION_MSG);
-        }
-
         if (start <= 0 || end <= 0 || start > end) {
             throw new PiliException(MessageConfig.ILLEGAL_TIME_MSG);
         }
@@ -339,7 +335,10 @@ public class API {
         }
         json.addProperty("start", start);
         json.addProperty("end", end);
-        json.addProperty("format", format);
+
+        if (Utils.isArgNotEmpty(format)) {
+            json.addProperty("format", format);
+        }
 
         try {
             URL url = new URL(urlStr);
