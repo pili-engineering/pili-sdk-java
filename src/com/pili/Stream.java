@@ -154,7 +154,7 @@ public class Stream {
         public String getPersistentId() {
             return persistentId;
         }
-        
+
         @Override
         public String toString() {
             return mJsonString;
@@ -170,14 +170,14 @@ public class Stream {
             persistentId = jsonObj.get("persistentId").getAsString();
             mJsonString = jsonObj.toString();
         }
-        
+
         public String getTargetUrl() {
             return targetUrl;
         }
         public String getPersistentId() {
             return persistentId;
         }
-        
+
         @Override
         public String toString() {
             return mJsonString;
@@ -193,7 +193,7 @@ public class Stream {
             this.video = video;
             this.data = data;
         }
-        
+
         public float getAudio() {
             return audio;
         }
@@ -257,7 +257,7 @@ public class Stream {
             try {
                 startFrom = jsonObj.get("startFrom").getAsString();
                 bytesPerSecond = jsonObj.get("bytesPerSecond").getAsFloat();
-                
+
                 JsonObject framesPerSecondJsonObj = jsonObj.getAsJsonObject("framesPerSecond");
                 float audio = framesPerSecondJsonObj.get("audio").getAsFloat();
                 float video = framesPerSecondJsonObj.get("video").getAsFloat();
@@ -280,11 +280,11 @@ public class Stream {
         public FramesPerSecond getFramesPerSecond() {
             return framesPerSecond;
         }
-        
+
         public String getStartFrom() {
             return startFrom;
         }
-        
+
         @Override
         public String toString() {
             return mJsonString;
@@ -355,7 +355,11 @@ public class Stream {
         return API.hlsLiveUrl(this);
     }
     public Map<String, String> hlsPlaybackUrls(long start, long end) throws PiliException {
-        return API.hlsPlaybackUrl(this, start, end);
+        final String fileName = String.format("%d", System.currentTimeMillis() / 1000);
+        final SaveAsResponse ret = API.saveAs(mCredentials, this.id, fileName, null, start, end, null);
+        Map<String, String> dictionary = new HashMap<String, String>();
+        put(Stream.ORIGIN, ret.Url);
+        return dictionary;
     }
 
     public Map<String, String> httpFlvLiveUrls() {
@@ -376,6 +380,9 @@ public class Stream {
     public SaveAsResponse saveAs(String fileName, String format, long startTime, long endTime) throws PiliException {
         return saveAs(fileName, format, startTime, endTime, null);
     }
+    public SaveAsResponse saveAs(String fileName, long startTime, long endTime) throws PiliException {
+        return saveAs(fileName, null, startTime, endTime, null);
+    }
 
     public SnapshotResponse snapshot(String name, String format) throws PiliException {
         return API.snapshot(mCredentials, this.id, name, format, 0, null);
@@ -391,4 +398,3 @@ public class Stream {
         return API.updateStream(mCredentials, this.id, null, null, true);
     }
 }
-
