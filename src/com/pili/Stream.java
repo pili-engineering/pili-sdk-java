@@ -386,6 +386,9 @@ public class Stream {
     public SaveAsResponse saveAs(String fileName, String format, long startTime, long endTime) throws PiliException {
         return saveAs(fileName, format, startTime, endTime, null);
     }
+    public SaveAsResponse saveAs(String fileName, long startTime, long endTime) throws PiliException {
+        return saveAs(fileName, null, startTime, endTime, null);
+    }
 
     public SnapshotResponse snapshot(String name, String format) throws PiliException {
         return API.snapshot(mCredentials, this.id, name, format, 0, null);

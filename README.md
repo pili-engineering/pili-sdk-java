@@ -560,6 +560,7 @@ try {
   - `listStreams` return 0 item if no stream instead of Exception
   - update `hlsPlaybackUrls` API by `saveAs`
   - remove the check of `format` argument for `saveAs`
+  - add `SaveAsResponse saveAs(String fileName, long startTime, long endTime)`
 
 - 1.5.2
   - Add `start`, `end`, and `duration` attributes into `SegmentList`
