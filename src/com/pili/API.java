@@ -529,24 +529,13 @@ public class API {
     }
 
     //Generate HLS playback URL
-    public static Map<String, String> hlsPlaybackUrl(Stream stream, long startTime, long endTime) 
+    public static Map<String, String> hlsPlaybackUrl(Credentials credentials, Stream stream, long startTime, long endTime) 
             throws PiliException {
-        final String defaultScheme = "http";
-
-        final String url = String.format("%s://%s/%s/%s",defaultScheme, stream.getPlaybackHlshost(), stream.getHubName(), stream.getTitle());
-        String queryPara = null;
-        if (startTime > 0 && endTime > 0 && startTime < endTime) {
-            queryPara = "?start=" +startTime + "&end=" +endTime;
-        } else {
-            queryPara = "?start=-1&end=-1";
-        }
+        final SaveAsResponse response = saveAs(credentials, stream.getStreamId(), 
+                "" + System.currentTimeMillis() / 1000, null, startTime, endTime, null);
         Map<String, String> dictionary = new HashMap<String, String>();
-        dictionary.put(Stream.ORIGIN, url + ".m3u8" + queryPara);
-        String[] profiles = stream.getProfiles();
-        if (profiles != null) {
-            for (String p : profiles) {
-                dictionary.put(p, url + '@' + p + ".m3u8" + queryPara);
-            }
+        if (response != null) {
+            dictionary.put(Stream.ORIGIN, response.getUrl());
         }
         return dictionary;
     }

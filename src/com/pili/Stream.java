@@ -360,12 +360,7 @@ public class Stream {
         return API.hlsLiveUrl(this);
     }
     public Map<String, String> hlsPlaybackUrls(long start, long end) throws PiliException {
-        final SaveAsResponse response = saveAs("" + System.currentTimeMillis() / 1000, null, start, end);
-        Map<String, String> dictionary = new HashMap<String, String>();
-        if (response != null) {
-            dictionary.put(Stream.ORIGIN, response.url);
-        }
-        return dictionary;
+        return API.hlsPlaybackUrl(mCredentials, this, start, end);
     }
 
     public Map<String, String> httpFlvLiveUrls() {
