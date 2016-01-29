@@ -385,10 +385,13 @@ public class Stream {
     }
 
     public SnapshotResponse snapshot(String name, String format) throws PiliException {
-        return API.snapshot(mCredentials, this.id, name, format, 0, null);
+        return API.snapshot(mCredentials, this.id, name, format, 0, null, null);
     }
     public SnapshotResponse snapshot(String name, String format, long time, String notifyUrl) throws PiliException {
-        return API.snapshot(mCredentials, this.id, name, format, time, notifyUrl);
+        return API.snapshot(mCredentials, this.id, name, format, time, notifyUrl, null);
+    }
+    public SnapshotResponse snapshot(String name, String format, long time, String notifyUrl, String pipeline) throws PiliException {
+        return API.snapshot(mCredentials, this.id, name, format, time, notifyUrl, pipeline);
     }
 
     public Stream enable() throws PiliException {

@@ -375,7 +375,7 @@ public class API {
     }
 
     public static SnapshotResponse snapshot(Credentials credentials, String streamId, String fileName, String format,
-            long time, String notifyUrl) throws PiliException {
+            long time, String notifyUrl, String pipeline) throws PiliException {
         if (streamId == null) {
             throw new PiliException(MessageConfig.NULL_STREAM_ID_EXCEPTION_MSG);
         }
@@ -398,6 +398,9 @@ public class API {
         }
         if (Utils.isArgNotEmpty(notifyUrl)) {
             json.addProperty("notifyUrl", notifyUrl);  // optional
+        }
+        if (Utils.isArgNotEmpty(pipeline)) {
+            json.addProperty("pipeline", pipeline);  // optional
         }
 
         try {
