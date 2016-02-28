@@ -2,6 +2,7 @@ package com.pili;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -140,7 +141,11 @@ public class Stream {
 
         public SaveAsResponse(JsonObject jsonObj) {
             url = jsonObj.get("url").getAsString();
-            targetUrl = jsonObj.get("targetUrl").getAsString();
+            try {
+                targetUrl = jsonObj.get("targetUrl").getAsString();
+            } catch (java.lang.NullPointerException e) {
+                // do nothing. ignore.
+            }
             persistentId = jsonObj.get("persistentId").getAsString();
             mJsonString = jsonObj.toString();
         }
@@ -154,7 +159,7 @@ public class Stream {
         public String getPersistentId() {
             return persistentId;
         }
-        
+
         @Override
         public String toString() {
             return mJsonString;
@@ -170,14 +175,14 @@ public class Stream {
             persistentId = jsonObj.get("persistentId").getAsString();
             mJsonString = jsonObj.toString();
         }
-        
+
         public String getTargetUrl() {
             return targetUrl;
         }
         public String getPersistentId() {
             return persistentId;
         }
-        
+
         @Override
         public String toString() {
             return mJsonString;
@@ -193,7 +198,7 @@ public class Stream {
             this.video = video;
             this.data = data;
         }
-        
+
         public float getAudio() {
             return audio;
         }
@@ -257,7 +262,7 @@ public class Stream {
             try {
                 startFrom = jsonObj.get("startFrom").getAsString();
                 bytesPerSecond = jsonObj.get("bytesPerSecond").getAsFloat();
-                
+
                 JsonObject framesPerSecondJsonObj = jsonObj.getAsJsonObject("framesPerSecond");
                 float audio = framesPerSecondJsonObj.get("audio").getAsFloat();
                 float video = framesPerSecondJsonObj.get("video").getAsFloat();
@@ -280,11 +285,11 @@ public class Stream {
         public FramesPerSecond getFramesPerSecond() {
             return framesPerSecond;
         }
-        
+
         public String getStartFrom() {
             return startFrom;
         }
-        
+
         @Override
         public String toString() {
             return mJsonString;
@@ -298,17 +303,17 @@ public class Stream {
         public StreamList(JsonObject jsonObj, Credentials auth) {
             this.marker = jsonObj.get("marker").getAsString();
             this.end = jsonObj.get("end").getAsBoolean();
+            itemList = new ArrayList<Stream>();
 
             try {
                 JsonArray respArray = jsonObj.getAsJsonArray("items");
                 Iterator<JsonElement> it = respArray.iterator();
-                itemList = new ArrayList<Stream>();
                 while (it.hasNext()) {
                   JsonObject json = it.next().getAsJsonObject();
                   itemList.add(new Stream(json, auth));
                 }
             } catch (java.lang.ClassCastException e) {
-                e.printStackTrace();
+//                e.printStackTrace();
             }
         }
 
@@ -355,7 +360,7 @@ public class Stream {
         return API.hlsLiveUrl(this);
     }
     public Map<String, String> hlsPlaybackUrls(long start, long end) throws PiliException {
-        return API.hlsPlaybackUrl(this, start, end);
+        return API.hlsPlaybackUrl(mCredentials, this, start, end);
     }
 
     public Map<String, String> httpFlvLiveUrls() {
@@ -375,6 +380,9 @@ public class Stream {
     }
     public SaveAsResponse saveAs(String fileName, String format, long startTime, long endTime) throws PiliException {
         return saveAs(fileName, format, startTime, endTime, null);
+    }
+    public SaveAsResponse saveAs(String fileName, long startTime, long endTime) throws PiliException {
+        return saveAs(fileName, null, startTime, endTime, null);
     }
 
     public SnapshotResponse snapshot(String name, String format) throws PiliException {
