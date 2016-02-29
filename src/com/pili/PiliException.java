@@ -1,10 +1,10 @@
 package com.pili;
 
-import java.io.IOException;
-
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.squareup.okhttp.Response;
+
+import java.io.IOException;
 
 public class PiliException extends Exception {
     public final Response response;

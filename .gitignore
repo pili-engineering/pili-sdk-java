@@ -18,3 +18,9 @@ hs_err_pid*
 
 # For vim:
 *.swp
+
+# For build
+build/
+
+# For intellij
+*.iml

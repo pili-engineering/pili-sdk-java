@@ -1,12 +1,15 @@
-package common;
+package com.pili.common;
 
 import java.io.UnsupportedEncodingException;
 
-public class UrlSafeBase64 {
+public final class UrlSafeBase64 {
+
+    private UrlSafeBase64() {
+    }
 
     public static String encodeToString(String data) {
         try {
-            return encodeToString(data.getBytes(Config.UTF8));
+            return encodeToString(data.getBytes("UTF-8"));
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }

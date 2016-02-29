@@ -1,17 +1,16 @@
 package com.qiniu;
 
+import com.pili.common.Config;
+import com.pili.common.UrlSafeBase64;
+
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.security.GeneralSecurityException;
 import java.security.SignatureException;
 
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
-
-import common.Config;
-import common.UrlSafeBase64;
-
-public class Credentials {
+public final class Credentials {
     private static final String DIGEST_AUTH_PREFIX = "Qiniu";
     private SecretKeySpec mSkSpec;
     private String mAccessKey;
@@ -31,10 +30,32 @@ public class Credentials {
         }
     }
 
-    public String signRequest(URL url, String method, byte[] body, String contentType) 
+    private static byte[] digest(String secret, String data) throws SignatureException {
+        try {
+            SecretKeySpec secretKeySpec = new SecretKeySpec(secret.getBytes(Config.UTF8), "HmacSHA1");
+            Mac mac = createMac(secretKeySpec);
+            mac.update(data.getBytes(Config.UTF8));
+            return mac.doFinal();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new SignatureException("Failed to digest: " + e.getMessage());
+        }
+    }
+
+    public static String sign(String secret, String data) throws SignatureException {
+        return UrlSafeBase64.encodeToString(digest(secret, data));
+    }
+
+    private static Mac createMac(SecretKeySpec secretKeySpec) throws GeneralSecurityException {
+        Mac mac = javax.crypto.Mac.getInstance("HmacSHA1");
+        mac.init(secretKeySpec);
+        return mac;
+    }
+
+    public String signRequest(URL url, String method, byte[] body, String contentType)
             throws SignatureException {
         StringBuilder sb = new StringBuilder();
-        
+
         // <Method> <Path><?Query>
         String line = String.format("%s %s", method, url.getPath());
         sb.append(line);
@@ -55,27 +76,11 @@ public class Credentials {
 
         // body
         sb.append("\n\n");
-        if (body != null && contentType != null && 
-                !"application/octet-stream".equals(contentType)) {
+        if (body != null && contentType != null
+            && !"application/octet-stream".equals(contentType)) {
             sb.append(new String(body));
         }
         return String.format("%s %s:%s", DIGEST_AUTH_PREFIX, mAccessKey, signData(sb.toString()));
-    }
-
-    private static byte[] digest(String secret, String data) throws SignatureException {
-        try {
-            SecretKeySpec secretKeySpec = new SecretKeySpec(secret.getBytes(Config.UTF8), "HmacSHA1");
-            Mac mac = createMac(secretKeySpec);
-            mac.update(data.getBytes(Config.UTF8));
-            return mac.doFinal();
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new SignatureException("Failed to digest: " + e.getMessage());
-        } 
-    }
-
-    public static String sign(String secret, String data) throws SignatureException {
-        return UrlSafeBase64.encodeToString(digest(secret, data));
     }
 
     private String signData(String data) throws SignatureException {
@@ -87,11 +92,5 @@ public class Credentials {
             throw new SignatureException("Failed to generate HMAC : " + e.getMessage());
         }
         return sign;
-    }
-
-    private static Mac createMac(SecretKeySpec secretKeySpec) throws GeneralSecurityException {
-        Mac mac = javax.crypto.Mac.getInstance("HmacSHA1");
-        mac.init(secretKeySpec);
-        return mac;
     }
 }
