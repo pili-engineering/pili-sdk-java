@@ -1,11 +1,10 @@
 package com.pili;
 
 import com.pili.Stream.StreamList;
+import com.pili.common.MessageConfig;
 import com.qiniu.Credentials;
 
-import common.MessageConfig;
-
-public class Hub {
+public final class Hub {
 
     private Credentials mCredentials;
     private String mHubName;

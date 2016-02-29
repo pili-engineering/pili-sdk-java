@@ -1,13 +1,22 @@
-package common;
+package com.pili.common;
 
-public class Utils {
+public final class Utils {
+    private Utils() {
+    }
+
     public static String getUserAgent() {
         String javaVersion = "Java/" + System.getProperty("java.version");
-        String os = System.getProperty("os.name") + " " 
+        String os = System.getProperty("os.name") + " "
                 + System.getProperty("os.arch") + " " + System.getProperty("os.version");
         String sdk = Config.USER_AGENT + Config.SDK_VERSION;
         return sdk + " (" + os + ") " + javaVersion;
     }
+
+//    public static String getPath(String streamId) {
+//        String[] res = streamId.split("\\.");
+//        // res[1] -> hub, res[2] -> title
+//        return String.format("/%s/%s", res[1], res[2]);
+//    }
 
     /*
      * check the arg.
@@ -20,10 +29,4 @@ public class Utils {
     public static boolean isArgNotEmpty(String arg) {
         return arg != null && !arg.trim().isEmpty();
     }
-
-//    public static String getPath(String streamId) {
-//        String[] res = streamId.split("\\.");
-//        // res[1] -> hub, res[2] -> title
-//        return String.format("/%s/%s", res[1], res[2]);
-//    }
 }

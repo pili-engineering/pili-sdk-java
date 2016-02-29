@@ -1,5 +1,15 @@
 package com.pili;
 
+import com.google.gson.JsonNull;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.pili.Stream.*;
+import com.pili.common.Config;
+import com.pili.common.MessageConfig;
+import com.pili.common.Utils;
+import com.qiniu.Credentials;
+import com.squareup.okhttp.*;
+
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
@@ -8,35 +18,20 @@ import java.security.SignatureException;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.google.gson.JsonNull;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.pili.Stream.SaveAsResponse;
-import com.pili.Stream.SegmentList;
-import com.pili.Stream.SnapshotResponse;
-import com.pili.Stream.Status;
-import com.pili.Stream.StreamList;
-import com.qiniu.Credentials;
-import com.squareup.okhttp.MediaType;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.RequestBody;
-import com.squareup.okhttp.Response;
-
-import common.Config;
-import common.MessageConfig;
-import common.Utils;
-
-public class API {
+public final class API {
     private static final String API_BASE_URL = String.format("%s://%s/%s",
             Configuration.getInstance().USE_HTTPS ? "https" : "http",
-            Configuration.getInstance().API_HOST, 
+            Configuration.getInstance().API_HOST,
             Configuration.getInstance().API_VERSION);
 
     private static final OkHttpClient mOkHttpClient = new OkHttpClient();
 
+    private API() {
+    }
+
     // Create a new stream
-    public static Stream createStream(Credentials credentials, String hubName, String title, String publishKey, String publishSecurity) throws PiliException {
+    public static Stream createStream(Credentials credentials, String hubName, String title, String publishKey,
+                                      String publishSecurity) throws PiliException {
 //        System.out.println("createStream:" + API_BASE_URL);
         String urlStr = API_BASE_URL + "/streams";
         JsonObject json = new JsonObject();
@@ -62,12 +57,12 @@ public class API {
             String macToken = credentials.signRequest(url, "POST", body, contentType);
             RequestBody rBody = RequestBody.create(MediaType.parse(contentType), body);
             Request request = new Request.Builder()
-            .url(url)
-            .post(rBody)
-            .header("User-Agent", Utils.getUserAgent())
-            .addHeader("Authorization", macToken)
-            .addHeader("Content-Type", contentType)
-            .build();
+                    .url(url)
+                    .post(rBody)
+                    .header("User-Agent", Utils.getUserAgent())
+                    .addHeader("Authorization", macToken)
+                    .addHeader("Content-Type", contentType)
+                    .build();
 
             response = mOkHttpClient.newCall(request).execute();
 
@@ -103,11 +98,11 @@ public class API {
 
             String macToken = credentials.signRequest(url, "GET", null, null);
             Request request = new Request.Builder()
-            .url(url)
-            .get()
-            .header("User-Agent", Utils.getUserAgent())
-            .addHeader("Authorization", macToken)
-            .build();
+                    .url(url)
+                    .get()
+                    .header("User-Agent", Utils.getUserAgent())
+                    .addHeader("Authorization", macToken)
+                    .build();
 
             response = mOkHttpClient.newCall(request).execute();
         } catch (Exception e) {
@@ -129,7 +124,8 @@ public class API {
     }
 
     // List stream
-    public static StreamList listStreams(Credentials credentials, String hubName, String status, String startMarker, long limitCount, String titlePrefix) throws PiliException {
+    public static StreamList listStreams(Credentials credentials, String hubName, String status,
+                                         String startMarker, long limitCount, String titlePrefix) throws PiliException {
         try {
             hubName = URLEncoder.encode(hubName, Config.UTF8);
             if (Utils.isArgNotEmpty(status)) {
@@ -164,11 +160,11 @@ public class API {
             URL url = new URL(urlStr);
             String macToken = credentials.signRequest(url, "GET", null, null);
             Request request = new Request.Builder()
-            .url(url)
-            .get()
-            .header("User-Agent", Utils.getUserAgent())
-            .header("Authorization", macToken)
-            .build();
+                    .url(url)
+                    .get()
+                    .header("User-Agent", Utils.getUserAgent())
+                    .header("Authorization", macToken)
+                    .build();
             response = mOkHttpClient.newCall(request).execute();
         } catch (Exception e) {
             e.printStackTrace();
@@ -202,11 +198,11 @@ public class API {
 
             String macToken = credentials.signRequest(url, "GET", null, null);
             Request request = new Request.Builder()
-            .url(url)
-            .get()
-            .header("User-Agent", Utils.getUserAgent())
-            .addHeader("Authorization", macToken)
-            .build();
+                    .url(url)
+                    .get()
+                    .header("User-Agent", Utils.getUserAgent())
+                    .addHeader("Authorization", macToken)
+                    .build();
 
             response = mOkHttpClient.newCall(request).execute();
         } catch (Exception e) {
@@ -228,11 +224,12 @@ public class API {
     }
 
     // Update an exist stream
-    public static Stream updateStream(Credentials credentials, String streamId, String publishKey, String publishSecurity, boolean disabled) throws PiliException {
+    public static Stream updateStream(Credentials credentials, String streamId, String publishKey,
+                                      String publishSecurity, boolean disabled) throws PiliException {
         if (streamId == null) {
             throw new PiliException(MessageConfig.NULL_STREAM_ID_EXCEPTION_MSG);
         }
-        
+
         JsonObject json = new JsonObject();
         if (Utils.isArgNotEmpty(publishKey)) {
             json.addProperty("publishKey", publishKey);
@@ -244,7 +241,7 @@ public class API {
         String urlStr = String.format("%s/streams/%s", API_BASE_URL, streamId);
         Response response = null;
         try {
-            byte body[] = json.toString().getBytes(Config.UTF8);
+            byte[] body = json.toString().getBytes(Config.UTF8);
             URL url = new URL(urlStr);
 
             String contentType = "application/json";
@@ -252,11 +249,11 @@ public class API {
             MediaType type = MediaType.parse(contentType);
             RequestBody rBody = RequestBody.create(type, body);
             Request request = new Request.Builder()
-            .post(rBody)
-            .url(url)
-            .header("User-Agent", Utils.getUserAgent())
-            .addHeader("Authorization", macToken)
-            .build();
+                    .post(rBody)
+                    .url(url)
+                    .header("User-Agent", Utils.getUserAgent())
+                    .addHeader("Authorization", macToken)
+                    .build();
 
             response = mOkHttpClient.newCall(request).execute();
         } catch (Exception e) {
@@ -284,19 +281,19 @@ public class API {
         if (streamId == null) {
             throw new PiliException(MessageConfig.NULL_STREAM_ID_EXCEPTION_MSG);
         }
-        
+
         String urlStr = String.format("%s/streams/%s", API_BASE_URL, streamId);
         Response response = null;
         try {
             URL url = new URL(urlStr);
-            
+
             String macToken = credentials.signRequest(url, "DELETE", null, null);
             Request request = new Request.Builder()
-            .url(url)
-            .delete()
-            .header("User-Agent", Utils.getUserAgent())
-            .header("Authorization", macToken)
-            .build();
+                    .url(url)
+                    .delete()
+                    .header("User-Agent", Utils.getUserAgent())
+                    .header("Authorization", macToken)
+                    .build();
 
             response = mOkHttpClient.newCall(request).execute();
         } catch (Exception e) {
@@ -312,8 +309,8 @@ public class API {
         }
     }
 
-    public static SaveAsResponse saveAs(Credentials credentials, String streamId, String fileName, String format, 
-            long start, long end, String notifyUrl) throws PiliException {
+    public static SaveAsResponse saveAs(Credentials credentials, String streamId, String fileName, String format,
+                                        long start, long end, String notifyUrl) throws PiliException {
         if (streamId == null) {
             throw new PiliException(MessageConfig.NULL_STREAM_ID_EXCEPTION_MSG);
         }
@@ -349,11 +346,11 @@ public class API {
             MediaType type = MediaType.parse(contentType);
             RequestBody rBody = RequestBody.create(type, body);
             Request request = new Request.Builder()
-            .post(rBody)
-            .url(url)
-            .header("User-Agent", Utils.getUserAgent())
-            .addHeader("Authorization", macToken)
-            .build();
+                    .post(rBody)
+                    .url(url)
+                    .header("User-Agent", Utils.getUserAgent())
+                    .addHeader("Authorization", macToken)
+                    .build();
 
             response = mOkHttpClient.newCall(request).execute();
         } catch (Exception e) {
@@ -375,8 +372,8 @@ public class API {
         }
     }
 
-    public static SnapshotResponse snapshot(Credentials credentials, String streamId, String fileName, String format, 
-            long time, String notifyUrl) throws PiliException {
+    public static SnapshotResponse snapshot(Credentials credentials, String streamId, String fileName, String format,
+                                            long time, String notifyUrl) throws PiliException {
         if (streamId == null) {
             throw new PiliException(MessageConfig.NULL_STREAM_ID_EXCEPTION_MSG);
         }
@@ -410,11 +407,11 @@ public class API {
             MediaType type = MediaType.parse(contentType);
             RequestBody rBody = RequestBody.create(type, body);
             Request request = new Request.Builder()
-            .post(rBody)
-            .url(url)
-            .header("User-Agent", Utils.getUserAgent())
-            .addHeader("Authorization", macToken)
-            .build();
+                    .post(rBody)
+                    .url(url)
+                    .header("User-Agent", Utils.getUserAgent())
+                    .addHeader("Authorization", macToken)
+                    .build();
 
             response = mOkHttpClient.newCall(request).execute();
         } catch (Exception e) {
@@ -437,7 +434,8 @@ public class API {
     }
 
     // Get recording segments from an exist stream
-    public static SegmentList getStreamSegments(Credentials credentials, String streamId, long startTime, long endTime, int limitCount) throws PiliException {
+    public static SegmentList getStreamSegments(Credentials credentials, String streamId, long startTime, long endTime,
+                                                int limitCount) throws PiliException {
         if (streamId == null) {
             throw new PiliException(MessageConfig.NULL_STREAM_ID_EXCEPTION_MSG);
         }
@@ -453,14 +451,14 @@ public class API {
             URL url = new URL(urlStr);
             String macToken = credentials.signRequest(url, "GET", null, null);
             Request request = new Request.Builder()
-            .url(url)
-            .get()
-            .header("User-Agent", Utils.getUserAgent())
-            .addHeader("Authorization", macToken)
-            .build();
+                    .url(url)
+                    .get()
+                    .header("User-Agent", Utils.getUserAgent())
+                    .addHeader("Authorization", macToken)
+                    .build();
 
             response = mOkHttpClient.newCall(request).execute();
-           
+
         } catch (Exception e) {
             e.printStackTrace();
             throw new PiliException(e);
@@ -483,9 +481,9 @@ public class API {
             throw new PiliException(response);
         }
     }
-    
+
     //Generate a RTMP publish URL
-    public static String publishUrl(Stream stream, long nonce) 
+    public static String publishUrl(Stream stream, long nonce)
             throws PiliException {
         final String defaultScheme = "rtmp";
         if ("dynamic".equals(stream.getPublishSecurity())) {
@@ -493,7 +491,7 @@ public class API {
         } else if ("static".equals(stream.getPublishSecurity())) {
             return generateStaticUrl(stream, defaultScheme);
         } else {
-            // "dynamic" as default 
+            // "dynamic" as default
             return generateDynamicUrl(stream, nonce, defaultScheme);
         }
     }
@@ -501,7 +499,8 @@ public class API {
     //Generate RTMP live play URL
     public static Map<String, String> rtmpLiveUrl(Stream stream) {
         final String defaultScheme = "rtmp";
-        final String url = String.format("%s://%s/%s/%s",defaultScheme, stream.getLiveRtmpHost(), stream.getHubName(), stream.getTitle());
+        final String url = String.format("%s://%s/%s/%s", defaultScheme, stream.getLiveRtmpHost(), stream.getHubName(),
+                stream.getTitle());
         Map<String, String> dictionary = new HashMap<String, String>();
         dictionary.put(Stream.ORIGIN, url);
         String[] profiles = stream.getProfiles();
@@ -516,7 +515,8 @@ public class API {
     //Generate HLS live play URL
     public static Map<String, String> hlsLiveUrl(Stream stream) {
         final String defaultScheme = "http";
-        final String url = String.format("%s://%s/%s/%s",defaultScheme, stream.getLiveHlsHost(), stream.getHubName(), stream.getTitle());
+        final String url = String.format("%s://%s/%s/%s", defaultScheme, stream.getLiveHlsHost(), stream.getHubName(),
+                stream.getTitle());
         Map<String, String> dictionary = new HashMap<String, String>();
         dictionary.put(Stream.ORIGIN, url + ".m3u8");
         String[] profiles = stream.getProfiles();
@@ -529,9 +529,10 @@ public class API {
     }
 
     //Generate HLS playback URL
-    public static Map<String, String> hlsPlaybackUrl(Credentials credentials, Stream stream, long startTime, long endTime) 
+    public static Map<String, String> hlsPlaybackUrl(Credentials credentials, Stream stream,
+                                                     long startTime, long endTime)
             throws PiliException {
-        final SaveAsResponse response = saveAs(credentials, stream.getStreamId(), 
+        final SaveAsResponse response = saveAs(credentials, stream.getStreamId(),
                 "" + System.currentTimeMillis() / 1000, null, startTime, endTime, null);
         Map<String, String> dictionary = new HashMap<String, String>();
         if (response != null) {
@@ -541,11 +542,12 @@ public class API {
     }
 
     public static Map<String, String> httpFlvLiveUrl(Stream stream) {
-        /* 
+        /*
          * http://liveHttpFlvHost/hub/title@480p.flv
          */
         final String defaultScheme = "http";
-        final String url = String.format("%s://%s/%s/%s",defaultScheme, stream.getLiveHdlHost(), stream.getHubName(), stream.getTitle());
+        final String url = String.format("%s://%s/%s/%s", defaultScheme, stream.getLiveHdlHost(), stream.getHubName(),
+                stream.getTitle());
         Map<String, String> dictionary = new HashMap<String, String>();
         dictionary.put(Stream.ORIGIN, url + ".flv");
         String[] profiles = stream.getProfiles();
@@ -558,7 +560,8 @@ public class API {
     }
 
     private static String generateStaticUrl(Stream stream, String scheme) {
-        return String.format("%s://%s/%s/%s?key=%s", scheme, stream.getPublishRtmpHost(), stream.getHubName(), stream.getTitle(), stream.getPublishKey());
+        return String.format("%s://%s/%s/%s?key=%s", scheme, stream.getPublishRtmpHost(), stream.getHubName(),
+                stream.getTitle(), stream.getPublishKey());
     }
 
     private static String generateDynamicUrl(Stream stream, long nonce, String scheme) throws PiliException {

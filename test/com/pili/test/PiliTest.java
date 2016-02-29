@@ -1,30 +1,23 @@
 package com.pili.test;
 
-import static org.junit.Assert.*;
+import com.pili.Configuration;
+import com.pili.Hub;
+import com.pili.PiliException;
+import com.pili.Stream;
+import com.pili.Stream.*;
+import com.qiniu.Credentials;
+import com.pili.common.Config;
+import com.pili.common.MessageConfig;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
-import com.pili.Configuration;
-import com.pili.Hub;
-import com.pili.PiliException;
-import com.pili.Stream;
-import com.pili.Stream.SaveAsResponse;
-import com.pili.Stream.Segment;
-import com.pili.Stream.SegmentList;
-import com.pili.Stream.SnapshotResponse;
-import com.pili.Stream.Status;
-import com.pili.Stream.StreamList;
-import com.qiniu.Credentials;
-
-import common.Config;
-import common.MessageConfig;
+import static org.junit.Assert.*;
 
 public class PiliTest {
     // Replace with your keys
@@ -47,7 +40,7 @@ public class PiliTest {
     private static final String SEGMENTS_IS_NULL = "Segments is null";
     private static final String SAVEAS_RES_OK = "OK";
 
-    private static final String[] DEFAULT_PRESETS = new String[] {null, "240p", "360p", "480p"};
+    private static final String[] DEFAULT_PRESETS = new String[]{null, "240p", "360p", "480p"};
 
     private static final String STREAM_STATUS_DISCONNECTED = "disconnected";
     private static final String STREAM_STATUS_CONNECTED = "connected";
@@ -60,13 +53,14 @@ public class PiliTest {
     private static final String EXPECTED_BASE_FLV_LIVEURL = "http://" + "xxx.live1-http.z1.pili.qiniucdn.com" + "/" + HUB_NAME;
     private static final String EXPECTED_SAVEAS_BASE_URL = "http://" + "xxx.ts.z1.pili.qiniucdn.com" + "/" + HUB_NAME;
 
+    static {
+        Configuration.getInstance().setAPIHost("pili-lte.qiniuapi.com");
+    }
+
     private Credentials mCredentials = new Credentials(ACCESS_KEY, SECRET_KEY);
     private Hub mHub = new Hub(mCredentials, HUB_NAME);
     private Stream mStream = null;
     private List<Stream> mTestCreatedStreamList = new ArrayList<Stream>();
-    static {
-        Configuration.getInstance().setAPIHost("pili-lte.qiniuapi.com");
-    }
 
     @Before
     public void prepareStream() {
@@ -111,7 +105,7 @@ public class PiliTest {
     @Test
     public void testCreateStreamTitle() {
         // min title test
-        String[] titles = new String[] {"1", "12", "123", "1234", "t", "-", "_", "titl"};
+        String[] titles = new String[]{"1", "12", "123", "1234", "t", "-", "_", "titl"};
         for (String title : titles) {
             try {
                 Stream stream = mHub.createStream(title, null, null);
@@ -121,10 +115,10 @@ public class PiliTest {
                 assertEquals(MessageConfig.ILLEGAL_TITLE_MSG, e.getMessage());
             }
         }
-        
+
         // max title test
         String maxTitleStr = "";
-        for(int i = 0; i < Config.TITLE_MAX_LENGTH; i++) {
+        for (int i = 0; i < Config.TITLE_MAX_LENGTH; i++) {
             maxTitleStr += i;
         }
         try {
@@ -200,7 +194,7 @@ public class PiliTest {
             e.printStackTrace();
         }
 
-        String[] markers = new String[] {null, "", " ", "  "};
+        String[] markers = new String[]{null, "", " ", "  "};
         for (String marker : markers) {
             try {
                 StreamList streamList = mHub.listStreams(marker, 0);
@@ -216,7 +210,7 @@ public class PiliTest {
             }
         }
 
-        int[] limitCounts = new int[] {-1, 0, 1};
+        int[] limitCounts = new int[]{-1, 0, 1};
         for (int limitCount : limitCounts) {
             try {
                 StreamList streamList = mHub.listStreams(null, limitCount);
@@ -237,12 +231,12 @@ public class PiliTest {
             mHub.createStream(title, null, null);
             boolean found = false;
             String marker = null;
-            while(!found) {
+            while (!found) {
                 StreamList streamList = mHub.listStreams(marker, 300);
                 marker = streamList.getMarker();
                 List<Stream> list = streamList.getStreams();
                 for (Stream stream : list) {
-                    if(title.equals(stream.getTitle())) {
+                    if (title.equals(stream.getTitle())) {
                         String res = stream.delete();
                         assertEquals(OK_DELETE_STREAM_RES_MSG, res);
                         System.out.println("found stream:" + title + ",delete:" + res);
@@ -252,7 +246,7 @@ public class PiliTest {
                 }
             }
             fail();
-        } catch(PiliException e) {
+        } catch (PiliException e) {
             e.printStackTrace();
             fail();
         }
@@ -314,7 +308,7 @@ public class PiliTest {
         }
 
         try {
-            Stream stream = mStream.update(mStream.getPublishKey(), 
+            Stream stream = mStream.update(mStream.getPublishKey(),
                     mStream.getPublishSecurity(), true);
             assertNotNull(stream);
             assertEquals(mStream.getPublishKey(), stream.getPublishKey());
@@ -385,7 +379,7 @@ public class PiliTest {
         if (mStream == null) {
             prepareStream();
         }
-        Map<String, String> expectedUrls =  new HashMap<String, String>();
+        Map<String, String> expectedUrls = new HashMap<String, String>();
         expectedUrls.put(Stream.ORIGIN, EXPECTED_BASE_RTMP_LIVEURL + "/" + mStream.getTitle());
         if (mStream.getProfiles() != null) {
             for (String p : mStream.getProfiles()) {
@@ -407,11 +401,11 @@ public class PiliTest {
         if (mStream == null) {
             prepareStream();
         }
-        Map<String, String> expectedUrls =  new HashMap<String, String>();
+        Map<String, String> expectedUrls = new HashMap<String, String>();
         expectedUrls.put(Stream.ORIGIN, EXPECTED_BASE_HLS_LIVEURL + "/" + mStream.getTitle() + ".m3u8");
         if (mStream.getProfiles() != null) {
             for (String p : mStream.getProfiles()) {
-                expectedUrls.put(p, EXPECTED_BASE_HLS_LIVEURL + "/" + mStream.getTitle() + "@" + p  + ".m3u8");
+                expectedUrls.put(p, EXPECTED_BASE_HLS_LIVEURL + "/" + mStream.getTitle() + "@" + p + ".m3u8");
             }
         }
         Map<String, String> hlsLiveUrl;
@@ -452,7 +446,7 @@ public class PiliTest {
         long startSec = currentSecond - 3600;
         long endSec = currentSecond;
         final String queryPara = "?start=" + startSec + "&end=" + endSec;
-        Map<String, String> expectedUrls =  new HashMap<String, String>();
+        Map<String, String> expectedUrls = new HashMap<String, String>();
         if (mStream.getProfiles() != null) {
             expectedUrls.put(Stream.ORIGIN, EXPECTED_BASE_HLS_LIVEURL + "/" + mStream.getTitle() + ".m3u8" + queryPara);
             for (String p : mStream.getProfiles()) {
@@ -471,7 +465,7 @@ public class PiliTest {
             e.printStackTrace();
         }
     }
-    
+
     @Test
     public void testSaveAs() {
         if (mStream == null) {
@@ -484,10 +478,10 @@ public class PiliTest {
         final String fileName = name + "." + format;
         final String expectedUrl = EXPECTED_SAVEAS_BASE_URL + "/" + title + "/" + "play" + "/" + name + ".m3u8";
         final String expectedTargetUrl = EXPECTED_SAVEAS_BASE_URL + "/" + title + "/" + "play" + "/" + fileName;
-        
+
         long startTime = 0;
         long endTime = 0;
-        
+
         try {
             mStream.saveAs(null, format, startTime, endTime);
             fail();
@@ -583,7 +577,7 @@ public class PiliTest {
         if (mStream == null) {
             prepareStream();
         }
-        Map<String, String> expectedUrls =  new HashMap<String, String>();
+        Map<String, String> expectedUrls = new HashMap<String, String>();
         expectedUrls.put(Stream.ORIGIN, EXPECTED_BASE_FLV_LIVEURL + "/" + mStream.getTitle() + ".flv");
         if (mStream.getProfiles() != null) {
             for (String p : mStream.getProfiles()) {
@@ -613,10 +607,10 @@ public class PiliTest {
             e.printStackTrace();
         }
     }
-    
+
     @Test
     public void testDisable() {
-     // the test case order cannot be guaranteed
+        // the test case order cannot be guaranteed
         if (mStream == null) {
             prepareStream();
         }

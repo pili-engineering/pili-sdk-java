@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package common;
+package com.pili.common;
 
 import java.io.UnsupportedEncodingException;
 
