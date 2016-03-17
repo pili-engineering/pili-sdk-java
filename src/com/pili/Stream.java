@@ -266,7 +266,7 @@ public final class Stream {
 
         public SnapshotResponse(JsonObject jsonObj) {
             targetUrl = jsonObj.get("targetUrl").getAsString();
-            persistentId = jsonObj.get("persistentId")==null?null:jsonObj.get("persistentId").getAsString();
+            persistentId = jsonObj.get("persistentId") == null ? null : jsonObj.get("persistentId").getAsString();
             mJsonString = jsonObj.toString();
         }
 
