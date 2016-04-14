@@ -54,6 +54,7 @@
 ### 安装
 
 你可以在当前发布的页面中下载 **pili-sdk-java-v1.5.0.jar** 
+或者使用 gradle: `compile 'com.qiniu:pili-sdk-java:1.5.3'`
 <a id="dependencies"></a>
 ### 依赖包
 
