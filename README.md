@@ -490,13 +490,14 @@ try {
 
 ```JAVA
 // Save Stream as a file
-String saveAsFormat    = "mp4";                            // required
 String saveAsName      = "videoName" + "." + saveAsFormat; // required
 long saveAsStart       = 1440315411;                       // required, in second, unix timestamp
 long saveAsEnd         = 1440315435;                       // required, in second, unix timestamp
+String saveAsFormat    = "mp4";                            // optional
 String saveAsNotifyUrl = null;                             // optional
+String saveAsPipeline  = null;                             // optional
 try {
-    SaveAsResponse response = stream.saveAs(saveAsName, saveAsFormat, saveAsStart, saveAsEnd, saveAsNotifyUrl);
+    SaveAsResponse response = stream.saveAs(saveAsName, saveAsFormat, saveAsStart, saveAsEnd, saveAsNotifyUrl, saveAsPipeline);
     System.out.println("Stream saveAs()");
     System.out.println(response.toString());
     /*
@@ -557,6 +558,9 @@ try {
 ```
 
 ## History
+
+- 1.5.4
+  - Add pipeline in saveAs
 - 1.5.3
   - `listStreams` return 0 item if no stream instead of Exception
   - update `hlsPlaybackUrls` API by `saveAs`

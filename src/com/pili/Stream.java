@@ -177,9 +177,9 @@ public final class Stream {
         return mStreamJsonStr;
     }
 
-    public SaveAsResponse saveAs(String fileName, String format, long startTime, long endTime, String notifyUrl)
+    public SaveAsResponse saveAs(String fileName, String format, long startTime, long endTime, String notifyUrl, String pipeline)
             throws PiliException {
-        return API.saveAs(mCredentials, this.id, fileName, format, startTime, endTime, notifyUrl);
+        return API.saveAs(mCredentials, this.id, fileName, format, startTime, endTime, notifyUrl, pipeline);
     }
 
     public SaveAsResponse saveAs(String fileName, String format, long startTime, long endTime) throws PiliException {
@@ -434,4 +434,3 @@ public final class Stream {
         }
     }
 }
-
