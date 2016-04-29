@@ -310,7 +310,7 @@ public final class API {
     }
 
     public static SaveAsResponse saveAs(Credentials credentials, String streamId, String fileName, String format,
-                                        long start, long end, String notifyUrl) throws PiliException {
+                                        long start, long end, String notifyUrl, String pipeline) throws PiliException {
         if (streamId == null) {
             throw new PiliException(MessageConfig.NULL_STREAM_ID_EXCEPTION_MSG);
         }
@@ -329,6 +329,9 @@ public final class API {
         json.addProperty("name", fileName);
         if (Utils.isArgNotEmpty(notifyUrl)) {
             json.addProperty("notifyUrl", notifyUrl);
+        }
+        if (Utils.isArgNotEmpty(pipeline)) {
+            json.addProperty("pipeline", pipeline);
         }
         json.addProperty("start", start);
         json.addProperty("end", end);
