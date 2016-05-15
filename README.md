@@ -9,16 +9,16 @@
 	- [x] HDL直播地址: HDLPlayURL(domain, hub, streamKey)
 	- [x] 截图直播地址: SnapshotPlayURL(domain, hub, streamKey)
 - Hub
-	- [x] 创建流: hub.Create(streamKey)
-	- [x] 查询流: hub.Get(streamKey)
-	- [x] 列出流: hub.List(prefix, limit, marker)
-	- [x] 列出正在直播的流: hub.ListLive(prefix, limit, marker)
+	- [x] 创建流: hub.create(streamKey)
+	- [x] 查询流: hub.get(streamKey)
+	- [x] 列出流: hub.list(prefix, limit, marker)
+	- [x] 列出正在直播的流: hub.listLive(prefix, limit, marker)
 - Stream
-	- [x] 禁用流: stream.Disable()
-	- [x] 启用流: stream.Enable()
- 	- [x] 查询直播状态: stream.LiveStatus()
-	- [x] 保存直播回放: stream.Saveas(key, start, end)
-	- [x] 查询直播历史: stream.HistoryRecord(start, end)
+	- [x] 禁用流: stream.disable()
+	- [x] 启用流: stream.enable()
+ 	- [x] 查询直播状态: stream.liveStatus()
+	- [x] 保存直播回放: stream.save(key, start, end)
+	- [x] 查询直播历史: stream.historyRecord(start, end)
 
 ## Contents
 
