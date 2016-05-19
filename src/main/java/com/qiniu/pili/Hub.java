@@ -1,8 +1,8 @@
 package com.qiniu.pili;
 
 import com.google.gson.Gson;
+import com.qiniu.pili.utils.UrlSafeBase64;
 
-import javax.xml.bind.DatatypeConverter;
 
 public class Hub {
 
@@ -59,7 +59,7 @@ public class Hub {
     public Stream get(String streamKey) throws PiliException {
 
         try {
-            String ekey = DatatypeConverter.printBase64Binary(streamKey.getBytes("UTF-8"));
+            String ekey = UrlSafeBase64.encodeToString(streamKey);;
             String path = baseUrl + "/streams/" + ekey;
 
             String resp = cli.callWithGet(path);
