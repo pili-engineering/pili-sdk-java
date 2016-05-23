@@ -536,7 +536,7 @@ public final class API {
                                                      long startTime, long endTime)
             throws PiliException {
         final SaveAsResponse response = saveAs(credentials, stream.getStreamId(),
-                "" + System.currentTimeMillis() / 1000, null, startTime, endTime, null);
+                "" + System.currentTimeMillis() / 1000, null, startTime, endTime, null, null);
         Map<String, String> dictionary = new HashMap<String, String>();
         if (response != null) {
             dictionary.put(Stream.ORIGIN, response.getUrl());
