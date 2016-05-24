@@ -77,7 +77,7 @@ public final class Credentials {
         // body
         sb.append("\n\n");
         if (body != null && contentType != null
-            && !"application/octet-stream".equals(contentType)) {
+                && !"application/octet-stream".equals(contentType)) {
             sb.append(new String(body));
         }
         return String.format("%s %s:%s", DIGEST_AUTH_PREFIX, mAccessKey, signData(sb.toString()));

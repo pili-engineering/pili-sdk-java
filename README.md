@@ -561,6 +561,10 @@ try {
 
 - 1.5.4
   - Add pipeline in saveAs
+  - fixed non persistentId NPE
+  - add maven support
+  - add pipeline to snapshot
+
 - 1.5.3
   - `listStreams` return 0 item if no stream instead of Exception
   - update `hlsPlaybackUrls` API by `saveAs`

@@ -3,7 +3,7 @@
 package com.pili.common;
 
 public final class Config {
-    public static final String SDK_VERSION = "1.5.3";
+    public static final String SDK_VERSION = "1.5.4";
 
     public static final String USER_AGENT = "pili-sdk-java";
 
