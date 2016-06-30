@@ -4,7 +4,7 @@ import com.google.gson.Gson;
 import com.qiniu.pili.utils.UrlSafeBase64;
 
 
-public class Hub {
+public final class Hub {
 
     private RPC cli;
     private String hub;
@@ -19,17 +19,6 @@ public class Hub {
         this.hub = hub;
         this.baseUrl = Config.APIHTTPScheme + Config.APIHost + "/v2/hubs/" + hub;
         this.gson = new Gson();
-    }
-
-    /*
-        Create
-     */
-    private class CreateArgs {
-        String key;
-
-        public CreateArgs(String key) {
-            this.key = key;
-        }
     }
 
     public Stream create(String streamKey) throws PiliException {
@@ -49,17 +38,11 @@ public class Hub {
         }
     }
 
-    /*
-        Get
-     */
-    private class GetRet {
-        long disabledTill;
-    }
-
     public Stream get(String streamKey) throws PiliException {
 
         try {
-            String ekey = UrlSafeBase64.encodeToString(streamKey);;
+            String ekey = UrlSafeBase64.encodeToString(streamKey);
+            ;
             String path = baseUrl + "/streams/" + ekey;
 
             String resp = cli.callWithGet(path);
@@ -73,23 +56,6 @@ public class Hub {
             throw new PiliException(e);
         }
 
-    }
-
-    /*
-        List
-     */
-    public class ListRet {
-        public String[] keys;
-        public String omarker;
-    }
-
-    private class ListItem {
-        String key;
-    }
-
-    private class ApiRet {
-        ListItem[] items;
-        String marker;
     }
 
     private ListRet list(boolean live, String prefix, int limit, String marker) throws PiliException {
@@ -121,6 +87,41 @@ public class Hub {
 
     public ListRet listLive(String prefix, int limit, String marker) throws PiliException {
         return list(true, prefix, limit, marker);
+    }
+
+    /*
+        Create
+     */
+    private class CreateArgs {
+        String key;
+
+        public CreateArgs(String key) {
+            this.key = key;
+        }
+    }
+
+    /*
+        Get
+     */
+    private class GetRet {
+        long disabledTill;
+    }
+
+    /*
+        List
+     */
+    public class ListRet {
+        public String[] keys;
+        public String omarker;
+    }
+
+    private class ListItem {
+        String key;
+    }
+
+    private class ApiRet {
+        ListItem[] items;
+        String marker;
     }
 
 

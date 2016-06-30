@@ -4,7 +4,7 @@ import okhttp3.*;
 
 import java.net.URL;
 
-class RPC {
+final class RPC {
     private Mac mac;
     private OkHttpClient okHttpClient;
 

@@ -3,10 +3,9 @@ package com.qiniu.pili;
 import com.qiniu.pili.utils.HMac;
 import com.qiniu.pili.utils.UrlSafeBase64;
 
-import java.awt.*;
 import java.net.URL;
 
-class Mac {
+final class Mac {
     private String accessKey;
     private String secretKey;
 

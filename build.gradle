@@ -1,15 +1,50 @@
+import java.util.regex.Matcher
+
 apply plugin: 'java'
 
 sourceCompatibility = 1.7
-version = '2.0'
+targetCompatibility = 1.7
+[compileJava,compileTestJava,javadoc]*.options*.encoding = 'UTF-8'
 
 repositories {
     mavenCentral()
 }
 
-
 dependencies {
-    compile 'com.squareup.okhttp3:okhttp:3.2.0'
-    compile 'com.google.code.gson:gson:2.6.2'
+    compile group:'com.squareup.okhttp3', name:'okhttp', version:'3.2.0'
+    compile group:'com.google.code.gson', name:'gson', version:'2.6.2'
     testCompile group: 'junit', name: 'junit', version: '4.+'
 }
+
+def versionName() {
+    String config = 'src/main/java/com/qiniu/pili/Config.java'
+    String fileContents = new File(config).text
+    Matcher myMatcher = fileContents =~ /VERSION = "(.+)";/
+    String version = myMatcher[0][1]
+    println(version)
+    return version
+}
+
+def versionNameToCode(String version) {
+    String v = version.replaceAll(/\./, '')
+    return v.toLong()
+}
+
+String version = versionName()
+int code = versionNameToCode(version)
+
+setProperty('VERSION_NAME', version)
+setProperty('VERSION_CODE', code)
+
+
+//apply plugin: 'checkstyle'
+
+apply from: 'mvn_push.gradle'
+
+apply plugin: 'eclipse'
+
+task gen_eclipse(dependsOn:[
+'cleanEclipseProject', 'cleanEclipseClasspath',
+'eclipseProject', 'eclipseClasspath'])
+eclipseProject.mustRunAfter cleanEclipseProject
+eclipseClasspath.mustRunAfter cleanEclipseClasspath

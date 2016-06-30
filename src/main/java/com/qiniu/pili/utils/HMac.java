@@ -5,7 +5,7 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
 
-public class HMac {
+public final class HMac {
     private static final String MAC_NAME = "HmacSHA1";
     private static final String UTF8 = "UTF-8";
 

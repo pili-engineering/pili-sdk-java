@@ -1,4 +1,4 @@
-# Pili Streaming Cloud server-side library for JAVA 
+# Pili Streaming Cloud Server-Side Library For JAVA
 
 ## Features
 

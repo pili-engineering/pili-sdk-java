@@ -1,7 +1,7 @@
 package com.qiniu.pili;
 
 
-public class StreamInfo {
+public final class StreamInfo {
     private String hub;
     private String key;
     private long disabledTill;

@@ -1,8 +1,8 @@
 package com.qiniu.pili;
 
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.Assume;
 
 import java.util.Date;
 

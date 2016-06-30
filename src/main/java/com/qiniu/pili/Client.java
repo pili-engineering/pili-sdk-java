@@ -2,7 +2,7 @@ package com.qiniu.pili;
 
 import java.util.Date;
 
-public class Client {
+public final class Client {
     private RPC cli;
 
     public Client(String accessKey, String secretKey) {
