@@ -62,6 +62,12 @@ gradle build
 
 `okhttp`, `okio`, `Gson`
 
+## Install via gradle
+
+```
+compile 'com.qiniu:pili-sdk-java:1.5.4'
+```
+
 ## Usage
 
 ### Init
