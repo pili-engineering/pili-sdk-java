@@ -177,17 +177,18 @@ public final class Stream {
         return mStreamJsonStr;
     }
 
-    public SaveAsResponse saveAs(String fileName, String format, long startTime, long endTime, String notifyUrl, String pipeline)
+    public SaveAsResponse saveAs(String fileName, String format, long startTime, long endTime, String notifyUrl,
+                                 String pipeline)
             throws PiliException {
         return API.saveAs(mCredentials, this.id, fileName, format, startTime, endTime, notifyUrl, pipeline);
     }
 
     public SaveAsResponse saveAs(String fileName, String format, long startTime, long endTime) throws PiliException {
-        return saveAs(fileName, format, startTime, endTime, null);
+        return saveAs(fileName, format, startTime, endTime, null, null);
     }
 
     public SaveAsResponse saveAs(String fileName, long startTime, long endTime) throws PiliException {
-        return saveAs(fileName, null, startTime, endTime, null);
+        return saveAs(fileName, null, startTime, endTime, null, null);
     }
 
     public SnapshotResponse snapshot(String name, String format) throws PiliException {
