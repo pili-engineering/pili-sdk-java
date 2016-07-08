@@ -54,6 +54,7 @@ public class Hub {
      */
     private class GetRet {
         long disabledTill;
+        String[] converts;
     }
 
     public Stream get(String streamKey) throws PiliException {
@@ -64,7 +65,7 @@ public class Hub {
 
             String resp = cli.callWithGet(path);
             GetRet ret = gson.fromJson(resp, GetRet.class);
-            StreamInfo streamInfo = new StreamInfo(hub, streamKey, ret.disabledTill);
+            StreamInfo streamInfo = new StreamInfo(hub, streamKey,ret.converts, ret.disabledTill);
             return new Stream(streamInfo, cli);
         } catch (PiliException e) {
             throw e;
