@@ -65,7 +65,7 @@ gradle build
 ## Install via gradle
 
 ```
-compile 'com.qiniu:pili-sdk-java:1.5.4'
+compile 'com.qiniu.pili:pili-sdk-java:2.0.0'
 ```
 
 ## Usage
