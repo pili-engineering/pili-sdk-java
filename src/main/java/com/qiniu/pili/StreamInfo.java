@@ -22,16 +22,8 @@ public class StreamInfo {
         return hub;
     }
 
-    public void setHub(String hub) {
-        this.hub = hub;
-    }
-
     public String getKey() {
         return key;
-    }
-
-    public void setKey(String key) {
-        this.key = key;
     }
 
     public String[] getConverts() {
