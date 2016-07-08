@@ -52,8 +52,8 @@
 
 ### Installation
 
-You can download **pili-sdk-java-v1.5.3.jar** file in the **release** folder.
-Or use gradle: `compile 'com.qiniu:pili-sdk-java:1.5.3'`.
+You can download **pili-sdk-java-v1.5.4.jar** file in the **release** folder.
+Or use gradle: `compile 'com.qiniu:pili-sdk-java:1.5.4'`.
 
 ### Dependencies
 
