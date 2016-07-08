@@ -1,8 +1,9 @@
 package com.qiniu.pili;
 
+import org.junit.Assert;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.Assume;
 
 import java.util.Date;
 
@@ -202,5 +203,29 @@ public class ClientTest {
         expect = "http://live-snapshot.test.com/" + hubName + "/key.jpg";
         url = cli.SnapshotPlayURL("live-snapshot.test.com", hubName, "key");
         assertTrue(url.startsWith(expect));
+    }
+
+    @Test
+    public void testConvert() {
+        Assume.assumeTrue(skip());
+        String streamKey = streamKeyPrefix + "convert";
+
+        try {
+            Stream stream = hub.create(streamKey);
+            String[] converts = new String[]{"720p","480p"};
+            stream.updateConvert(converts);
+
+            stream = hub.get(streamKey);
+            Assert.assertArrayEquals(stream.getConverts(), converts);
+
+            stream.updateConvert(null);
+
+            stream = hub.get(streamKey);
+            Assert.assertTrue(null == stream.getConverts() || stream.getConverts().length == 0);
+
+        } catch (PiliException e) {
+            e.printStackTrace();
+            fail();
+        }
     }
 }

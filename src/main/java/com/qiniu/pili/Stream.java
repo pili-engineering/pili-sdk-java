@@ -1,9 +1,10 @@
 package com.qiniu.pili;
 
-import java.io.UnsupportedEncodingException;
-
 import com.google.gson.Gson;
 import com.qiniu.pili.utils.UrlSafeBase64;
+
+import java.io.UnsupportedEncodingException;
+
 
 public class Stream {
     private StreamInfo info;
@@ -38,6 +39,8 @@ public class Stream {
         return gson.toJson(info);
     }
 
+    public String[] getConverts() { return info.getConverts();}
+
     private class DisabledArgs {
         long disabledTill;
 
@@ -53,6 +56,7 @@ public class Stream {
 
         try {
             cli.callWithJson(path, json);
+            info.setDisabledTill(disabledTill);
         } catch (PiliException e) {
             throw e;
         } catch (Exception e) {
@@ -182,5 +186,27 @@ public class Stream {
         }
     }
 
+    public void updateConvert(String[] converts) throws PiliException {
+        String path = baseUrl + "/converts";
+        ConvertArgs args = new ConvertArgs(converts);
+        String json = gson.toJson(args);
 
+        try {
+            cli.callWithJson(path, json);
+            info.setConverts(converts);
+        } catch (PiliException e) {
+            throw e;
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new PiliException(e);
+        }
+    }
+
+    private class ConvertArgs {
+        String[] converts;
+
+        public ConvertArgs(String[] converts) {
+            this.converts = converts;
+        }
+    }
 }
