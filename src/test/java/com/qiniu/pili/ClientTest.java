@@ -207,6 +207,7 @@ public class ClientTest {
 
     @Test
     public void testConvert() {
+        Assume.assumeTrue(skip());
         String streamKey = streamKeyPrefix + "convert";
 
         try {
