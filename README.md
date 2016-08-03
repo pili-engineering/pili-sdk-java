@@ -138,7 +138,7 @@ public static void main(String args[]) {
 #### Create a new Stream
 
 ```java
-Stream stream := hub.create("streamkey")
+Stream stream = hub.create("streamkey")
 System.out.println(stream.toJson());
 /*
 {"Hub":"PiliSDKTest","Key":"streamkey","DisabledTill":0}
