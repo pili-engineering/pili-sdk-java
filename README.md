@@ -128,9 +128,9 @@ http://live-snapshot.test.com/PiliSDKTest/streamkey.jpg
 #### Instantiate a Pili Hub object
 
 ```java
-func main() {
-	Client cli = cli.New(AccessKey, SecretKey);
-	hub = cli.newHub("PiliSDKTest");
+public static void main(String args[]) { 
+	Client cli = new Client(accessKey, secretKey);
+	Hub hub = cli.newHub("PiliSDKTest");
 	// ...
 }
 ```
@@ -203,7 +203,7 @@ after disable: {"Hub":"PiliSDKTest","Key":"streamkey","DisabledTill":0}
 #### Get Stream live status
 
 ```java
-Stream.LiveStatus = stream.liveStatus();
+Stream.LiveStatus status = stream.liveStatus();
 /*
 {"startAt":1463022236,"clientIP":"222.73.202.226","bps":248,"fps":{"audio":45,"vedio":28,"data":0}}
 */
@@ -212,7 +212,7 @@ Stream.LiveStatus = stream.liveStatus();
 #### Get Stream history record
 
 ```java
-Stream.Record[] records := stream.historyRecord(0, 0)
+Stream.Record[] records = stream.historyRecord(0, 0)
 /*
 [{1463022236,1463022518}]
 */
@@ -221,7 +221,7 @@ Stream.Record[] records := stream.historyRecord(0, 0)
 #### Save Stream live playback
 
 ```java
-String fname= stream.save(0, 0)
+String fname = stream.save(0, 0)
 /*
 FtVdro8JYNwq4uVFALsKGWDRVaiN
 */
