@@ -486,16 +486,16 @@ public final class API {
     }
 
     //Generate a RTMP publish URL
-    public static String publishUrl(Stream stream, long nonce)
+    public static String publishUrl(Stream stream, long nonce, String accessKey, String secretKey)
             throws PiliException {
         final String defaultScheme = "rtmp";
         if ("dynamic".equals(stream.getPublishSecurity())) {
-            return generateDynamicUrl(stream, nonce, defaultScheme);
+            return generateDynamicUrl(stream, nonce, defaultScheme, accessKey, secretKey);
         } else if ("static".equals(stream.getPublishSecurity())) {
             return generateStaticUrl(stream, defaultScheme);
         } else {
             // "dynamic" as default
-            return generateDynamicUrl(stream, nonce, defaultScheme);
+            return generateDynamicUrl(stream, nonce, defaultScheme, accessKey, secretKey);
         }
     }
 
@@ -567,18 +567,18 @@ public final class API {
                 stream.getTitle(), stream.getPublishKey());
     }
 
-    private static String generateDynamicUrl(Stream stream, long nonce, String scheme) throws PiliException {
+    private static String generateDynamicUrl(Stream stream, long nonce, String scheme, String accessKey, String secretKey) throws PiliException {
         if (nonce <= 0) {
-            nonce = System.currentTimeMillis() / 1000; // the unit should be second
+            nonce = System.currentTimeMillis() / 1000 + 60 * 60; // the unit should be second
         }
-        final String baseUri = "/" + stream.getHubName() + "/" + stream.getTitle() + "?nonce=" + nonce;
+        final String baseUri = "/" + stream.getHubName() + "/" + stream.getTitle() + "?e=" + nonce;
         String publishToken = null;
         try {
-            publishToken = Credentials.sign(stream.getPublishKey(), baseUri);
+            publishToken = Credentials.sign(secretKey, baseUri);
         } catch (SignatureException e) {
             e.printStackTrace();
             throw new PiliException(e);
         }
-        return String.format("%s://%s%s&token=%s", scheme, stream.getPublishRtmpHost(), baseUri, publishToken);
+        return String.format("%s://%s%s&token=%s:%s", scheme, stream.getPublishRtmpHost(), baseUri, accessKey, publishToken);
     }
 }

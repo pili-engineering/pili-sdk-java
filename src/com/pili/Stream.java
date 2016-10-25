@@ -149,8 +149,8 @@ public final class Stream {
         return API.getStreamStatus(mCredentials, this.id);
     }
 
-    public String rtmpPublishUrl() throws PiliException {
-        return API.publishUrl(this, 0);
+    public String rtmpPublishUrl(String accessKey, String secretKey) throws PiliException {
+        return API.publishUrl(this, 0, accessKey, secretKey);
     }
 
     public Map<String, String> rtmpLiveUrls() {
