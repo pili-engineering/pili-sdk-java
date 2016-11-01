@@ -21,8 +21,6 @@ public class ClientTest {
     @Before
     public void prepare() {
         // local test environment
-//        Config.APIHost = "10.200.20.28:7778";
-
         accessKey = "7O7hf7Ld1RrC_fpZdFvU8aCgOPuhw2K4eapYOdII";
         secretKey = "6Rq7rMSUHHqOgo0DJjh15tHsGUBEH9QhWqqyj4ka";
         hubName = "PiliSDKTest";

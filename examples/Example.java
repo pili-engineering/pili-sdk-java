@@ -11,7 +11,7 @@ public class Example {
         String streamKeyPrefix = "javasdkexample" + String.valueOf(new Date().getTime());
 
         String hubName = "PiliSDKTest";
-        Config.APIHost = "10.200.20.28:7778";
+        Config.APIHost = "pili.qiniuapi.com";
 
         //初始化client
         Client cli = new Client(accessKey,secretKey);
