@@ -1,7 +1,5 @@
 package com.qiniu.pili;
 
-import java.util.Date;
-
 public final class Client {
     private RPC cli;
 
@@ -14,7 +12,7 @@ public final class Client {
         expireAfterSeconds means URL will be invalid after expireAfterSeconds.
      */
     public String RTMPPublishURL(String domain, String hub, String streamKey, int expireAfterSeconds) {
-        long expire = new Date().getTime() + expireAfterSeconds;
+        long expire = System.currentTimeMillis() / 1000 + expireAfterSeconds;
         String path = String.format("/%s/%s?e=%d", hub, streamKey, expire);
         String token;
         try {
