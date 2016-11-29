@@ -1,5 +1,6 @@
 package com.pili;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -274,6 +275,49 @@ public final class API {
         } else {
             throw new PiliException(response);
         }
+    }
+
+    public static Hub.StreamStatus[] batchStreamStatuses(Credentials credentials, Hub.StreamStatusesArgs args) throws PiliException{
+        String urlStr = String.format("%s/statuses", API_BASE_URL);
+
+        Gson gson = new Gson();
+        String reqJson = gson.toJson(args);
+
+        Response response = null;
+        try {
+            byte[] body = reqJson.toString().getBytes(Config.UTF8);
+            URL url = new URL(urlStr);
+
+            String contentType = "application/json";
+            String macToken = credentials.signRequest(url, "POST", body, contentType);
+            MediaType type = MediaType.parse(contentType);
+            RequestBody rBody = RequestBody.create(type, body);
+            Request request = new Request.Builder()
+                    .post(rBody)
+                    .url(url)
+                    .header("User-Agent", Utils.getUserAgent())
+                    .addHeader("Authorization", macToken)
+                    .build();
+
+            response = mOkHttpClient.newCall(request).execute();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new PiliException(e);
+        }
+
+        // response never be null
+        if (response.isSuccessful()) {
+            try {
+                Hub.StreamStatuses ret = gson.fromJson(response.body().string(),  Hub.StreamStatuses.class);
+                return ret.items;
+            } catch (IOException e) {
+                e.printStackTrace();
+                throw new PiliException(e);
+            }
+        } else {
+            throw new PiliException(response);
+        }
+
     }
 
     // Delete stream

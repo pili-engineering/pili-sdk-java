@@ -49,4 +49,35 @@ public final class Hub {
         return API.listStreams(mCredentials, mHubName, status, marker, limit, titlePrefix);
     }
 
+    //-----------
+    static class StreamStatuses {
+        public StreamStatus[] items;
+    }
+    public static class StreamStatus {
+        public String streamId;
+        public String addr;
+        public String startFrom;
+        public String updatedAt;
+        public Float bytesPerSecond;
+        public Fps framesPerSecond;
+        public String reqId;
+        public String status;
+    }
+    public static class Fps {
+        public Float audio;
+        public Float video;
+        public Float data;
+    }
+
+    static class StreamStatusesArgs {
+        public String[] streamIds;
+        StreamStatusesArgs(String[] ids) {
+            this.streamIds = ids;
+        }
+    }
+
+    public StreamStatus[] batchStreamStatuses(String... streamIds) throws PiliException{
+        return API.batchStreamStatuses(mCredentials, new StreamStatusesArgs(streamIds));
+    }
+
 }
