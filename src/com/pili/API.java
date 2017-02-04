@@ -224,6 +224,54 @@ public final class API {
         }
     }
 
+    public static boolean updateStreamAvailable(Credentials credentials, String streamId, boolean disabled,
+                                                long disabledTill) throws PiliException {
+        if (streamId == null) {
+            throw new PiliException(MessageConfig.NULL_STREAM_ID_EXCEPTION_MSG);
+        }
+
+        JsonObject json = new JsonObject();
+        if (disabled) {
+            json.addProperty("available", "disabled");
+        } else {
+            json.addProperty("available", "enabled");
+        }
+        if (disabledTill < 0) {
+            disabledTill = 0;
+        }
+        json.addProperty("disabledTill", disabledTill);
+
+        String urlStr = String.format("%s/streams/%s/available", API_BASE_URL, streamId);
+        Response response = null;
+        try {
+            byte[] body = json.toString().getBytes(Config.UTF8);
+            URL url = new URL(urlStr);
+
+            String contentType = "application/json";
+            String macToken = credentials.signRequest(url, "POST", body, contentType);
+            MediaType type = MediaType.parse(contentType);
+            RequestBody rBody = RequestBody.create(type, body);
+            Request request = new Request.Builder()
+                    .post(rBody)
+                    .url(url)
+                    .header("User-Agent", Utils.getUserAgent())
+                    .addHeader("Authorization", macToken)
+                    .build();
+
+            response = mOkHttpClient.newCall(request).execute();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new PiliException(e);
+        }
+
+        // response never be null
+        if (response.isSuccessful()) {
+            return true;
+        } else {
+            throw new PiliException(response);
+        }
+    }
+
     // Update an exist stream
     public static Stream updateStream(Credentials credentials, String streamId, String publishKey,
                                       String publishSecurity, boolean disabled) throws PiliException {

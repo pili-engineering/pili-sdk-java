@@ -624,6 +624,28 @@ public class PiliTest {
     }
 
     @Test
+    public void testDisableTill() {
+        // the test case order cannot be guaranteed
+        if (mStream == null) {
+            prepareStream();
+        }
+        try {
+            boolean ret = mStream.disable(1801577086L);
+            assertEquals(true, ret);
+
+            Stream stream = mHub.getStream(mStream.getStreamId());
+            assertEquals(true, stream.isDisabled());
+
+            ret = mStream.disable(1486217217L);
+            assertEquals(true, ret);
+            stream = mHub.getStream(mStream.getStreamId());
+            assertEquals(false, stream.isDisabled());
+        }catch (PiliException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
     public void testSnapshot() {
         if (mStream == null) {
             prepareStream();

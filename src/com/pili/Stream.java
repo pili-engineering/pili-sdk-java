@@ -207,6 +207,10 @@ public final class Stream {
         return API.updateStream(mCredentials, this.id, null, null, true);
     }
 
+    public boolean disable(long disabledTill) throws PiliException {
+        return API.updateStreamAvailable(mCredentials, this.id, true, disabledTill);
+    }
+
     public static class Segment {
         private long start;
         private long end;
