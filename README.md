@@ -7,17 +7,21 @@
 	- [x] RTMP直播地址: RTMPPlayURL(domain, hub, streamKey)
 	- [x] HLS直播地址: HLSPlayURL(domain, hub, streamKey)
 	- [x] HDL直播地址: HDLPlayURL(domain, hub, streamKey)
-	- [x] 截图直播地址: SnapshotPlayURL(domain, hub, streamKey)
+	- [x] 直播封面地址: SnapshotPlayURL(domain, hub, streamKey)
 - Hub
 	- [x] 创建流: hub.create(streamKey)
 	- [x] 查询流: hub.get(streamKey)
 	- [x] 列出流: hub.list(prefix, limit, marker)
 	- [x] 列出正在直播的流: hub.listLive(prefix, limit, marker)
+	- [x] 批量查询直播实时信息: hub.batchLiveStatus(streamTitles)
 - Stream
-	- [x] 禁用流: stream.disable()
-	- [x] 启用流: stream.enable()
+	- [x] 流信息: stream.info()
+	- [x] 禁用流: stream.disable() / stream.disable(disabledTill)
+	- [x] 解禁流: stream.enable()
  	- [x] 查询直播状态: stream.liveStatus()
-	- [x] 保存直播回放: stream.save(key, start, end)
+	- [x] 保存直播回放: stream.save(key, start, end) / stream.save(saveOptions)
+	- [x] 保存直播截图: stream.snapshot(snapshotOptions) zzz
+	- [x] 更改流的实时转码规格: stream.updateConverts(profiles)
 	- [x] 查询直播历史: stream.historyRecord(start, end)
 
 ## Contents
@@ -37,12 +41,16 @@
 		- [Get a Stream](#get-a-stream)
 		- [List Streams](#list-streams)
 		- [List live Streams](#list-live-streams)
+		- [Batch get streams' live status](#batch-live-status)
 	- [Stream](#stream)
+		- [Get Stream info](#get-stream-info)
 		- [Disable a Stream](#disable-a-stream)
 		- [Enable a Stream](#enable-a-stream)
 		- [Get Stream live status](#get-stream-live-status)
 		- [Get Stream history record](#get-stream-history-record)
 		- [Save Stream live playback](#save-stream-live-playback)
+		- [Snapshot Stream](#snapshot-stream)
+		- [Update converts](#update-converts)
 
 ## Java version
 
@@ -173,7 +181,23 @@ keys=[] marker=
 */
 ```
 
+#### Batch live status
+
+```java
+Hub.BatchLiveStatus[] statuses = hub.batchLiveStatus(new String[]{"strm1","strm2"});
+```
+
 ### Stream
+
+#### Get stream info
+
+Get the latest stream info
+```java
+Stream stream = hub.get("streamkey")
+stream.disable()
+// will get the latest info from server
+stream = stream.info()
+```
 
 #### Disable a Stream
 
@@ -184,6 +208,12 @@ stream = hub.get("streamkey")
 /*
 before disable: {"Hub":"PiliSDKTest","Key":"streamkey","DisabledTill":0}
 after disable: {"Hub":"PiliSDKTest","Key":"streamkey","DisabledTill":-1}
+*/
+
+stream.disable(1488540526L);
+stream.info();
+/*
+after disable: {"Hub":"PiliSDKTest","Key":"streamkey","DisabledTill":1488540526}
 */
 ```
 
@@ -223,6 +253,20 @@ Stream.Record[] records = stream.historyRecord(0, 0)
 ```java
 String fname = stream.save(0, 0)
 /*
-FtVdro8JYNwq4uVFALsKGWDRVaiN
+recordings/z1.hub1.strm1/0_1488529267.m3u8
 */
+```
+
+#### Snapshot Stream
+
+```java
+Stream.SnapshotOptions opts = new Stream.SnapshotOptions();
+opts.fname = "test";
+stream.snapshot(opts);
+```
+#### Update converts
+
+```java
+String[] profiles = {"480p", "720p"};
+stream.updateConverts(profiles);
 ```
