@@ -23,6 +23,7 @@ public final class Hub {
 
     /**
      * create stream
+     *
      * @param streamKey
      * @return
      * @throws PiliException
@@ -39,13 +40,13 @@ public final class Hub {
         } catch (PiliException e) {
             throw e;
         } catch (Exception e) {
-            e.printStackTrace();
             throw new PiliException(e);
         }
     }
 
     /**
      * get stream
+     *
      * @param streamKey
      * @return
      * @throws PiliException
@@ -64,7 +65,6 @@ public final class Hub {
         } catch (PiliException e) {
             throw e;
         } catch (Exception e) {
-            e.printStackTrace();
             throw new PiliException(e);
         }
 
@@ -87,7 +87,6 @@ public final class Hub {
         } catch (PiliException e) {
             throw e;
         } catch (Exception e) {
-            e.printStackTrace();
             throw new PiliException(e);
         }
 
@@ -95,6 +94,7 @@ public final class Hub {
 
     /**
      * list stream
+     *
      * @param prefix
      * @param limit
      * @param marker
@@ -107,6 +107,7 @@ public final class Hub {
 
     /**
      * list streams which is live
+     *
      * @param prefix
      * @param limit
      * @param marker
@@ -119,22 +120,22 @@ public final class Hub {
 
     /**
      * batch get live status
+     *
      * @param streamTitles
      * @return
      * @throws PiliException
      */
     public BatchLiveStatus[] batchLiveStatus(String[] streamTitles) throws PiliException {
-        String path = baseUrl+ "/livestreams";
+        String path = baseUrl + "/livestreams";
         String json = gson.toJson(new BatchLiveStatusOptions(streamTitles));
         try {
             String resp = cli.callWithJson(path, json);
 
             BatchLiveStatusRet ret = gson.fromJson(resp, BatchLiveStatusRet.class);
             return ret.items;
-        }catch (PiliException e) {
+        } catch (PiliException e) {
             throw e;
         } catch (Exception e) {
-            e.printStackTrace();
             throw new PiliException(e);
         }
     }
@@ -146,9 +147,11 @@ public final class Hub {
             this.items = items;
         }
     }
+
     private class BatchLiveStatusRet {
         BatchLiveStatus[] items;
     }
+
     public class BatchLiveStatus extends Stream.LiveStatus {
         String key;
     }

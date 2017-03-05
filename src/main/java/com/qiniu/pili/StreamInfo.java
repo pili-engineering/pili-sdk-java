@@ -10,12 +10,12 @@ public final class StreamInfo {
     // codec profiles
     private String[] converts;
 
-    StreamInfo(String hub, String key){
+    StreamInfo(String hub, String key) {
         this.hub = hub;
         this.key = key;
     }
 
-    void setMeta(String hub, String key){
+    void setMeta(String hub, String key) {
         this.key = key;
         this.hub = hub;
     }
