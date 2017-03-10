@@ -21,6 +21,13 @@ public final class Hub {
         this.gson = new Gson();
     }
 
+    /**
+     * create stream
+     *
+     * @param streamKey
+     * @return
+     * @throws PiliException
+     */
     public Stream create(String streamKey) throws PiliException {
         String path = this.baseUrl + "/streams";
         CreateArgs args = new CreateArgs(streamKey);
@@ -28,16 +35,22 @@ public final class Hub {
 
         try {
             cli.callWithJson(path, json);
-            StreamInfo streamInfo = new StreamInfo(hub, streamKey, 0);
+            StreamInfo streamInfo = new StreamInfo(hub, streamKey);
             return new Stream(streamInfo, cli);
         } catch (PiliException e) {
             throw e;
         } catch (Exception e) {
-            e.printStackTrace();
             throw new PiliException(e);
         }
     }
 
+    /**
+     * get stream
+     *
+     * @param streamKey
+     * @return
+     * @throws PiliException
+     */
     public Stream get(String streamKey) throws PiliException {
 
         try {
@@ -46,13 +59,12 @@ public final class Hub {
             String path = baseUrl + "/streams/" + ekey;
 
             String resp = cli.callWithGet(path);
-            GetRet ret = gson.fromJson(resp, GetRet.class);
-            StreamInfo streamInfo = new StreamInfo(hub, streamKey, ret.disabledTill);
-            return new Stream(streamInfo, cli);
+            StreamInfo ret = gson.fromJson(resp, StreamInfo.class);
+            ret.setMeta(hub, streamKey);
+            return new Stream(ret, cli);
         } catch (PiliException e) {
             throw e;
         } catch (Exception e) {
-            e.printStackTrace();
             throw new PiliException(e);
         }
 
@@ -75,18 +87,73 @@ public final class Hub {
         } catch (PiliException e) {
             throw e;
         } catch (Exception e) {
-            e.printStackTrace();
             throw new PiliException(e);
         }
 
     }
 
+    /**
+     * list stream
+     *
+     * @param prefix
+     * @param limit
+     * @param marker
+     * @return
+     * @throws PiliException
+     */
     public ListRet list(String prefix, int limit, String marker) throws PiliException {
         return list(false, prefix, limit, marker);
     }
 
+    /**
+     * list streams which is live
+     *
+     * @param prefix
+     * @param limit
+     * @param marker
+     * @return
+     * @throws PiliException
+     */
     public ListRet listLive(String prefix, int limit, String marker) throws PiliException {
         return list(true, prefix, limit, marker);
+    }
+
+    /**
+     * batch get live status
+     *
+     * @param streamTitles
+     * @return
+     * @throws PiliException
+     */
+    public BatchLiveStatus[] batchLiveStatus(String[] streamTitles) throws PiliException {
+        String path = baseUrl + "/livestreams";
+        String json = gson.toJson(new BatchLiveStatusOptions(streamTitles));
+        try {
+            String resp = cli.callWithJson(path, json);
+
+            BatchLiveStatusRet ret = gson.fromJson(resp, BatchLiveStatusRet.class);
+            return ret.items;
+        } catch (PiliException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new PiliException(e);
+        }
+    }
+
+    private class BatchLiveStatusOptions {
+        String[] items;
+
+        public BatchLiveStatusOptions(String[] items) {
+            this.items = items;
+        }
+    }
+
+    private class BatchLiveStatusRet {
+        BatchLiveStatus[] items;
+    }
+
+    public class BatchLiveStatus extends Stream.LiveStatus {
+        String key;
     }
 
     /*
@@ -98,13 +165,6 @@ public final class Hub {
         public CreateArgs(String key) {
             this.key = key;
         }
-    }
-
-    /*
-        Get
-     */
-    private class GetRet {
-        long disabledTill;
     }
 
     /*

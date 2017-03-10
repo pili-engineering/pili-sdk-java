@@ -30,6 +30,14 @@ public final class Stream {
         return info.getDisabledTill();
     }
 
+    public String[] getConverts() {
+        return info.getConverts();
+    }
+
+    public String getKey() {
+        return info.getKey();
+    }
+
     private void setDisabledTill(long disabledTill) throws PiliException {
         DisabledArgs args = new DisabledArgs(disabledTill);
         String path = baseUrl + "/disabled";
@@ -40,50 +48,10 @@ public final class Stream {
         } catch (PiliException e) {
             throw e;
         } catch (Exception e) {
-            e.printStackTrace();
             throw new PiliException(e);
         }
     }
 
-    public String getKey() {
-        return info.getKey();
-    }
-
-    public String toJson() {
-        return gson.toJson(info);
-    }
-
-    /*
-        disable
-     */
-    public void disable() throws PiliException {
-        setDisabledTill(-1);
-    }
-
-    /*
-        enable
-     */
-    public void enable() throws PiliException {
-        setDisabledTill(0);
-    }
-
-    public LiveStatus liveStatus() throws PiliException {
-        String path = baseUrl + "/live";
-        try {
-            String resp = cli.callWithGet(path);
-            LiveStatus status = gson.fromJson(resp, LiveStatus.class);
-            return status;
-        } catch (PiliException e) {
-            throw e;
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new PiliException(e);
-        }
-    }
-
-    /*
-        Save
-     */
     private String appendQuery(String path, long start, long end) {
         String flag = "?";
         if (start > 0) {
@@ -96,10 +64,100 @@ public final class Stream {
         return path;
     }
 
+    public String toJson() {
+        return gson.toJson(info);
+    }
+
+    /**
+     * fetch stream info
+     *
+     * @return
+     * @throws PiliException
+     */
+    public Stream info() throws PiliException {
+        try {
+            String resp = cli.callWithGet(baseUrl);
+            StreamInfo ret = gson.fromJson(resp, StreamInfo.class);
+            ret.setMeta(info.getHub(), info.getKey());
+            this.info = ret;
+            return this;
+        } catch (PiliException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new PiliException(e);
+        }
+    }
+
+    /**
+     * diable stream
+     *
+     * @throws PiliException
+     */
+    public void disable() throws PiliException {
+        setDisabledTill(-1);
+    }
+
+    /**
+     * disable stream
+     *
+     * @param disabledTill
+     * @throws PiliException
+     */
+    public void disable(long disabledTill) throws PiliException {
+        setDisabledTill(disabledTill);
+    }
+
+    /**
+     * enable stream
+     *
+     * @throws PiliException
+     */
+    public void enable() throws PiliException {
+        setDisabledTill(0);
+    }
+
+    /**
+     * get the status of live stream
+     *
+     * @return
+     * @throws PiliException
+     */
+    public LiveStatus liveStatus() throws PiliException {
+        String path = baseUrl + "/live";
+        try {
+            String resp = cli.callWithGet(path);
+            LiveStatus status = gson.fromJson(resp, LiveStatus.class);
+            return status;
+        } catch (PiliException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new PiliException(e);
+        }
+    }
+
+    /**
+     * save playback
+     *
+     * @param start
+     * @param end
+     * @return
+     * @throws PiliException
+     */
     public String save(long start, long end) throws PiliException {
-        String path = appendQuery(baseUrl + "/saveas", start, end);
-        SaveArgs args = new SaveArgs(start, end);
-        String json = gson.toJson(args);
+        SaveOptions args = new SaveOptions(start, end);
+        return save(args);
+    }
+
+    /**
+     * save playback with more options
+     *
+     * @param opts
+     * @return
+     * @throws PiliException
+     */
+    public String save(SaveOptions opts) throws PiliException {
+        String path = baseUrl + "/saveas";
+        String json = gson.toJson(opts);
 
         try {
             String resp = cli.callWithJson(path, json);
@@ -108,12 +166,58 @@ public final class Stream {
         } catch (PiliException e) {
             throw e;
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new PiliException(e);
+        }
+    }
+
+    /**
+     * snapshot the live stream
+     *
+     * @param opts
+     * @return
+     * @throws PiliException
+     */
+    public String snapshot(SnapshotOptions opts) throws PiliException {
+        String path = baseUrl + "/snapshot";
+        String json = gson.toJson(opts);
+        try {
+            String resp = cli.callWithJson(path, json);
+            SnapshotRet ret = gson.fromJson(resp, SnapshotRet.class);
+            return ret.fname;
+        } catch (PiliException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new PiliException(e);
+        }
+    }
+
+    /**
+     * update convert configs
+     *
+     * @param profiles
+     * @throws PiliException
+     */
+    public void updateConverts(String[] profiles) throws PiliException {
+        String path = baseUrl + "/converts";
+        String json = gson.toJson(new ConvertsOptions(profiles));
+        try {
+            cli.callWithJson(path, json);
+        } catch (PiliException e) {
+            throw e;
+        } catch (Exception e) {
             throw new PiliException(e);
         }
 
     }
 
+    /**
+     * query the stream history
+     *
+     * @param start
+     * @param end
+     * @return
+     * @throws PiliException
+     */
     public Record[] historyRecord(long start, long end) throws PiliException {
         String path = appendQuery(baseUrl + "/historyrecord", start, end);
         try {
@@ -123,7 +227,6 @@ public final class Stream {
         } catch (PiliException e) {
             throw e;
         } catch (Exception e) {
-            e.printStackTrace();
             throw new PiliException(e);
         }
     }
@@ -145,7 +248,7 @@ public final class Stream {
         public int data;
     }
 
-    public class LiveStatus {
+    public static class LiveStatus {
         public long startAt;
         public String clientIP;
         public int bps;
@@ -156,11 +259,43 @@ public final class Stream {
         }
     }
 
-    private class SaveArgs {
-        long start;
-        long end;
+    public static class SaveOptions {
+        /**
+         * start unix time
+         */
+        public long start;
+        /**
+         * end unix time. 0 means current time
+         */
+        public long end;
+        /**
+         * the saved file name
+         */
+        public String fname;
+        /**
+         * file format. default in m3u8
+         */
+        public String format;
+        /**
+         * if qiniu dora pipeline is needed, assign this value
+         */
+        public String pipeline;
+        /**
+         * URL address. After dora asynchronous operation is done, will notify this address
+         */
+        public String notify;
+        /**
+         * ts's expiration days
+         * -1 means no change of ts's expiration
+         * 0 means storing forever
+         * any other positive number can change the ts's expiration days
+         */
+        public long expireDays;
 
-        public SaveArgs(long start, long end) {
+        public SaveOptions() {
+        }
+
+        public SaveOptions(long start, long end) {
             this.start = start;
             this.end = end;
         }
@@ -168,6 +303,42 @@ public final class Stream {
 
     private class SaveRet {
         String fname;
+    }
+
+    public static class SnapshotOptions {
+        /**
+         * the saved file name
+         */
+        public String fname;
+        /**
+         * the unix time of snapshot. 0 means the current time
+         */
+        public long time;
+        /**
+         * file format. default in jpg
+         */
+        public String format;
+
+        public SnapshotOptions() {
+        }
+
+        public SnapshotOptions(String fname, long time, String format) {
+            this.fname = fname;
+            this.time = time;
+            this.format = format;
+        }
+    }
+
+    private class SnapshotRet {
+        String fname;
+    }
+
+    private class ConvertsOptions {
+        String[] converts;
+
+        public ConvertsOptions(String[] converts) {
+            this.converts = converts;
+        }
     }
 
     /*

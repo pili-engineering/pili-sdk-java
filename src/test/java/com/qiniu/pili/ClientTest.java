@@ -21,8 +21,8 @@ public class ClientTest {
     @Before
     public void prepare() {
         // local test environment
-        accessKey = "7O7hf7Ld1RrC_fpZdFvU8aCgOPuhw2K4eapYOdII";
-        secretKey = "6Rq7rMSUHHqOgo0DJjh15tHsGUBEH9QhWqqyj4ka";
+        accessKey = "Ge_kRfuV_4JW0hOCOnRq5_kD1sX53bKVht8FNdd3";
+        secretKey = "0fU92CSrvgNJTVCXqbuRVqkntPFJLFERGa4akpko";
         hubName = "PiliSDKTest";
         streamKeyPrefix = "javasdktest" + String.valueOf(new Date().getTime());
 
@@ -93,7 +93,7 @@ public class ClientTest {
         try {
             stream = hub.get(streamKey);
             stream.enable();
-            stream = hub.get(streamKey);
+            stream.info();
             assertEquals(0, stream.getDisabledTill());
             assertEquals(hubName, stream.getHub());
             assertEquals(streamKey, stream.getKey());
@@ -101,6 +101,24 @@ public class ClientTest {
             fail();
         }
 
+    }
+
+    @Test
+    public void testUpdateConverts(){
+        Assume.assumeTrue(skip());
+
+        String streamKey = streamKeyPrefix + "converts";
+        try {
+            Stream stream = hub.create(streamKey);
+            assertEquals(null, stream.getConverts());
+
+            String[] profiles = {"480p", "720p"};
+            stream.updateConverts(profiles);
+            stream = stream.info();
+            assertEquals(profiles, stream.getConverts());
+        }catch (PiliException e) {
+            fail();
+        }
     }
 
     @Test
