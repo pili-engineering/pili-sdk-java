@@ -4,9 +4,9 @@ import okhttp3.Response;
 
 public class PiliException extends Exception {
     public final Response response;
-    private final String ErrNotFound = "not found";
-    private final String ErrDuplicate = "already exists";
-    private final String ErrNotLive = "stream isn't in live";
+    private final String ErrNotFound = "stream not found";
+    private final String ErrDuplicate = "stream already exists";
+    private final String ErrNotLive = "no data";
 
 
     public PiliException(Response response) {
