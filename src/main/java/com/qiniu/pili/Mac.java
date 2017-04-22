@@ -56,4 +56,12 @@ final class Mac {
         return typeOK && lengthOK;
     }
 
+    public String signRoomToken(String roomAccess) throws Exception {
+        String encodedRoomAcc = UrlSafeBase64.encodeToString(roomAccess);
+        byte[] sign = HMac.HmacSHA1Encrypt(encodedRoomAcc, this.secretKey);
+        String encodedSign = UrlSafeBase64.encodeToString(sign);
+        return this.accessKey + ":" + encodedSign+":"+encodedRoomAcc;
+    }
+
+
 }
