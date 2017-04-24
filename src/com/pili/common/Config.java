@@ -11,10 +11,13 @@ public final class Config {
 
     public static final String DEFAULT_API_VERSION = "v1";
 
+    public static final String DEFAULT_RTC_VERSION = "v1";
+
     @Deprecated
     public static final String API_VERSION = DEFAULT_API_VERSION;
 
     public static final String DEFAULT_API_HOST = "pili.qiniuapi.com";
+    public static final String DEFAULT_RTC_HOST = "rtc.qiniuapi.com";
     public static final boolean DEFAULT_USE_HTTPS = false;
 
     public static final int TITLE_MIN_LENGTH = 5;

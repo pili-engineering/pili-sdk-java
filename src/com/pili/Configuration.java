@@ -9,6 +9,8 @@ public final class Configuration {
     boolean USE_HTTPS = Config.DEFAULT_USE_HTTPS;
     String API_HOST = Config.DEFAULT_API_HOST;
     String API_VERSION = Config.DEFAULT_API_VERSION;
+    String RTC_HOST = Config.DEFAULT_RTC_HOST;
+    String RTC_VERSION = Config.DEFAULT_RTC_VERSION;
 
     private Configuration() {
     }

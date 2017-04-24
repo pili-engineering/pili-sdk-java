@@ -93,4 +93,11 @@ public final class Credentials {
         }
         return sign;
     }
+
+    public String signRoomToken(String roomAccess) throws Exception {
+        String encodedRoomAcc = UrlSafeBase64.encodeToString(roomAccess);
+        byte[] sign = digest(this.mSecretKey, encodedRoomAcc);
+        String encodedSign = UrlSafeBase64.encodeToString(sign);
+        return this.mAccessKey + ":" +  encodedSign + ":" + encodedRoomAcc;
+    }
 }

@@ -11,6 +11,9 @@ public final class MessageConfig {
     public static final String ILLEGAL_FILE_NAME_EXCEPTION_MSG = "Illegal file name !";
     public static final String ILLEGAL_FORMAT_EXCEPTION_MSG = "Illegal format !";
 
+    public static final String ILLEGAL_OWNER_ID = "Illegal owner id!";
+    public static final String ILLEGAL_ROOM = "Illegal room!";
+
     private MessageConfig() {
     }
 }
