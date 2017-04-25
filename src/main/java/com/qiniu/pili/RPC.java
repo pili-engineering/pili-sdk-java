@@ -60,4 +60,22 @@ final class RPC {
             throw new PiliException(response);
         }
     }
+
+    public String callWithDelete(String urlStr) throws Exception{
+        URL url = new URL(urlStr);
+        String macToken = mac.signRequest(url, "DELETE", null,null);
+        Request request = new Request.Builder()
+                .url(url)
+                .delete()
+                .header("User-Agent", Config.APIUserAgent)
+                .addHeader("Authorization", "Qiniu " + macToken)
+                .build();
+
+        Response response = okHttpClient.newCall(request).execute();
+        if (response.isSuccessful()) {
+            return response.body().string();
+        } else {
+            throw new PiliException(response);
+        }
+    }
 }

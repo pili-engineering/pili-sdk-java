@@ -55,6 +55,10 @@ public final class Client {
     public Hub newHub(String hub) {
         return new Hub(this.cli, hub);
     }
+
+    public Meeting newMeeting() {
+        return new Meeting(this.cli);
+    }
 }
 
 
