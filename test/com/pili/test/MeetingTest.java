@@ -42,7 +42,7 @@ public class MeetingTest {
 
         // create room with name
         try {
-            String r1 =  meeting.createRoom("123",roomName);
+            String r1 =  meeting.createRoom("123",roomName,6);
             assertEquals(roomName,r1);
 
             Room room = meeting.getRoom(roomName);

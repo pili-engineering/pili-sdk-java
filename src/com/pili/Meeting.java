@@ -16,6 +16,9 @@ public class Meeting {
         }
         mCredentials = credentials;
     }
+    public String createRoom(String ownerId, String roomName,int userMax) throws PiliException {
+        return API.createRoom(this.mCredentials, new CreateArgs(ownerId, roomName,userMax));
+    }
 
     public String createRoom(String ownerId, String roomName) throws PiliException {
         return API.createRoom(this.mCredentials, new CreateArgs(ownerId, roomName));
@@ -60,10 +63,17 @@ public class Meeting {
     static class CreateArgs {
         @SerializedName("owner_id") String ownerId;
         @SerializedName("room_name") String room;
+        @SerializedName("user_max") int userMax;
 
-        public CreateArgs(String ownerId, String room) {
+        public CreateArgs(String ownerId, String room){
             this.ownerId = ownerId;
             this.room = room;
+        }
+
+        public CreateArgs(String ownerId, String room, int userMax) {
+            this.ownerId = ownerId;
+            this.room = room;
+            this.userMax = userMax;
         }
 
         public CreateArgs(String ownerId) {
@@ -92,5 +102,7 @@ public class Meeting {
         public RoomStatus status;
         @SerializedName("owner_id")
         public String ownerId;
+        @SerializedName("user_max")
+        public int userMax;
     }
 }
