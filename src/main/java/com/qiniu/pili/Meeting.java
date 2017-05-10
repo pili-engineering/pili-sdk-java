@@ -18,6 +18,11 @@ public class Meeting {
         this.gson = new Gson();
     }
 
+    public String createRoom(String ownerId ,String roomName, int userMax) throws PiliException{
+        CreateArgs args = new CreateArgs(ownerId, roomName, userMax);
+        return createRoom(args);
+    }
+
     public String createRoom(String ownerId ,String roomName) throws PiliException{
         CreateArgs args = new CreateArgs(ownerId, roomName);
         return createRoom(args);
@@ -110,6 +115,7 @@ public class Meeting {
         @SerializedName("room_name") public String name;
         @SerializedName("room_status") public Status status;
         @SerializedName("owner_id") public String ownerId;
+        @SerializedName("user_max") public int userMaxe;
     }
 
     /**
@@ -122,6 +128,13 @@ public class Meeting {
     private class CreateArgs {
         @SerializedName("owner_id") String ownerId;
         @SerializedName("room_name") String room;
+        @SerializedName("user_max") int userMax;
+
+        public CreateArgs(String ownerId, String room, int userMax){
+            this.ownerId = ownerId;
+            this.room = room;
+            this.userMax = userMax;
+        }
 
         public CreateArgs(String ownerId, String room) {
             this.ownerId= ownerId;
