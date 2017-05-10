@@ -364,7 +364,8 @@ public class PiliTest {
             prepareStream();
         }
         try {
-            String publishUrl = mStream.rtmpPublishUrl();
+            // todo fill with a vaild accessKey and secretKey
+            String publishUrl = mStream.rtmpPublishUrl("", "");
             String expectedUrl = EXPECTED_BASE_PUBLISH_URL + "?key=" + mStream.getPublishKey();
             System.out.println("publishUrl:" + publishUrl + ",expectedUrl:" + expectedUrl);
             assertEquals(expectedUrl, publishUrl);
