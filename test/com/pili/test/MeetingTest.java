@@ -13,14 +13,13 @@ import com.pili.PiliException;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-public class MeetingTest {
+public class MeetingTest implements java.lang.instrument.Instrumentation {
     String accessKey;
     String secretKey;
     Meeting meeting;
 
     @Before
     public void prepare() {
-
         accessKey = "7O7hf7Ld1RrC_fpZdFvU8aCgOPuhw2K4eapYOdII";
         secretKey = "6Rq7rMSUHHqOgo0DJjh15tHsGUBEH9QhWqqyj4ka";
 
@@ -105,6 +104,31 @@ public class MeetingTest {
             assertEquals("7O7hf7Ld1RrC_fpZdFvU8aCgOPuhw2K4eapYOdII:jltpX6P42j2fH3ErOp7Zj7RyaeE=:eyJyb29tX25hbWUiOiJyb29tMSIsInVzZXJfaWQiOiIxMjMiLCJwZXJtIjoiYWRtaW4iLCJleHBpcmVfYXQiOjE3ODU2MDAwMDB9",
                     token);
         } catch (Exception e) {
+            fail();
+        }
+    }
+
+    @Test
+    public void testActiveUsers(){
+        String room = "roomName";
+        try {
+            Meeting.AllActiveUser users = meeting.activeUsers(room);
+            System.out.println(users.users.length);
+            for (int i = 0 ; i < users.users.length; i++){
+                System.out.println(users.users[i].UserId +":" + users.users[i].UserName);
+            }
+        } catch (PiliException e) {
+            fail();
+        }
+    }
+
+    @Test
+    public void testRejectUser(){
+        String room = "roomName";
+        String userId = "userId";
+        try {
+            meeting.rejectUser(room, userId);
+        } catch (PiliException e) {
             fail();
         }
     }
