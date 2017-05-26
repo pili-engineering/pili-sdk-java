@@ -23,8 +23,8 @@ public class MeetingTest {
         // local test environment
 //        Config.APIHost = "10.200.20.28:7778";
 
-        accessKey = "7O7hf7Ld1RrC_fpZdFvU8aCgOPuhw2K4eapYOdII";
-        secretKey = "6Rq7rMSUHHqOgo0DJjh15tHsGUBEH9QhWqqyj4ka";
+        accessKey = "YFvDcv7ie2tmSCRjX8aYHwrfqpeXR4M_ef2Az1CK";
+        secretKey = "MCBFkF6tv55uxavHTnxKEFt8f7uKL5rD0Lv2gL5n";
 
         cli = new Client(accessKey, secretKey);
         meeting = cli.newMeeting();
@@ -32,6 +32,26 @@ public class MeetingTest {
 
     private boolean skip() {
         return Config.RTCAPIHost != "rtc.qiniuapi.com";
+    }
+
+    @Test
+    public void testCreateRoom(){
+        // create room with name
+        try {
+            String roomName = "test12Room";
+            String r1 =  meeting.createRoom("123",roomName,12);
+            assertEquals(roomName,r1);
+
+            Meeting.Room room = meeting.getRoom(roomName);
+            System.out.println("roomName:"+room.name);
+            System.out.println("roomStatus:"+room.status);
+            assertEquals(roomName, room.name);
+            assertEquals("123",room.ownerId);
+            assertEquals(Meeting.Status.NEW,room.status);
+        } catch (PiliException e){
+            e.printStackTrace();
+//            fail();
+        }
     }
 
     @Test
@@ -127,6 +147,31 @@ public class MeetingTest {
             assertEquals("7O7hf7Ld1RrC_fpZdFvU8aCgOPuhw2K4eapYOdII:jltpX6P42j2fH3ErOp7Zj7RyaeE=:eyJyb29tX25hbWUiOiJyb29tMSIsInVzZXJfaWQiOiIxMjMiLCJwZXJtIjoiYWRtaW4iLCJleHBpcmVfYXQiOjE3ODU2MDAwMDB9",
                     token);
         } catch (Exception e) {
+            fail();
+        }
+    }
+
+    @Test
+    public void testActiveUsers(){
+        String roomName = "liujingbo";
+        try {
+            Meeting.AllActiveUsers users = meeting.activeUsers(roomName);
+            System.out.println(users.users.length);
+            for (int i = 0 ; i < users.users.length; i++){
+                System.out.println(users.users[i].userId + " : " + users.users[i].userName);
+            }
+        }catch (PiliException e){
+            fail();
+        }
+    }
+
+    @Test
+    public void testRejectUser(){
+        String roomName = "liujingbo";
+        String userId = "qiniu-186bf90c-f9b8-4ef5-b3b4-cba0e2b93064";
+        try {
+            meeting.rejectUser(roomName, userId);
+        }catch (PiliException e){
             fail();
         }
     }
