@@ -747,4 +747,76 @@ public final class API {
             throw new PiliException(response);
         }
     }
+
+    public static Meeting.AllActiveUser getActiveUsers(Credentials credentials, String room) throws PiliException{
+        if (room == null){
+            throw new PiliException(MessageConfig.ILLEGAL_ROOM);
+        }
+        Gson gson = new Gson();
+        String urlStr = String.format("%s/rooms/%s/users",RTC_BASE_URL, room);
+        Response response = null;
+        try {
+            URL url = new URL(urlStr);
+
+            String macToken = credentials.signRequest(url, "GET", null, null);
+            Request request = new Request.Builder()
+                    .url(url)
+                    .get()
+                    .header("User-Agent", Utils.getUserAgent())
+                    .addHeader("Authorization", macToken)
+                    .build();
+            response = mOkHttpClient.newCall(request).execute();
+        }catch (Exception e){
+            e.printStackTrace();
+            throw new PiliException(e);
+        }
+
+        // response never be null
+        if (response.isSuccessful()) {
+            try {
+                Meeting.AllActiveUser ret = gson.fromJson(response.body().string(), Meeting.AllActiveUser.class);
+                return ret;
+            } catch (IOException e) {
+                e.printStackTrace();
+                throw new PiliException(e);
+            }
+        } else {
+            throw new PiliException(response);
+        }
+    }
+
+    public static void rejectUser(Credentials credentials, String room, String userId) throws PiliException{
+        if (room == null){
+            throw new PiliException(MessageConfig.ILLEGAL_ROOM);
+        }
+        if (userId == null){
+            throw new PiliException(MessageConfig.ILLEGAL_PARAMETER);
+        }
+
+//        Gson gson = new Gson();
+        String urlStr = String.format("%s/rooms/%s/users/%s",RTC_BASE_URL, room, userId);
+        Response response = null;
+        try {
+            URL url = new URL(urlStr);
+
+            String macToken = credentials.signRequest(url, "DELETE", null, null);
+            Request request = new Request.Builder()
+                    .url(url)
+                    .delete()
+                    .header("User-Agent", Utils.getUserAgent())
+                    .addHeader("Authorization", macToken)
+                    .build();
+            response = mOkHttpClient.newCall(request).execute();
+        }catch (Exception e){
+            e.printStackTrace();
+            throw new PiliException(e);
+        }
+
+        // response never be null
+        if (response.isSuccessful()) {
+            return;
+        } else {
+            throw new PiliException(response);
+        }
+    }
 }

@@ -13,6 +13,7 @@ public final class MessageConfig {
 
     public static final String ILLEGAL_OWNER_ID = "Illegal owner id!";
     public static final String ILLEGAL_ROOM = "Illegal room!";
+    public static final String ILLEGAL_PARAMETER = "Illegal parameter!";
 
     private MessageConfig() {
     }

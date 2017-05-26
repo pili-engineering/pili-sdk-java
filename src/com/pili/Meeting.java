@@ -36,6 +36,14 @@ public class Meeting {
         API.deleteRoom(this.mCredentials, roomName);
     }
 
+    public AllActiveUser activeUsers(String roomName) throws PiliException{
+        return API.getActiveUsers(this.mCredentials,roomName);
+    }
+
+    public void rejectUser(String roomName, String userId) throws PiliException{
+        API.rejectUser(this.mCredentials, roomName, userId);
+    }
+
     public String roomToken(String roomName, String userId, String perm, Date expireAt) throws Exception {
         RoomAccess access = new RoomAccess(roomName, userId, perm, expireAt);
         String json = new Gson().toJson(access);
@@ -104,5 +112,17 @@ public class Meeting {
         public String ownerId;
         @SerializedName("user_max")
         public int userMax;
+    }
+
+    public static class ActiveUser{
+        @SerializedName("user_id")
+        public String UserId;
+        @SerializedName("user_name")
+        public String UserName;
+    }
+
+    public static class AllActiveUser{
+        @SerializedName("active_users")
+        public ActiveUser[] users;
     }
 }
