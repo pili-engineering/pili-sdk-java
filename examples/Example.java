@@ -151,12 +151,11 @@ public class Example {
         System.out.printf("keyA=%s 保存直播数据: fname=%s\n", keyA, fname);
 
         //保存直播数据并获取作业id
-        Stream streamA = hub.get("hutext");
         String fname = null;
         try {
             Stream.SaveOptions options = new Stream.SaveOptions();
-            options.start = 1508294455;
-            options.end = 1508294621;
+            options.start = 0;
+            options.end = 0;
             options.format = "mp4";
 
             Map<String, String> ret = streamA.saveReturn(options);
