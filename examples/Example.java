@@ -150,6 +150,26 @@ public class Example {
         }
         System.out.printf("keyA=%s 保存直播数据: fname=%s\n", keyA, fname);
 
+        //保存直播数据并获取作业id
+        String fname = null;
+        try {
+            Stream.SaveOptions options = new Stream.SaveOptions();
+            options.start = 0;
+            options.end = 0;
+            options.format = "mp4";
+
+            Map<String, String> ret = streamA.saveReturn(options);
+            System.out.println( "fname:" + ret.get("fname") );
+            System.out.println( "persistentID:" + ret.get("persistentID") );
+        }catch (PiliException e){
+            if (!e.isNotInLive()) {
+                e.printStackTrace();
+                return;
+            }else{
+                System.out.printf("keyA=%s 不在直播\n","hutext");
+            }
+        }
+
         // RTMP推流地址
         String url = cli.RTMPPublishURL("publish-rtmp.test.com", hubName, keyA, 3600);
         System.out.printf("keyA=%s RTMP推流地址=%s\n", keyA, url);
