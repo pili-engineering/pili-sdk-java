@@ -4,6 +4,8 @@ import com.google.gson.Gson;
 import com.qiniu.pili.utils.UrlSafeBase64;
 
 import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
+import java.util.Map;
 
 public final class Stream {
     private StreamInfo info;
@@ -170,6 +172,24 @@ public final class Stream {
         }
     }
 
+    public Map<String, String> saveReturn(SaveOptions opts) throws PiliException {
+        String path = baseUrl + "/saveas";
+        String json = gson.toJson(opts);
+
+        try {
+            String resp = cli.callWithJson(path, json);
+            SaveRetFull ret = gson.fromJson(resp, SaveRetFull.class);
+            Map<String, String> result = new HashMap<>();
+            result.put("persistentID", ret.persistentID);
+            result.put("fname", ret.fname);
+            return result;
+        } catch (PiliException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new PiliException(e);
+        }
+    }
+
     /**
      * snapshot the live stream
      *
@@ -304,6 +324,12 @@ public final class Stream {
     private class SaveRet {
         String fname;
     }
+
+    private class SaveRetFull {
+        String fname;
+        String persistentID;
+    }
+
 
     public static class SnapshotOptions {
         /**
