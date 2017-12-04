@@ -9,9 +9,9 @@ public final class Config {
 
     public static final String UTF8 = "UTF-8";
 
-    public static final String DEFAULT_API_VERSION = "v1";
+    public static final String DEFAULT_API_VERSION = "v2";
 
-    public static final String DEFAULT_RTC_VERSION = "v1";
+    public static final String DEFAULT_RTC_VERSION = "v2";
 
     @Deprecated
     public static final String API_VERSION = DEFAULT_API_VERSION;

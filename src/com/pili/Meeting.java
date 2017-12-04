@@ -28,21 +28,21 @@ public class Meeting {
         return API.createRoom(this.mCredentials, new CreateArgs(ownerId));
     }
 
-    public Room getRoom(String roomName) throws PiliException {
-        return API.getRoom(this.mCredentials, roomName);
-    }
+//    public Room getRoom(String roomName) throws PiliException {
+//        return API.getRoom(this.mCredentials, roomName);
+//    }
 
     public void deleteRoom(String roomName) throws PiliException {
         API.deleteRoom(this.mCredentials, roomName);
     }
 
-    public AllActiveUser activeUsers(String roomName) throws PiliException{
-        return API.getActiveUsers(this.mCredentials,roomName);
-    }
+//    public AllActiveUser activeUsers(String roomName) throws PiliException{
+//        return API.getActiveUsers(this.mCredentials,roomName);
+//    }
 
-    public void rejectUser(String roomName, String userId) throws PiliException{
-        API.rejectUser(this.mCredentials, roomName, userId);
-    }
+//    public void rejectUser(String roomName, String userId) throws PiliException{
+//        API.rejectUser(this.mCredentials, roomName, userId);
+//    }
 
     public String roomToken(String roomName, String userId, String perm, Date expireAt) throws Exception {
         RoomAccess access = new RoomAccess(roomName, userId, perm, expireAt);
@@ -59,12 +59,23 @@ public class Meeting {
         String perm;
         @SerializedName("expire_at")
         long expireAt;
+        @SerializedName("version")
+        String version;
 
         RoomAccess(String roomName, String userId, String perm, Date expireAt) {
             this.roomName = roomName;
             this.userId = userId;
             this.perm = perm;
             this.expireAt = expireAt.getTime() / 1000; // nanoseconds
+            this.version = "2.0";
+        }
+
+        RoomAccess(String roomName, String userId, String perm, Date expireAt, String version){
+            this.roomName = roomName;
+            this.userId = userId;
+            this.perm = perm;
+            this.expireAt = expireAt.getTime()/1000;
+            this.version = version;
         }
     }
 
