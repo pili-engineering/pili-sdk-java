@@ -28,9 +28,9 @@ public class Meeting {
         return API.createRoom(this.mCredentials, new CreateArgs(ownerId));
     }
 
-//    public Room getRoom(String roomName) throws PiliException {
-//        return API.getRoom(this.mCredentials, roomName);
-//    }
+    public Room getRoom(String roomName) throws PiliException {
+        return API.getRoom(this.mCredentials, roomName);
+    }
 
     public void deleteRoom(String roomName) throws PiliException {
         API.deleteRoom(this.mCredentials, roomName);
