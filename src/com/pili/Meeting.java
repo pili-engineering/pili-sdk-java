@@ -117,8 +117,8 @@ public class Meeting {
     public static class Room {
         @SerializedName("room_name")
         public String name;
-        @SerializedName("room_status")
-        public RoomStatus status;
+//        @SerializedName("room_status")
+//        public RoomStatus status;
         @SerializedName("owner_id")
         public String ownerId;
         @SerializedName("user_max")
