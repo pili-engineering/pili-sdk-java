@@ -157,7 +157,7 @@ public class Meeting {
 
     public class Room {
         @SerializedName("room_name") public String name;
-        @SerializedName("room_status") public Status status;
+//        @SerializedName("room_status") public Status status;
         @SerializedName("owner_id") public String ownerId;
         @SerializedName("user_max") public int userMaxe;
     }
