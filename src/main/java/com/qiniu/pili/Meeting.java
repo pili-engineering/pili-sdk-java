@@ -13,7 +13,7 @@ public class Meeting {
     private Meeting(){}
 
     Meeting(RPC cli ) {
-        this.baseUrl = Config.APIHTTPScheme + Config.RTCAPIHost + "/v1";
+        this.baseUrl = Config.APIHTTPScheme + Config.RTCAPIHost + "/v2";
         this.cli = cli;
         this.gson = new Gson();
     }
@@ -75,32 +75,38 @@ public class Meeting {
         }
     }
 
-    public AllActiveUsers activeUsers(String roomName) throws PiliException{
-        String path = this.baseUrl + "/rooms/"+roomName+"/users";
-        try {
-            String resp = cli.callWithGet(path);
-            AllActiveUsers us = gson.fromJson(resp, AllActiveUsers.class);
-            return us;
-        }catch (PiliException e){
+    /**
+     * 暂未开放
+     */
+//    public AllActiveUsers activeUsers(String roomName) throws PiliException{
+//        String path = this.baseUrl + "/rooms/"+roomName+"/users";
+//        try {
+//            String resp = cli.callWithGet(path);
+//            AllActiveUsers us = gson.fromJson(resp, AllActiveUsers.class);
+//            return us;
+//        }catch (PiliException e){
+////            e.printStackTrace();
+//            throw e;
+//        }catch (Exception e){
 //            e.printStackTrace();
-            throw e;
-        }catch (Exception e){
-            e.printStackTrace();
-            throw new PiliException(e);
-        }
-    }
+//            throw new PiliException(e);
+//        }
+//    }
 
-    public void rejectUser(String roomName, String userId)throws PiliException{
-        String path = this.baseUrl + "/rooms/"+roomName + "/users/" + userId;
-        try {
-            cli.callWithDelete(path);
-        }catch (PiliException e){
-            throw e;
-        }catch (Exception e){
-            e.printStackTrace();
-            throw new PiliException(e);
-        }
-    }
+    /**
+     * 暂未开放
+     */
+//    public void rejectUser(String roomName, String userId)throws PiliException{
+//        String path = this.baseUrl + "/rooms/"+roomName + "/users/" + userId;
+//        try {
+//            cli.callWithDelete(path);
+//        }catch (PiliException e){
+//            throw e;
+//        }catch (Exception e){
+//            e.printStackTrace();
+//            throw new PiliException(e);
+//        }
+//    }
 
     public String roomToken(String roomName, String userId, String perm, Date expireAt) throws Exception {
         RoomAccess access = new RoomAccess(roomName, userId, perm, expireAt);
@@ -117,12 +123,23 @@ public class Meeting {
         String perm;
         @SerializedName("expire_at")
         long expireAt;
+        @SerializedName("version")
+        String version ;
 
         RoomAccess(String roomName, String userId, String perm, Date expireAt){
             this.roomName = roomName;
             this.userId = userId;
             this.perm = perm;
             this.expireAt = expireAt.getTime() / 1000;// seconds
+            this.version = "2.0";
+        }
+
+        RoomAccess(String roomName, String userId, String perm, Date expireAt, String version){
+            this.roomName = roomName;
+            this.userId = userId;
+            this.perm = perm;
+            this.expireAt = expireAt.getTime()/1000;
+            this.version = version;
         }
     }
 
@@ -140,7 +157,7 @@ public class Meeting {
 
     public class Room {
         @SerializedName("room_name") public String name;
-        @SerializedName("room_status") public Status status;
+//        @SerializedName("room_status") public Status status;
         @SerializedName("owner_id") public String ownerId;
         @SerializedName("user_max") public int userMaxe;
     }
