@@ -531,14 +531,14 @@ public class PiliTest {
             assertEquals(MessageConfig.ILLEGAL_TIME_MSG, e.getMessage());
         }
 
-        try {
-            SaveAsResponse res = mStream.saveAs(fileName, format, 1000, 3600, null);
-            fail();
-        } catch (PiliException e) {
-            if (!NOT_FOUND_MSG.equals(e.getMessage())) {
-                assertEquals(BAD_REQ_MSG, e.getMessage());
-            }
-        }
+//        try {
+//            SaveAsResponse res = mStream.saveAs(fileName, format, 1000, 3600, null);
+//            fail();
+//        } catch (PiliException e) {
+//            if (!NOT_FOUND_MSG.equals(e.getMessage())) {
+//                assertEquals(BAD_REQ_MSG, e.getMessage());
+//            }
+//        }
 
         try {
             Stream stream = mHub.getStream(streamId);
@@ -554,8 +554,8 @@ public class PiliTest {
             s = list.get(0);
             start = s.getStart();
             end = s.getEnd();
-            res = stream.saveAs(fileName, format, start, end, "http://notifyurl");
-            assertNotNull(res);
+//            res = stream.saveAs(fileName, format, start, end, "http://notifyurl");
+//            assertNotNull(res);
         } catch (PiliException e1) {
             // TODO Auto-generated catch block
             e1.printStackTrace();
