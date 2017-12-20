@@ -36,13 +36,13 @@ public class Meeting {
         API.deleteRoom(this.mCredentials, roomName);
     }
 
-//    public AllActiveUser activeUsers(String roomName) throws PiliException{
-//        return API.getActiveUsers(this.mCredentials,roomName);
-//    }
+    public AllActiveUser activeUsers(String roomName) throws PiliException{
+        return API.getActiveUsers(this.mCredentials,roomName);
+    }
 
-//    public void rejectUser(String roomName, String userId) throws PiliException{
-//        API.rejectUser(this.mCredentials, roomName, userId);
-//    }
+    public void rejectUser(String roomName, String userId) throws PiliException{
+        API.rejectUser(this.mCredentials, roomName, userId);
+    }
 
     public String roomToken(String roomName, String userId, String perm, Date expireAt) throws Exception {
         RoomAccess access = new RoomAccess(roomName, userId, perm, expireAt);
@@ -126,10 +126,8 @@ public class Meeting {
     }
 
     public static class ActiveUser{
-        @SerializedName("user_id")
+        @SerializedName("UserID")
         public String UserId;
-        @SerializedName("user_name")
-        public String UserName;
     }
 
     public static class AllActiveUser{
