@@ -43,10 +43,8 @@ public class MeetingTest {
 
             Meeting.Room room = meeting.getRoom(roomName);
             System.out.println("roomName:"+room.name);
-            System.out.println("roomStatus:"+room.status);
             assertEquals(roomName, room.name);
             assertEquals("admin",room.ownerId);
-            assertEquals(Meeting.Status.NEW,room.status);
         } catch (PiliException e){
             e.printStackTrace();
 //            fail();
@@ -76,28 +74,28 @@ public class MeetingTest {
         }
     }
 
-//    @Test
-//    public void testActiveUsers(){
-//        String roomName = "liujingbo";
-//        try {
-//            Meeting.AllActiveUsers users = meeting.activeUsers(roomName);
-//            System.out.println(users.users.length);
-//            for (int i = 0 ; i < users.users.length; i++){
-//                System.out.println(users.users[i].userId + " : " + users.users[i].userName);
-//            }
-//        }catch (PiliException e){
-//            fail();
-//        }
-//    }
+    @Test
+    public void testActiveUsers(){
+        String roomName = "qs";
+        try {
+            Meeting.AllActiveUsers users = meeting.activeUsers(roomName);
+            System.out.println(users.users.length);
+            for (int i = 0 ; i < users.users.length; i++){
+                System.out.println(users.users[i].userId);
+            }
+        }catch (PiliException e){
+            fail();
+        }
+    }
 
-//    @Test
-//    public void testRejectUser(){
-//        String roomName = "liujingbo";
-//        String userId = "qiniu-186bf90c-f9b8-4ef5-b3b4-cba0e2b93064";
-//        try {
-//            meeting.rejectUser(roomName, userId);
-//        }catch (PiliException e){
-//            fail();
-//        }
-//    }
+    @Test
+    public void testRejectUser(){
+        String roomName = "qs";
+        String userId = "qiniu-1afc2fa3-6e89-4453-8171-1e4bbf628fa2";
+        try {
+            meeting.rejectUser(roomName, userId);
+        }catch (PiliException e){
+            fail();
+        }
+    }
 }

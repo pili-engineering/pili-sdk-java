@@ -76,37 +76,37 @@ public class Meeting {
     }
 
     /**
-     * 暂未开放
+     * 查询连麦房间活跃人数
      */
-//    public AllActiveUsers activeUsers(String roomName) throws PiliException{
-//        String path = this.baseUrl + "/rooms/"+roomName+"/users";
-//        try {
-//            String resp = cli.callWithGet(path);
-//            AllActiveUsers us = gson.fromJson(resp, AllActiveUsers.class);
-//            return us;
-//        }catch (PiliException e){
-////            e.printStackTrace();
-//            throw e;
-//        }catch (Exception e){
+    public AllActiveUsers activeUsers(String roomName) throws PiliException{
+        String path = this.baseUrl + "/rooms/"+roomName+"/users";
+        try {
+            String resp = cli.callWithGet(path);
+            AllActiveUsers us = gson.fromJson(resp, AllActiveUsers.class);
+            return us;
+        }catch (PiliException e){
 //            e.printStackTrace();
-//            throw new PiliException(e);
-//        }
-//    }
+            throw e;
+        }catch (Exception e){
+            e.printStackTrace();
+            throw new PiliException(e);
+        }
+    }
 
     /**
-     * 暂未开放
+     * 剔除连麦用户
      */
-//    public void rejectUser(String roomName, String userId)throws PiliException{
-//        String path = this.baseUrl + "/rooms/"+roomName + "/users/" + userId;
-//        try {
-//            cli.callWithDelete(path);
-//        }catch (PiliException e){
-//            throw e;
-//        }catch (Exception e){
-//            e.printStackTrace();
-//            throw new PiliException(e);
-//        }
-//    }
+    public void rejectUser(String roomName, String userId)throws PiliException{
+        String path = this.baseUrl + "/rooms/"+roomName + "/users/" + userId;
+        try {
+            cli.callWithDelete(path);
+        }catch (PiliException e){
+            throw e;
+        }catch (Exception e){
+            e.printStackTrace();
+            throw new PiliException(e);
+        }
+    }
 
     public String roomToken(String roomName, String userId, String perm, Date expireAt) throws Exception {
         RoomAccess access = new RoomAccess(roomName, userId, perm, expireAt);
@@ -190,10 +190,8 @@ public class Meeting {
     }
 
     public class ActiveUser{
-        @SerializedName("user_id")
+        @SerializedName("UserID")
         public String userId;
-        @SerializedName("user_name")
-        public String userName;
     }
 
     public class AllActiveUsers{
