@@ -39,6 +39,7 @@ final class RPC {
         if (response.isSuccessful()) {
             return response.body().string();
         } else {
+            response.close();
             throw new PiliException(response);
         }
     }
@@ -57,6 +58,7 @@ final class RPC {
         if (response.isSuccessful()) {
             return response.body().string();
         } else {
+            response.close();
             throw new PiliException(response);
         }
     }
@@ -75,6 +77,7 @@ final class RPC {
         if (response.isSuccessful()) {
             return response.body().string();
         } else {
+            response.close();
             throw new PiliException(response);
         }
     }
