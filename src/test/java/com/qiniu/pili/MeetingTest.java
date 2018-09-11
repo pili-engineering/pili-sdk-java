@@ -42,11 +42,12 @@ public class MeetingTest {
             assertEquals(roomName,r1);
 
             Meeting.Room room = meeting.getRoom(roomName);
-            System.out.println("roomName:"+room.name);
-            System.out.println("roomStatus:"+room.status);
+            System.out.println("roomName:" + room.name);
+            System.out.println("roomOwnerId:" + room.ownerId);
+            System.out.println("roomUserMaxe:" + room.userMaxe);
             assertEquals(roomName, room.name);
-            assertEquals("admin",room.ownerId);
-            assertEquals(Meeting.Status.NEW,room.status);
+            assertEquals("admin", room.ownerId);
+            assertEquals(12, room.userMaxe);
         } catch (PiliException e){
             e.printStackTrace();
 //            fail();

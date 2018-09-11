@@ -21,8 +21,8 @@ public class ClientTest {
     @Before
     public void prepare() {
         // local test environment
-        accessKey = "Ge_kRfuV_4JW0hOCOnRq5_kD1sX53bKVht8FNdd3";
-        secretKey = "0fU92CSrvgNJTVCXqbuRVqkntPFJLFERGa4akpko";
+        accessKey = "";
+        secretKey = "";
         hubName = "PiliSDKTest";
         streamKeyPrefix = "javasdktest" + String.valueOf(new Date().getTime());
 
