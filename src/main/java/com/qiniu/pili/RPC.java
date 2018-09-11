@@ -36,8 +36,13 @@ final class RPC {
                 .build();
 
         Response response = okHttpClient.newCall(request).execute();
+
         if (response.isSuccessful()) {
-            return response.body().string();
+            ResponseBody responseBody = response.body();
+            String responseString = responseBody.string();
+            if (responseBody != null)
+                responseBody.close();
+            return responseString;
         } else {
             throw new PiliException(response);
         }
@@ -54,8 +59,13 @@ final class RPC {
                 .build();
 
         Response response = okHttpClient.newCall(request).execute();
+
         if (response.isSuccessful()) {
-            return response.body().string();
+            ResponseBody responseBody = response.body();
+            String responseString = responseBody.string();
+            if (responseBody != null)
+                responseBody.close();
+            return responseString;
         } else {
             throw new PiliException(response);
         }
@@ -72,8 +82,13 @@ final class RPC {
                 .build();
 
         Response response = okHttpClient.newCall(request).execute();
+
         if (response.isSuccessful()) {
-            return response.body().string();
+            ResponseBody responseBody = response.body();
+            String responseString = responseBody.string();
+            if (responseBody != null)
+                responseBody.close();
+            return responseString;
         } else {
             throw new PiliException(response);
         }
