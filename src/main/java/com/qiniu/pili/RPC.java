@@ -44,6 +44,7 @@ final class RPC {
                 responseBody.close();
             return responseString;
         } else {
+            response.close();
             throw new PiliException(response);
         }
     }
@@ -67,6 +68,7 @@ final class RPC {
                 responseBody.close();
             return responseString;
         } else {
+            response.close();
             throw new PiliException(response);
         }
     }
@@ -90,6 +92,7 @@ final class RPC {
                 responseBody.close();
             return responseString;
         } else {
+            response.close();
             throw new PiliException(response);
         }
     }
