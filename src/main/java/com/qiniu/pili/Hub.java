@@ -71,7 +71,7 @@ public final class Hub {
     }
 
     private ListRet list(boolean live, String prefix, int limit, String marker) throws PiliException {
-        String path = String.format("%s/streams?liveonly=%s&prefix=%s&limit=%d&marker=%s", baseUrl, live, prefix, limit, marker);
+        String path = String.format("%s/streams?liveonly=%s&prefix=%s&limit=%d&marker=%s", baseUrl, live, nullToEmpty(prefix), limit, nullToEmpty(marker));
         try {
             String resp = cli.callWithGet(path);
 
@@ -90,6 +90,13 @@ public final class Hub {
             throw new PiliException(e);
         }
 
+    }
+
+    private String nullToEmpty(String str) {
+        if (str == null) {
+            return "";
+        }
+        return str;
     }
 
     /**
